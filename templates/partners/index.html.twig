@@ -1,0 +1,113 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark' %}
+{% block title %}Partenaires | Épicafé{% endblock %}
+
+
+
+{% block body %}
+  {% include 'components/page_banner.html.twig' with {
+    title: 'Partenaires',
+    subtitle: 'Caves & domaines sélectionnés — terroir, conseil, convivialité.',
+    background: asset('images/banners-partners.png')
+  } %}
+
+<section id="partners" class="vv-section vv-section--light">
+  <div class="vv-container">
+
+    <div class="vv-section__head vv-scroll-reveal">
+      <h2 class="vv-h2">Nos partenaires</h2>
+      <p class="vv-lead">Deux caves locales, sélectionnées pour leurs pépites & leur exigence.</p>
+    </div>
+
+    <div class="vv-partnersPremium">
+      {% for p in partners if p.type == 'premium' %}
+        {# Alterne la mise en page (1 sur 2 inversée) #}
+        <article class="vv-partnerBlock vv-scroll-reveal {{ loop.index is even ? 'is-reversed' : '' }}">
+          <div class="vv-partnerBlock__text">
+            <div class="vv-kicker">PARTENAIRE</div>
+
+            <h3 class="vv-partnerBlock__title">{{ p.name }}</h3>
+
+            {% if p.description %}
+              <p class="vv-partnerBlock__desc">{{ p.description }}</p>
+            {% endif %}
+
+            <ul class="vv-partnerBlock__bullets">
+              {% if p.bullet1 %}<li>{{ p.bullet1 }}</li>{% endif %}
+              {% if p.bullet2 %}<li>{{ p.bullet2 }}</li>{% endif %}
+              {% if p.bullet3 %}<li>{{ p.bullet3 }}</li>{% endif %}
+            </ul>
+
+            <div class="vv-partnerBlock__actions">
+              {% if p.websiteUrl %}
+                <a class="vv-btn vv-btn--primary" href="{{ p.websiteUrl }}" target="_blank" rel="noreferrer">
+                  Découvrir <span aria-hidden="true">→</span>
+                </a>
+              {% endif %}
+              
+            </div>
+
+            <p class="vv-partnerBlock__note vv-muted">
+              * Vins disponibles à l’Épicafé selon arrivage — demandez au comptoir 🙂
+            </p>
+          </div>
+
+          <div class="vv-partnerBlock__media">
+            {# Image 1 (grande) : si tu as une image principale, sinon placeholder #}
+            {% set hero =
+              p.heroImageFileName is defined and p.heroImageFileName
+                ? asset('uploads/partners/' ~ p.heroImageFileName)
+                : (p.heroImageUrl is defined and p.heroImageUrl ? p.heroImageUrl : asset('images/partner-hero-placeholder.jpg'))
+            %}
+
+            {# Image 2/3 : petites (optionnelles). Tu peux les ajouter plus tard. #}
+            {% set img2 =
+              p.image2FileName is defined and p.image2FileName
+                ? asset('uploads/partners/' ~ p.image2FileName)
+                : (p.image2Url is defined and p.image2Url ? p.image2Url : asset('images/partner-2-placeholder.jpg'))
+            %}
+            {% set img3 =
+              p.image3FileName is defined and p.image3FileName
+                ? asset('uploads/partners/' ~ p.image3FileName)
+                : (p.image3Url is defined and p.image3Url ? p.image3Url : asset('images/partner-3-placeholder.jpg'))
+            %}
+
+            <div class="vv-partnerCollage">
+              <img class="vv-partnerCollage__main" src="{{ hero }}" alt="{{ p.name|e }}">
+              <img class="vv-partnerCollage__small vv-partnerCollage__small--top" src="{{ img2 }}" alt="">
+              <img class="vv-partnerCollage__small vv-partnerCollage__small--bottom" src="{{ img3 }}" alt="">
+
+              {# Logo en pastille (si dispo) #}
+              {% set logo =
+                p.logoFileName ? asset('uploads/partners/' ~ p.logoFileName)
+                : (p.logoUrl ? p.logoUrl : null)
+              %}
+              {% if logo %}
+                <div class="vv-partnerCollage__logo" aria-hidden="true">
+                  <img src="{{ logo }}" alt="">
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+    <div class="vv-partnersSecondary">
+      {% for p in partners if p.type == 'secondary' %}
+        <article class="vv-partnerCard">
+          <div class="vv-partnerCard__content">
+            <h3>{{ p.name }}</h3>
+            <p>{{ p.description }}</p>
+
+            {% if p.websiteUrl %}
+              <a class="vv-btn vv-btn--primary" href="{{ p.websiteUrl }}" target="_blank">
+                Découvrir →
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

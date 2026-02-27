@@ -1,0 +1,61 @@
+{# templates/events/_event_row.html.twig #}
+<article class="vv-eventRow vv-scroll-reveal">
+  {% set imageSrc =
+    event.imageFileName
+      ? asset('uploads/events/' ~ event.imageFileName)
+      : (event.imageUrl ?: asset('images/event-placeholder.jpg'))
+  %}
+
+  <div class="vv-eventRow__media">
+    <img src="{{ imageSrc }}" alt="{{ event.title|e }}">
+
+    <div class="vv-eventRow__badge">
+      {% if event.startAt %}
+        {% set months = {
+          1:'janv.', 2:'févr.', 3:'mars', 4:'avr.', 5:'mai', 6:'juin',
+          7:'juil.', 8:'août', 9:'sept.', 10:'oct.', 11:'nov.', 12:'déc.'
+        } %}
+        {% set days = { 1:'Lun',2:'Mar',3:'Mer',4:'Jeu',5:'Ven',6:'Sam',7:'Dim' } %}
+
+        <strong>{{ event.startAt|date('d') }} {{ months[event.startAt|date('n')] }}</strong>
+        <span>{{ days[event.startAt|date('N')] }}</span>
+      {% else %}
+        <strong>À venir</strong>
+        <span>—</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="vv-eventRow__body">
+    <h3 class="vv-eventRow__title">{{ event.title }}</h3>
+
+    {% if event.description %}
+      <p class="vv-eventRow__desc">{{ event.description }}</p>
+    {% endif %}
+
+    <div class="vv-eventRow__meta">
+      <div class="vv-eventRow__time">
+        🕒
+        {% if event.startAt %}
+          {{ event.startAt|date('H:i') }}
+        {% elseif event.isRecurring and event.recurringTime %}
+          {{ event.recurringTime|date('H:i') }}
+        {% else %}
+          —
+        {% endif %}
+      </div>
+
+      {% if event.slug %}
+        <span class="vv-eventRow__cta">Voir <span>→</span></span>
+      {% else %}
+        <span class="vv-muted" style="font-weight:700;">Lien indisponible</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if event.slug %}
+    <a class="vv-eventRow__link"
+       href="{{ path('event_show', { slug: event.slug }) }}"
+       aria-label="Voir {{ event.title|e }}"></a>
+  {% endif %}
+</article>

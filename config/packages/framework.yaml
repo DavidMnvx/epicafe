@@ -1,13 +1,21 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    secret: '%env(APP_SECRET)%'
+  default_locale: fr
+  translator:
+    default_path: '%kernel.project_dir%/translations'
+    enabled: true
+    fallbacks: ['fr']
+  secret: '%env(APP_SECRET)%'
+  csrf_protection: true
 
-    # Note that the session will be started ONLY if you read or write from it.
-    session: true
-
-    #esi: true
-    #fragments: true
-
+  session:
+    enabled: true
+    handler_id: null
+    storage_factory_id: session.storage.factory.native
+    save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
+    cookie_secure: false
+    cookie_samesite: lax
+    
 when@test:
     framework:
         test: true

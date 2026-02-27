@@ -1,0 +1,27 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Upload multiple{% endblock %}
+
+{% block main %}
+  <div class="content-panel">
+    <form method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Titre (optionnel)</label>
+        <input class="form-control" name="titlePrefix" placeholder="Ex: Fête du village">
+      </div>
+
+      <div class="form-group">
+        <label>Date (optionnelle)</label>
+        <input class="form-control" type="date" name="takenAt">
+      </div>
+
+      <div class="form-group">
+        <label>Photos (sélection multiple)</label>
+        <input class="form-control" type="file" name="photos[files][]" multiple accept="image/*">
+        <small class="text-muted">Tu peux sélectionner 20 photos d’un coup.</small>
+      </div>
+
+      <button class="btn btn-primary">Importer</button>
+    </form>
+  </div>
+{% endblock %}

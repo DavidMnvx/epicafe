@@ -1,0 +1,282 @@
+/* ==========================================================================
+   Epicafé Admin – EA 4.27.6 (crème + vert, lisible, arrondi)
+   ========================================================================== */
+
+   :root{
+    --vv-bg: hsl(39 28% 94%);
+    --vv-card: hsl(39 30% 98%);
+    --vv-text: hsl(30 10% 14%);
+    --vv-muted: hsl(30 10% 45%);
+  
+    --vv-green: hsl(175 45% 32%);
+    --vv-green-dark: hsl(175 50% 24%);
+    --vv-green-soft: hsl(175 45% 32% / 0.14);
+  
+    --vv-border: hsl(30 20% 86%);
+    --vv-shadow: 0 10px 35px hsl(30 10% 14% / 0.10);
+  
+    --vv-r-lg: 18px;
+    --vv-r-md: 14px;
+    --vv-r-sm: 10px;
+  }
+  
+
+
+  body, html { background: var(--vv-bg) !important; }
+  .ea { background: var(--vv-bg) !important; color: var(--vv-text) !important; }
+  .ea .content-wrapper,
+  .ea .content,
+  .ea .content-body,
+  .ea .content-panel,
+  .ea .main-content{
+    background: transparent !important;
+  }
+  
+/* Header du contenu */
+  .ea .content-header{
+    background: var(--vv-card) !important;
+    border: 1px solid var(--vv-border) !important;
+    border-radius: var(--vv-r-lg) !important;
+    box-shadow: var(--vv-shadow) !important;
+    padding: 16px 18px !important;
+    margin-bottom: 18px !important;
+    margin-top: 18px !important; 
+  }
+  
+  .ea .content-header{
+    border-left: 6px solid var(--vv-green) !important;
+  }
+
+  .ea .content-header-title{
+    color: hsl(175 45% 26%) !important;
+    letter-spacing: .3px;
+  }
+  
+/* Cartes / panneaux */
+  .ea .card,
+  .ea .content-panel,
+  .ea .panel{
+    background: var(--vv-card) !important;
+    border: 1px solid var(--vv-border) !important;
+    border-radius: var(--vv-r-lg) !important;
+    box-shadow: var(--vv-shadow) !important;
+  }
+  
+/* Tables */
+  .ea table.table{
+    background: var(--vv-card) !important;
+    border-radius: var(--vv-r-lg) !important;
+    overflow: hidden !important;
+    border: 1px solid var(--vv-border) !important;
+  }
+  
+  .ea table.table thead th{
+    background: hsl(39 28% 92%) !important;
+    color: var(--vv-muted) !important;
+    font-weight: 700 !important;
+    border-bottom: 1px solid var(--vv-border) !important;
+  }
+  
+  .ea table.table tbody tr:hover{
+    background: var(--vv-green-soft) !important;
+  }
+  
+/* Sidebar */
+  .ea .sidebar,
+  .ea .ea-sidebar{
+    background: linear-gradient(180deg, hsl(175 50% 20%), hsl(175 45% 30%)) !important;
+    border-right: 0 !important;
+  }
+  
+  .ea .ea-sidebar__logo a{
+    color: #fff !important;
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-weight: 700 !important;
+  }
+  
+  /* Liens menu */
+  .ea .ea-menu__link{
+    border-radius: var(--vv-r-md) !important;
+    padding: 10px 14px !important;
+    color: hsl(39 23% 96% / 0.86) !important;
+  }
+  
+  .ea .ea-menu__link:hover{
+    background: hsl(39 23% 96% / 0.12) !important;
+    color: #fff !important;
+  }
+  
+  /* ✅ Actif (hyper visible) */
+  .ea .ea-menu__item--active > .ea-menu__link{
+    background: var(--vv-card) !important;
+    color: var(--vv-green-dark) !important;
+    font-weight: 800 !important;
+    position: relative !important;
+  }
+  
+  .ea .ea-menu__item--active > .ea-menu__link::before{
+    content: "" !important;
+    position: absolute !important;
+    left: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 6px !important;
+    height: 18px !important;
+    border-radius: 999px !important;
+    background: var(--vv-green) !important;
+  }
+  
+  /* Boutons */
+  .ea .btn{
+    border-radius: var(--vv-r-md) !important;
+    font-weight: 700 !important;
+  }
+  
+  .ea .btn-primary,
+  .ea .action-new .btn{
+    background: var(--vv-green) !important;
+    border-color: var(--vv-green) !important;
+    color: #fff !important;
+  }
+  
+  .ea .btn-primary:hover,
+  .ea .action-new .btn:hover{
+    background: var(--vv-green-dark) !important;
+    border-color: var(--vv-green-dark) !important;
+  }
+  
+  /* Inputs */
+  .ea .form-control,
+  .ea .form-select,
+  .ea textarea {
+    background: #ffffff !important;
+    color: hsl(175 50% 24%) !important;
+    border: 1px solid hsl(30 20% 78%) !important;
+    border-radius: var(--vv-r-md) !important;
+  }
+
+  .ea .form-control::placeholder,
+  .ea textarea::placeholder {
+    color: hsl(30 10% 55%) !important;
+  }
+
+  .ea .form-control:focus,
+  .ea .form-select:focus,
+  .ea textarea:focus {
+    background: #ffffff !important;
+    border-color: var(--vv-green) !important;
+    box-shadow: 0 0 0 3px var(--vv-green-soft) !important;
+  }
+  
+  /* Toggle boolean visible */
+  .ea .form-check-input{
+    width: 44px !important;
+    height: 24px !important;
+    border-radius: 999px !important;
+  }
+  
+  .ea .form-check-input:checked{
+    background-color: var(--vv-green) !important;
+    border-color: var(--vv-green) !important;
+  }
+  
+  /* TITRES DE COLONNES */
+.ea .datagrid thead th{
+    background: hsl(30 20% 92%) !important; /* crème légèrement plus foncé */
+    border-bottom: 1px solid hsl(30 20% 82%) !important;
+  }
+  
+  .ea .datagrid thead th,
+  .ea .datagrid thead th a,
+  .ea .datagrid thead .datagrid-column-title{
+    color: hsl(175 45% 26%) !important; /* vert canard foncé */
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  /* Ligne sélectionnée (remplace le noir brutal) */
+    .ea tr.table-row-selected {
+    background: linear-gradient(
+    90deg,
+    hsl(175 35% 28%) 0%,
+    hsl(175 30% 32%) 100%
+  ) !important;
+  color: #fff !important;
+}
+
+    .ea tr.table-row-selected td,
+    .ea tr.table-row-selected a {
+    color: #fff !important;
+}
+
+    .ea tbody tr:hover:not(.table-row-selected) {
+    background: hsl(175 25% 90%) !important;
+}
+
+    /* Labels au-dessus des champs */
+    .ea .ea-content form label,
+    .ea .content-wrapper form label,
+    .ea .main-content form label,
+    .ea .form-widget label,
+    .ea .form-group label.form-label,
+    .ea .form-group label.col-form-label {
+    color: hsl(175 45% 26%) !important; /* vert canard foncé */
+    font-weight: 700 !important;
+    opacity: 1 !important;
+  }
+
+    /* Titres de sections / fieldsets */
+    .ea .form-panel-title,
+    .ea .field-group .field-group-header,
+    .ea legend {
+    color: hsl(175 45% 22%);
+    font-weight: 800;
+  }
+
+    /* Alignement visuel des champs */
+    .ea .form-group {
+    margin-bottom: 18px;
+    
+}
+
+/* Neutralise l’overlay Bootstrap sur les tables (source du noir) */
+body.ea .datagrid .table > :not(caption) > * > *{
+    box-shadow: none !important;
+    --bs-table-bg-type: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+    background-color: var(--vv-card) !important;
+    color: var(--vv-text) !important;
+  }
+  
+  /* Hover doux */
+  body.ea .datagrid .table > tbody > tr:hover > *{
+    background-color: hsl(175 45% 32% / 0.08) !important;
+  }
+  
+  /* Selected (au lieu du noir) */
+  body.ea .datagrid .table > tbody > tr.table-row-selected > *{
+    background: hsl(175 45% 32% / 0.14) !important;
+    color: var(--vv-text) !important;
+    box-shadow: none !important;
+  }
+
+  body.ea .datagrid tbody tr td{  
+    background-color: hsl(175 45% 32% / 0.14) !important;
+    
+    box-shadow: none !important;
+    color: black !important;
+  }
+
+  .ea .content-header-title{
+    font-size: 1.35rem;
+    font-weight: 800;
+  }
+
+/* rend le panel “Aperçu” sticky */
+.ea-new-form .field-livePreview,
+.ea-edit-form .field-livePreview{
+  position: sticky;
+  top: 90px; /* ajuste selon ta navbar admin */
+}

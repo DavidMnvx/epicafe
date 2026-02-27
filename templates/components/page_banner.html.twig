@@ -1,0 +1,28 @@
+{# templates/components/page_banner.html.twig #}
+
+
+<section class="vv-miniHero"
+  style="--vv-miniHero-image: url('{{ background|default(asset('images/banners-events.png')) }}');"
+>
+  <div class="vv-miniHero__bg" aria-hidden="true"></div>
+
+  <div class="vv-container vv-miniHero__content">
+    <nav class="vv-breadcrumb" aria-label="Fil d’Ariane">
+      <a href="{{ path('app_home') }}">Accueil</a>
+      <span aria-hidden="true">›</span>
+      <span aria-current="page">{{ title }}</span>
+    </nav>
+
+    <h1 class="vv-miniHero__title">{{ title }}</h1>
+
+    {% if subtitle is defined and subtitle %}
+      <p class="vv-miniHero__subtitle">{{ subtitle }}</p>
+    {% endif %}
+
+    {% if cta is defined and cta %}
+      <a class="vv-btn vv-btn--primary vv-miniHero__cta" href="{{ cta.href }}">
+        {{ cta.label }} <span aria-hidden="true">→</span>
+      </a>
+    {% endif %}
+  </div>
+</section>

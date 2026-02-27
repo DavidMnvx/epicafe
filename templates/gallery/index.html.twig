@@ -1,0 +1,75 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark' %}
+{% block title %}Galerie | Épicafé{% endblock %}
+
+{% block body %}
+
+{# Mini-hero/banner (comme événements) #}
+{% include 'components/page_banner.html.twig' with {
+  title: 'Galerie',
+  subtitle: 'Souvenirs des événements passés',
+  background: asset('images/Le barroux-galerie.png')
+} %}
+
+<section class="vv-section vv-section--light">
+  <div class="vv-container">
+
+    <div class="vv-galleryToolbar vv-scroll-reveal">
+      <div class="vv-galleryToolbar__left">
+        <h2 class="vv-h3" style="margin:0;">Dernières photos</h2>
+        <p class="vv-muted" style="margin:.25rem 0 0;">Clique pour agrandir</p>
+      </div>
+
+      <form class="vv-galleryToolbar__right" method="get">
+        <select name="year" class="vv-input">
+          <option value="">Toutes les années</option>
+          {# exemple #}
+          {% for y in years %}
+            <option value="{{ y }}" {{ y == selectedYear ? 'selected' : '' }}>{{ y }}</option>
+          {% endfor %}
+        </select>
+
+        <select name="sort" class="vv-input">
+          <option value="new" {{ selectedSort == 'new' ? 'selected' : '' }}>Plus récent</option>
+          <option value="old" {{ selectedSort == 'old' ? 'selected' : '' }}>Plus ancien</option>
+        </select>
+
+        <button class="vv-btn vv-btn--primary" type="submit">Filtrer</button>
+      </form>
+    </div>
+
+    {% if photos|length %}
+      <div class="vv-galleryMasonry vv-scroll-reveal">
+        {% for p in photos %}
+          <a class="vv-galleryItem glightbox"
+            href="{{ asset('uploads/gallery/' ~ p.fileName) }}"
+            data-gallery="epicafe-gallery"
+            data-title="{{ p.title|e }}"
+            data-description="{% if p.takenAt %}{{ p.takenAt|date('d/m/Y') }}{% endif %}"
+          >
+            <img
+              src="{{ asset('uploads/gallery/' ~ p.fileName) }}"
+              alt="{{ p.title|e }}"
+              loading="lazy"
+            >
+
+            <div class="vv-galleryItem__overlay">
+              <div class="vv-galleryItem__meta">
+                <strong class="vv-galleryItem__title">{{ p.title }}</strong>
+                {% if p.takenAt %}
+                  <span class="vv-galleryItem__date">{{ p.takenAt|date('d/m/Y') }}</span>
+                {% endif %}
+              </div>
+              <span class="vv-galleryItem__zoom">Agrandir →</span>
+            </div>
+          </a>
+      {% endfor %}
+      </div>
+    {% else %}
+      <p class="vv-muted">Aucune photo pour le moment.</p>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

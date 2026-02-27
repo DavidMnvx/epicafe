@@ -1,0 +1,68 @@
+{% extends 'base_front.html.twig' %}
+
+
+{% block body %}
+<div class="login-page">
+  <div class="login-overlay"></div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <span class="login-icon">🌾</span>
+      <h1>Connexion</h1>
+      <p>Administration · L'Épicerie du Barroux</p>
+    </div>
+
+    <form method="post" class="login-form">
+      {% if error %}
+        <div class="login-alert">
+          {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+      {% endif %}
+
+      {% if app.user %}
+        <div class="login-info">
+          Connecté en tant que {{ app.user.userIdentifier }},
+          <a href="{{ logout_path() }}">Déconnexion</a>
+        </div>
+      {% endif %}
+
+      <div class="login-field">
+        <label for="inputEmail">Email</label>
+        <input
+          type="email"
+          name="email"
+          id="inputEmail"
+          value="{{ last_username }}"
+          required
+          autofocus
+          autocomplete="email"
+        >
+      </div>
+
+      <div class="login-field">
+        <label for="inputPassword">Mot de passe</label>
+        <input
+          type="password"
+          name="password"
+          id="inputPassword"
+          required
+          autocomplete="current-password"
+        >
+      </div>
+
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+      <div class="login-remember">
+        <label>
+          <input type="checkbox" name="_remember_me">
+          Se souvenir de moi
+        </label>
+      </div>
+
+      <button type="submit" class="login-btn">
+        Se connecter
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

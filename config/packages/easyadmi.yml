@@ -1,0 +1,8 @@
+easy_admin:
+  disable_turbo: true
+
+  easy_admin:
+  design:
+    assets:
+      css:
+        - '/assets/styles/admin.css'

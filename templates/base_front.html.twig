@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block meta_description %}Bar & produits locaux au pied du Ventoux.{% endblock %}">
+  <title>{% block title %}Épicafé – Bar & Épicerie locale à Le Barroux (Ventoux){% endblock %}</title>
+
+<link rel="stylesheet" href="{{ asset('styles/front.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+  {% block head %}
+  
+  {% endblock %}
+</head>
+
+<body class="{{ bodyClass|default('') }}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CafeOrCoffeeShop",
+  "name": "Épicafé",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "56 chemin Neuf",
+    "addressLocality": "Le Barroux",
+    "postalCode": "84330",
+    "addressCountry": "FR"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 44.1415,
+    "longitude": 5.1980
+  },
+  "telephone": "+33490123456",
+  "url": "https://tonsite.fr",
+  "priceRange": "€€",
+  "servesCuisine": "Produits locaux, café, vins",
+  "sameAs": [
+    "https://www.facebook.com/tonpage"
+  ]
+}
+
+</script>
+
+<header class="vv-header" data-vv-header>
+  <div class="vv-container">
+    <nav class="vv-nav">
+      <a href="{{ path('app_home') }}" class="vv-brand">
+        <img
+          src="{{ asset('images/Logos/Logo-epicafe-removbg.png') }}"
+          alt="Épicafé – Le Barroux"
+          class="vv-brand__logo"
+        >
+      </a>
+
+      <ul class="vv-nav__links">
+        <li><a href="{{ path('event_index') }}">Événements</a></li>
+        <li><a href="{{ path('gallery_index') }}">Galerie Photos</a></li>
+        <li><a href="{{ path('partner_index') }}">Partenaires</a></li>
+        <li><a href="{{ path('app_home') }}">Menu</a></li>
+        <li>
+          <a class="vv-nav__cta" href={{ path('app_home') }}>📍 Nous trouver</a>
+        </li>
+      </ul>
+
+      <button class="vv-burger" type="button" aria-label="Menu" aria-expanded="false" data-vv-burger>
+        ☰
+      </button>
+    </nav>
+  </div>
+
+  <div class="vv-mobile" data-vv-mobile>
+    <div class="vv-mobile__inner">
+      <a href="#events" data-vv-close-mobile>Événements</a>
+      <a href="#products" data-vv-close-mobile>Produits</a>
+      <a href="#hours" data-vv-close-mobile>Horaires</a>
+      <a href="#contact" data-vv-close-mobile>Contact</a>
+    </div>
+  </div>
+</header>
+
+{% block body %}{% endblock %}
+
+<footer class="vv-footer" id="contact">
+  <div class="vv-container vv-footer__grid">
+    <div>
+      <div class="vv-footer__title"><strong>Épicafé</strong></div>
+      <p class="vv-muted">Bar & produits locaux — village, Ventoux.</p>
+      <div class="vv-footer__small">© {{ "now"|date("Y") }} Épicafé</div>
+    </div>
+
+    <div>
+      <div class="vv-footer__title">Horaires</div>
+      <ul class="vv-list">
+        <li>Lun–Sam : 8h–19h</li>
+        <li>Dim : 9h–13h</li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="vv-footer__title">Contact</div>
+      <address>
+        <ul class="vv-list">
+          <li>56 chemin Neuf<br>84330 Le Barroux</li>
+          <li><a class="vv-link" href="tel:+33490123456">04 90 12 34 56</a></li>
+          <li><a class="vv-link" href="mailto:contact@epicafe.fr">contact@epicafe.fr</a></li>
+          <li class="vv-muted">Le Barroux / Ventoux</li>
+        </ul>
+      </address>
+    </div>
+  </div>
+</footer>
+
+{% block javascripts %}
+  <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+  <script src="{{ asset('scripts/front.js') }}" defer></script>
+  
+{% endblock %}
+
+</body>
+</html>
