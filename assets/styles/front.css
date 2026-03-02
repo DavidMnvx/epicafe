@@ -1191,6 +1191,39 @@ body.vv-page .vv-brand__text{
   .vv-partnerCollage__small{ width: 58%; }
 }
 
+/* Animation premium douce */
+.vv-partnerBlock.vv-scroll-reveal{
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .45s ease, transform .55s ease;
+  will-change: opacity, transform;
+}
+
+.vv-partnerBlock.vv-scroll-reveal.vv-visible{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Un peu plus “premium”: effet sur le collage */
+.vv-partnerBlock.vv-scroll-reveal .vv-partnerCollage{
+  transform: translateY(10px) scale(.99);
+  transition: transform .7s ease;
+}
+
+.vv-partnerBlock.vv-scroll-reveal.vv-visible .vv-partnerCollage{
+  transform: translateY(0) scale(1);
+}
+
+/* Respect accessibilité */
+@media (prefers-reduced-motion: reduce){
+  .vv-partnerBlock.vv-scroll-reveal,
+  .vv-partnerBlock.vv-scroll-reveal .vv-partnerCollage{
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
                                                                             /* =========================
                                                                             GALLERY
                                                                             ========================= */

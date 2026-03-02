@@ -33,55 +33,111 @@ final class PartnerCrudController extends AbstractCrudController
     }
 
     public function configureFields(string $pageName): iterable
-    {
-        yield IdField::new('id')->onlyOnIndex();
+{
+    // ===== ONGLET 1 : Infos =====
+    yield FormField::addTab('Infos');
 
-        yield FormField::addPanel('Informations');
+    yield IdField::new('id')->onlyOnIndex();
 
-        yield TextField::new('name', 'Nom')->setRequired(true);
-        yield SlugField::new('slug')->setTargetFieldName('name')->onlyOnForms();
-        yield UrlField::new('websiteUrl', 'Lien site partenaire');
+    yield TextField::new('name', 'Nom')
+        ->setRequired(true)
+        ->setColumns('col-md-6');
 
-        yield ChoiceField::new('type', 'Type de présentation')
-            ->setChoices([
-                'Premium (3 images)' => 'premium',
-                'Secondaire (carte simple)' => 'secondary',
-            ])
-            ->renderAsBadges();
+    yield SlugField::new('slug', 'Slug')
+        ->setTargetFieldName('name')
+        ->setRequired(false)
+        ->onlyOnForms()
+        ->setColumns('col-md-6');
 
-        yield IntegerField::new('position', 'Ordre');
-        yield BooleanField::new('isPublished', 'Publié');
+    yield ChoiceField::new('type', 'Type')
+        ->setChoices([
+            'Premium' => Partner::TYPE_PREMIUM,
+            'Secondaire' => Partner::TYPE_SECONDARY,
+            'Standard' => Partner::TYPE_PARTNER,
+        ])
+        ->renderAsNativeWidget()
+        ->setHelp('Premium = affichage “grand bloc” avec 3 images. Normal/Secondaire = affichage plus simple.')
+        ->setColumns('col-md-4');
 
-        yield TextareaField::new('description')->hideOnIndex();
+    yield IntegerField::new('position', 'Ordre')
+        ->setHelp('0 = en premier')
+        ->setColumns('col-md-2');
 
-        yield FormField::addPanel('Points forts (Premium uniquement)');
-        yield TextField::new('bullet1')->hideOnIndex();
-        yield TextField::new('bullet2')->hideOnIndex();
-        yield TextField::new('bullet3')->hideOnIndex();
+    yield BooleanField::new('isPublished', 'Publié')
+        ->renderAsSwitch(false)
+        ->setColumns('col-md-2');
 
-        yield FormField::addPanel('Images');
+    yield UrlField::new('websiteUrl', 'Site web')
+        ->setColumns('col-md-8');
 
-        yield ImageField::new('heroImageFileName', 'Image principale')
-            ->setUploadDir('public/uploads/partners')
-            ->setBasePath('uploads/partners')
-            ->setUploadedFileNamePattern('[slug]-hero-[timestamp].[extension]')
-            ->hideOnIndex();
+    yield TextareaField::new('description', 'Description')
+        ->hideOnIndex()
+        ->setColumns('col-md-12');
 
-        yield ImageField::new('image2FileName', 'Image secondaire 1')
-            ->setUploadDir('public/uploads/partners')
-            ->setBasePath('uploads/partners')
-            ->setUploadedFileNamePattern('[slug]-2-[timestamp].[extension]')
-            ->hideOnIndex();
 
-        yield ImageField::new('image3FileName', 'Image secondaire 2')
-            ->setUploadDir('public/uploads/partners')
-            ->setBasePath('uploads/partners')
-            ->setUploadedFileNamePattern('[slug]-3-[timestamp].[extension]')
-            ->hideOnIndex();
+    // ===== ONGLET 2 : Points =====
+    yield FormField::addTab('Points');
 
-        yield ImageField::new('logoFileName', 'Logo')
-            ->setUploadDir('public/uploads/partners')
-            ->setBasePath('uploads/partners')
-            ->hideOnIndex();
+    yield TextField::new('bullet1', 'Point 1')->hideOnIndex()->setColumns('col-md-4');
+    yield TextField::new('bullet2', 'Point 2')->hideOnIndex()->setColumns('col-md-4');
+    yield TextField::new('bullet3', 'Point 3')->hideOnIndex()->setColumns('col-md-4');
+
+
+    // ===== ONGLET 3 : Logo =====
+    yield FormField::addTab('Logo');
+
+    yield ImageField::new('logoFileName', 'Logo uploadé')
+        ->setUploadDir('public/uploads/partners')
+        ->setBasePath('uploads/partners')
+        ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
+        ->setHelp('PNG/SVG/WebP recommandé')
+        ->hideOnIndex()
+        ->setColumns('col-md-8');
+
+    yield TextField::new('logoUrl', 'Logo URL (fallback)')
+        ->hideOnIndex()
+        ->setColumns('col-md-8');
+
+    yield ImageField::new('logoFileName', 'Aperçu logo')
+        ->setBasePath('uploads/partners')
+        ->onlyOnIndex();
+
+
+    // ===== ONGLET 4 : Images Premium =====
+    yield FormField::addTab('Images Premium');
+
+    yield ImageField::new('heroImageFileName', 'Image principale')
+        ->setUploadDir('public/uploads/partners')
+        ->setBasePath('uploads/partners')
+        ->setUploadedFileNamePattern('[slug]-hero-[timestamp].[extension]')
+        ->hideOnIndex()
+        ->setColumns('col-md-4');
+
+    yield ImageField::new('image2FileName', 'Image 2')
+        ->setUploadDir('public/uploads/partners')
+        ->setBasePath('uploads/partners')
+        ->setUploadedFileNamePattern('[slug]-2-[timestamp].[extension]')
+        ->hideOnIndex()
+        ->setColumns('col-md-4');
+
+    yield ImageField::new('image3FileName', 'Image 3')
+        ->setUploadDir('public/uploads/partners')
+        ->setBasePath('uploads/partners')
+        ->setUploadedFileNamePattern('[slug]-3-[timestamp].[extension]')
+        ->hideOnIndex()
+        ->setColumns('col-md-4');
+
+        yield ChoiceField::new('type', 'Type')
+    ->setChoices([
+        'Premium' => Partner::TYPE_PREMIUM,
+        'Normal' => Partner::TYPE_PARTNER,
+        'Secondaire' => Partner::TYPE_SECONDARY,
+    ])
+    ->renderAsBadges([
+        Partner::TYPE_PREMIUM => 'success',
+        Partner::TYPE_PARTNER => 'info',
+        Partner::TYPE_SECONDARY => 'secondary',
+    ])
+    ->onlyOnIndex();
     }
 }

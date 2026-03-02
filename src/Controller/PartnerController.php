@@ -13,7 +13,7 @@ final class PartnerController extends AbstractController
     public function index(PartnerRepository $repo): Response
     {
         return $this->render('partners/index.html.twig', [
-            'partners' => $repo->findPublished(),
+            'partners' => $repo->findPublishedOrdered(),
         ]);
     }
 }

@@ -27,7 +27,6 @@ class Partner
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    // 3 bullet points (optionnels)
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $bullet1 = null;
 
@@ -37,11 +36,9 @@ class Partner
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $bullet3 = null;
 
-    // Logo uploadé (nom de fichier)
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logoFileName = null;
 
-    // Fallback logo par URL (optionnel)
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logoUrl = null;
 
@@ -58,17 +55,26 @@ class Partner
     private \DateTimeImmutable $updatedAt;
 
     #[ORM\Column(length: 20)]
-    private string $type = 'partner'; // premium | secondary | partner
+private string $type = self::TYPE_PARTNER;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $heroImageFileName = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $image2FileName = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $image3FileName = null;
 
+    public const TYPE_PREMIUM = 'premium';
+    public const TYPE_SECONDARY = 'secondary';
+    public const TYPE_PARTNER = 'partner';
+
+    /** @return string[] */
+    public static function getAllowedTypes(): array
+    {
+        return [self::TYPE_PREMIUM, self::TYPE_SECONDARY, self::TYPE_PARTNER];
+    }
 
     public function __construct()
     {
@@ -85,12 +91,6 @@ class Partner
     public function __toString(): string
     {
         return $this->name ?: 'Partenaire';
-    }
-
-        // Champ virtuel pour EasyAdmin (aperçu live)
-    public function getLivePreview(): string
-    {
-        return '';
     }
 
     public function getId(): ?int { return $this->id; }
@@ -133,4 +133,50 @@ class Partner
 
     public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self { $this->updatedAt = $updatedAt; return $this; }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+{
+    $allowed = [self::TYPE_PREMIUM, self::TYPE_SECONDARY, self::TYPE_PARTNER];
+    $this->type = in_array($type, $allowed, true) ? $type : self::TYPE_PARTNER;
+    return $this;
+} 
+    
+
+    public function getHeroImageFileName(): ?string
+    {
+        return $this->heroImageFileName;
+    }
+
+    public function setHeroImageFileName(?string $heroImageFileName): self
+    {
+        $this->heroImageFileName = $heroImageFileName;
+        return $this;
+    }
+
+    public function getImage2FileName(): ?string
+    {
+        return $this->image2FileName;
+    }
+
+    public function setImage2FileName(?string $image2FileName): self
+    {
+        $this->image2FileName = $image2FileName;
+        return $this;
+    }
+
+    public function getImage3FileName(): ?string
+    {
+        return $this->image3FileName;
+    }
+
+    public function setImage3FileName(?string $image3FileName): self
+    {
+        $this->image3FileName = $image3FileName;
+        return $this;
+    }
 }

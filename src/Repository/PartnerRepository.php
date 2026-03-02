@@ -13,6 +13,7 @@ final class PartnerRepository extends ServiceEntityRepository
         parent::__construct($registry, Partner::class);
     }
 
+ 
     /** @return Partner[] */
     public function findPublished(int $limit = 50): array
     {
@@ -24,4 +25,28 @@ final class PartnerRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /** @return Partner[] */
+    public function findPublishedOrdered(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.isPublished = true')
+            ->addSelect("
+                CASE
+                    WHEN p.type = :premium THEN 0
+                    WHEN p.type = :partner THEN 1
+                    WHEN p.type = :secondary THEN 2
+                    ELSE 3
+                END AS HIDDEN typeOrder
+            ")
+            ->setParameter('premium', Partner::TYPE_PREMIUM)
+            ->setParameter('partner', Partner::TYPE_PARTNER)
+            ->setParameter('secondary', Partner::TYPE_SECONDARY)
+            ->addOrderBy('typeOrder', 'ASC')
+            ->addOrderBy('p.position', 'ASC')
+            ->addOrderBy('p.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }
