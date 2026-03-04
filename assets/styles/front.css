@@ -180,10 +180,6 @@
 
 
 
-/* =========================
-   MINI HERO (Pages internes)
-========================= */
-
 
 /* =========================
    MINI HERO (bannière pages)
@@ -210,19 +206,25 @@
 .vv-miniHero__bg{
   position: absolute;
   inset: 0;
-
-  /* Voile plus "ciné" + fondu vers le background */
-  background-image:
-    
-     
+  /* voile léger + image */
+  background-image: linear-gradient(
+  rgba(20,60,50,0.35),
+  rgba(20,60,50,0.25)
+),
     var(--vv-miniHero-image);
-
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
   transform: scale(1.03);
 }
+
+/* Overrides par page */
+.vv-miniHero--events .vv-miniHero__bg{ background-position:center 38%; }
+.vv-miniHero--gallery .vv-miniHero__bg{ background-position:center 40%; }
+.vv-miniHero--menu .vv-miniHero__bg{ background-position:center 27%; }
+.vv-miniHero--partners .vv-miniHero__bg{ background-position:center 57%; }
+
 
 /* Contenu */
 .vv-miniHero__content{
@@ -300,7 +302,10 @@
 
 .vv-hero-dark .vv-header.is-scrolled a{
   color: hsl(var(--foreground));
+  
 }
+
+
 
                                                                               /* =================
                                                                               HEADER / NAV
@@ -362,14 +367,14 @@ mix-blend-mode: normal !important;
 .vv-brand__logo {
 height: 156px; 
 padding: 1rem;
-margin-top: 0.5rem;
+margin-top: 0.1rem;
 margin-right: 22rem;
 transition: all 0.45s cubic-bezier(.4,0,.2,1);
 background: transparent;
 }
 .vv-brand__logo:hover {
-transform: scale(1.20);
-
+transform: scale(1.25);
+margin-top: 0.1rem;
 }
 
 
@@ -398,7 +403,7 @@ transform: scale(1.20);
 .vv-nav__links a{
   position:relative;
   font-weight: 600;
-  color: black(var(--card));
+  color: 0 8px 18px hsl(0 0% 0% / 0.45);
   opacity: .95;
   transition: var(--transition-base);
 }
@@ -512,6 +517,8 @@ body.vv-page .vv-brand__text{
     width:100%;
     height:100%;
     object-fit: cover;
+    object-position: center 25%;
+    
   }
   
   .vv-hero__overlay{
@@ -520,8 +527,8 @@ body.vv-page .vv-brand__text{
     background: linear-gradient(
       to bottom,
       transparent 0%,
-      transparent 45%,
-      hsl(var(--background) / .92) 100%
+      transparent 65%,
+      hsl(var(--background) / .92) 120%
     );
   }
   
@@ -559,7 +566,7 @@ body.vv-page .vv-brand__text{
     font-size: clamp(1.15rem, 2vw, 1.8rem);
     margin: 0 0 2.6rem 0;
     color: hsl(var(--card) / .9);
-    text-shadow: 0 12px 28px hsl(0 0% 0% / .35);
+    text-shadow: 0 12px 28px hsla(0, 0%, 0%, 0.842);
   }
   
   @keyframes vv-bounce{
@@ -1826,6 +1833,7 @@ body.vv-page .vv-brand__text{
   }
 }
 
+
 /* Une carte */
 .vv-serviceItem{
   position: relative;
@@ -2009,6 +2017,111 @@ body.vv-page .vv-brand__text{
     align-items: flex-start;
   }
 }
+/* =========================
+   Services — boost visibilité (patch)
+   ========================= */
+
+/* Donne une vraie respiration à la section */
+.vv-serviceList{
+  margin-top: 1.2rem;
+}
+
+/* Cartes : un peu plus de contraste + bord plus premium */
+.vv-serviceItem{
+  border: 1px solid hsl(var(--border) / .95);
+  background: linear-gradient(
+    180deg,
+    hsl(var(--card)) 0%,
+    hsl(var(--card)) 55%,
+    hsl(var(--background)) 100%
+  );
+}
+
+/* Accent visuel : petite barre à gauche (très efficace) */
+.vv-serviceItem::after{
+  content:"";
+  position:absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 4px;
+  border-radius: 999px;
+  background: hsl(var(--primary) / .55);
+  box-shadow: 0 10px 24px hsl(30 10% 14% / .10);
+  opacity: .85;
+}
+
+/* Hover : plus “premium”, sans grossir */
+.vv-serviceItem:hover{
+  transform: translateY(-3px);
+  border-color: hsl(var(--primary) / .25);
+}
+
+/* Icône : tu styles img, mais souvent l’icône est dans un div.
+   On stylise le conteneur + l’image si présente */
+.vv-serviceItem__icon{
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+
+  background: linear-gradient(
+    180deg,
+    hsl(var(--card)) 0%,
+    hsl(var(--muted)) 100%
+  );
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 10px 24px hsl(30 10% 14% / .08);
+}
+
+/* Image à l’intérieur : s’adapte proprement */
+.vv-serviceItem__icon img{
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  border-radius: 12px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+/* Titres : un poil plus “headline” */
+.vv-serviceItem__title{
+  font-size: 1.42rem;
+  line-height: 1.2;
+}
+
+/* Texte : contraste un peu renforcé */
+.vv-serviceItem__text,
+.vv-serviceItem__bullets li{
+  color: hsl(var(--muted-foreground) / .92);
+}
+
+/* Chips : plus visibles, plus “tag” */
+.vv-chip{
+  border-color: hsl(var(--border) / .95);
+  background: hsl(var(--card));
+}
+
+.vv-chip:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px hsl(30 10% 14% / .08);
+}
+
+/* Note : plus “CTA” */
+.vv-servicesNote{
+  border-color: hsl(var(--primary) / .18);
+  background: linear-gradient(
+    180deg,
+    hsl(var(--secondary)) 0%,
+    hsl(var(--secondary) / .82) 100%
+  );
+}
+
+.vv-servicesNote__cta{
+  border-color: hsl(var(--primary) / .18);
+}
 
 
                                                                           /* ==============
@@ -2094,76 +2207,195 @@ body.vv-page .vv-brand__text{
     margin-top: 2rem;
     text-align: center;
   }
-  
-  
  
-  
-  
                                                                           /* =================
                                                                             FOOTER
                                                                           ================= */
 
 
-  .vv-footer{
-    background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-    padding: 4rem 0 2rem;
+.vv-footer--premium{
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 4.2rem 0 2rem;
+}
+
+.vv-footer--premium .vv-container{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* grille */
+.vv-footer--premium .vv-footer__grid{
+  display: grid;
+  gap: 2.2rem;
+  align-items: start;
+  text-align: center;
+}
+
+@media (min-width: 900px){
+  .vv-footer--premium .vv-footer__grid{
+    grid-template-columns: 1.2fr 1fr 1.2fr 1fr;
+    text-align: left;
+    gap: 2.6rem;
   }
-  
-  .vv-footer__grid{
-    display:grid;
-    gap: 2rem;
+}
+
+/* Brand */
+.vv-footer--premium .vv-footer__brand{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  margin-bottom: .9rem;
+}
+
+@media (min-width: 900px){
+  .vv-footer--premium .vv-footer__brand{
+    justify-content: flex-start;
   }
-  @media (min-width: 768px){
-    .vv-footer__grid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+
+.vv-footer--premium .vv-footer__icon{
+  font-size: 1.6rem;
+}
+
+.vv-footer--premium .vv-footer__title{
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  margin: 0;
+  letter-spacing: .2px;
+}
+
+.vv-footer--premium .vv-footer__title::after{
+  content:"";
+  display:block;
+  width: 52px;
+  height: 2px;
+  margin: .55rem auto 0;
+  background: hsl(var(--primary-foreground) / .35);
+  border-radius: 999px;
+}
+
+@media (min-width: 900px){
+  .vv-footer--premium .vv-footer__title::after{
+    margin-left: 0;
+    margin-right: 0;
   }
-  
-  .vv-footer__brand{
-    display:flex;
-    align-items:center;
-    gap:.6rem;
-    margin-bottom: .8rem;
+}
+
+.vv-footer--premium .vv-footer__text{
+  margin: 0;
+  opacity: .88;
+  line-height: 1.65;
+  max-width: 46ch;
+}
+
+@media (max-width: 899px){
+  .vv-footer--premium .vv-footer__text{
+    margin: 0 auto;
   }
-  .vv-footer__icon{ font-size: 1.6rem; }
-  .vv-footer__title{
-    font-family: var(--font-serif);
-    font-size: 1.25rem;
-    margin:0;
+}
+
+/* Titres colonnes */
+.vv-footer--premium .vv-footer__h4{
+  font-family: var(--font-serif);
+  font-size: 1.00rem;
+  margin: 0 0 1rem;
+  letter-spacing: .2px;
+}
+
+/* liens */
+.vv-footer--premium .vv-footer__links{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: .65rem;
+}
+
+.vv-footer--premium .vv-footer__links a{
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  opacity: .9;
+  transition: transform .18s ease, opacity .18s ease, background .18s ease;
+  padding: .35rem .45rem;
+  border-radius: 12px;
+}
+
+@media (max-width: 899px){
+  .vv-footer--premium .vv-footer__links a{
+    justify-content: center;
   }
-  
-  .vv-footer__h4{
-    font-family: var(--font-serif);
-    font-size: 1.05rem;
-    margin: .2rem 0 1rem;
+}
+
+.vv-footer--premium .vv-footer__links a:hover{
+  opacity: 1;
+  transform: translateX(2px);
+  background: hsl(var(--primary-foreground) / .08);
+}
+
+/* pastilles icônes */
+.vv-footer--premium .vv-pill{
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: hsl(var(--primary-foreground) / .14);
+  border: 1px solid hsl(var(--primary-foreground) / .18);
+  font-size: .92rem;
+  flex: 0 0 30px;
+}
+
+/* Réseaux sociaux */
+.vv-footer--premium .vv-footer__social{
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 900px){
+  .vv-footer--premium .vv-footer__social{
+    justify-content: flex-start;
   }
-  
-  .vv-footer__text{
-    margin:0;
-    opacity: .85;
-    line-height: 1.7;
-  }
-  
-  .vv-footer__links{
-    list-style:none;
-    margin:0;
-    padding:0;
-    display:grid;
-    gap: .6rem;
-  }
-  .vv-footer__links a{
-    opacity: .85;
-    transition: var(--transition-base);
-  }
-  .vv-footer__links a:hover{ opacity: 1; }
-  
-  .vv-footer__bottom{
-    margin-top: 2.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid hsl(var(--primary-foreground) / .2);
-    text-align:center;
-    opacity: .65;
-    font-size: .95rem;
-  }
+}
+
+.vv-footer--premium .vv-footer__socialBtn{
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .55rem .8rem;
+  border-radius: 999px;
+  background: hsl(var(--primary-foreground) / .10);
+  border: 1px solid hsl(var(--primary-foreground) / .16);
+  color: hsl(var(--primary-foreground));
+  opacity: .95;
+  transition: transform .18s ease, background .18s ease, opacity .18s ease;
+}
+
+.vv-footer--premium .vv-footer__socialBtn:hover{
+  transform: translateY(-1px);
+  background: hsl(var(--primary-foreground) / .14);
+  opacity: 1;
+}
+
+.vv-footer--premium .vv-footer__socialTxt{
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+/* bottom */
+.vv-footer--premium .vv-footer__bottom{
+  margin-top: 2.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid hsl(var(--primary-foreground) / .22);
+  text-align: center;
+  opacity: .78;
+  font-size: .95rem;
+}
 
                                                                             /* =========================
                                                                             LOGIN PAGE

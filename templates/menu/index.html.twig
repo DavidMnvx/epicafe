@@ -1,14 +1,15 @@
 {% extends 'base_front.html.twig' %}
-{% set bodyClass = 'vv-hero-dark' %}
+{% set bodyClass = 'vv-hero-dark vv-hero-img' %}
 {% block title %}Galerie | Épicafé{% endblock %}
 
 {% block body %}
 
 {# Mini-hero/banner (comme événements) #}
 {% include 'components/page_banner.html.twig' with {
-  title: 'Galerie',
-  subtitle: 'Souvenirs des événements passés',
-  background: asset('images/Le barroux-galerie.png')
+  title: 'Menu',
+  subtitle: 'Boissons, produits du terroir et plaisirs simples à déguster au cœur du village.',
+  background: asset('images/banners-menu.png'),
+  bgClass: 'vv-miniHero--menu'
 } %}
 
 <section class="vv-section">

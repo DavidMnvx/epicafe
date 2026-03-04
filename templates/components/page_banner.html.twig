@@ -1,7 +1,7 @@
 {# templates/components/page_banner.html.twig #}
 
 
-<section class="vv-miniHero"
+<section class="vv-miniHero {{ bgClass|default('') }}"
   style="--vv-miniHero-image: url('{{ background|default(asset('images/banners-events.png')) }}');"
 >
   <div class="vv-miniHero__bg" aria-hidden="true"></div>

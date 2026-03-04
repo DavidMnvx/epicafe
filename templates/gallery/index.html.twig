@@ -2,13 +2,14 @@
 {% set bodyClass = 'vv-hero-dark' %}
 {% block title %}Galerie | Épicafé{% endblock %}
 
-{% block body %}
+{% block body  %}
 
 {# Mini-hero/banner (comme événements) #}
 {% include 'components/page_banner.html.twig' with {
   title: 'Galerie',
   subtitle: 'Souvenirs des événements passés',
-  background: asset('images/Le barroux-galerie.png')
+  background: asset('images/Le barroux-galerie.png'),
+  bgClass: 'vv-miniHero--gallery'
 } %}
 
 <section class="vv-section vv-section--light">

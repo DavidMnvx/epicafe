@@ -1,12 +1,13 @@
 {% extends 'base_front.html.twig' %}
-{% set bodyClass = 'vv-hero-dark' %}
+{% set bodyClass = 'vv-hero-dark .vv-miniHero__bg-events' %}
 {% block title %}Événements | Épicafé{% endblock %}
 
 {% block body %}
 
 {% include 'components/page_banner.html.twig' with {
   title: 'Événements',
-  subtitle: 'À venir à l’Épicafé'
+  subtitle: 'À venir à l’Épicafé',
+  bgClass: 'vv-miniHero--events'
 } %}
 
 <section class="vv-section vv-section--light">

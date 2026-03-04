@@ -58,7 +58,7 @@
         <li><a href="{{ path('event_index') }}">Événements</a></li>
         <li><a href="{{ path('gallery_index') }}">Galerie Photos</a></li>
         <li><a href="{{ path('partner_index') }}">Partenaires</a></li>
-        <li><a href="{{ path('app_home') }}">Menu</a></li>
+        <li><a href="{{ path('menu') }}">Menu</a></li>
         <li>
           <a class="vv-nav__cta" href={{ path('app_home') }}>📍 Nous trouver</a>
         </li>
@@ -82,34 +82,98 @@
 
 {% block body %}{% endblock %}
 
-<footer class="vv-footer" id="contact">
-  <div class="vv-container vv-footer__grid">
-    <div>
-      <div class="vv-footer__title"><strong>Épicafé</strong></div>
-      <p class="vv-muted">Bar & produits locaux — village, Ventoux.</p>
-      <div class="vv-footer__small">© {{ "now"|date("Y") }} Épicafé</div>
-    </div>
+<footer class="vv-footer vv-footer--premium">
+  <div class="vv-container">
 
-    <div>
-      <div class="vv-footer__title">Horaires</div>
-      <ul class="vv-list">
-        <li>Lun–Sam : 8h–19h</li>
-        <li>Dim : 9h–13h</li>
-      </ul>
-    </div>
+    <div class="vv-footer__grid">
 
-    <div>
-      <div class="vv-footer__title">Contact</div>
-      <address>
-        <ul class="vv-list">
-          <li>56 chemin Neuf<br>84330 Le Barroux</li>
-          <li><a class="vv-link" href="tel:+33490123456">04 90 12 34 56</a></li>
-          <li><a class="vv-link" href="mailto:contact@epicafe.fr">contact@epicafe.fr</a></li>
-          <li class="vv-muted">Le Barroux / Ventoux</li>
+      {# Col 1 : Brand #}
+      <div class="vv-footer__col">
+        <div class="vv-footer__brand">
+          <span class="vv-footer__icon" aria-hidden="true">🍷</span>
+          <h3 class="vv-footer__title">Epicafé</h3>
+        </div>
+
+        <p class="vv-footer__text">
+          Bar – Épicerie – Produits locaux au cœur du village du Barroux, au pied du Mont Ventoux.
+        </p>
+
+        <div class="vv-footer__social">
+          {# Remplace l’URL par ta page FB #}
+          <a class="vv-footer__socialBtn" href="https://facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook">
+            <span class="vv-pill">f</span>
+            <span class="vv-footer__socialTxt">Facebook</span>
+          </a>
+        </div>
+      </div>
+
+      {# Col 2 : Infos #}
+      <div class="vv-footer__col">
+        <h4 class="vv-footer__h4">Informations</h4>
+
+        <ul class="vv-footer__links vv-footer__links--pills">
+          <li>
+            <a href="https://maps.google.com/?q=Le%20Barroux%20Vaucluse" target="_blank" rel="noreferrer">
+              <span class="vv-pill" aria-hidden="true">📍</span>
+              <span>Le Barroux — Vaucluse</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="tel:+33600000000">
+              <span class="vv-pill" aria-hidden="true">📞</span>
+              <span>06 00 00 00 00</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="mailto:contact@epicafe.fr">
+              <span class="vv-pill" aria-hidden="true">✉️</span>
+              <span>contact@epicafe.fr</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="{{ path('menu') }}">
+              <span class="vv-pill" aria-hidden="true">🍽️</span>
+              <span>Voir la carte</span>
+            </a>
+          </li>
         </ul>
-      </address>
+      </div>
+
+      {# Col 3 : Liens utiles #}
+      <div class="vv-footer__col">
+        <h4 class="vv-footer__h4">Liens utiles</h4>
+
+        <ul class="vv-footer__links vv-footer__links--pills">
+          <li><a href="https://www.laposte.fr/" target="_blank" rel="noreferrer"><span class="vv-pill">📮</span><span>La Poste</span></a></li>
+          <li><a href="https://www.ventouxprovence.fr/" target="_blank" rel="noreferrer"><span class="vv-pill">🏔️</span><span>Office de tourisme Ventoux Provence</span></a></li>
+          <li><a href="https://www.parcduventoux.fr/" target="_blank" rel="noreferrer"><span class="vv-pill">🌿</span><span>Parc naturel régional du Ventoux</span></a></li>
+          <li><a href="https://www.lebarroux.fr/accueil.html" target="_blank" rel="noreferrer"><span class="vv-pill">🏛️</span><span>Mairie de Le Barroux</span></a></li>
+          <li><a href="https://www.chateaudubarroux.fr/" target="_blank" rel="noreferrer"><span class="vv-pill">🏰</span><span>Château du Barroux</span></a></li>
+        </ul>
+      </div>
+
+      {# Col 4 : Découvrir #}
+      <div class="vv-footer__col">
+        <h4 class="vv-footer__h4">Découvrir</h4>
+
+        <ul class="vv-footer__links vv-footer__links--pills">
+          <li><a href="#"><span class="vv-pill">🧭</span><span>Mont Ventoux</span></a></li>
+          <li><a href="#"><span class="vv-pill">🏘️</span><span>Villages du Ventoux</span></a></li>
+          <li><a href="#"><span class="vv-pill">🫒</span><span>Produits du terroir</span></a></li>
+        </ul>
+      </div>
+
     </div>
+
+    <div class="vv-footer__bottom">
+      © {{ "now"|date("Y") }} Epicafé — Tous droits réservés · Site réalisé par <strong>NosWeb</strong>
+    </div>
+
   </div>
+</footer>
 </footer>
 
 {% block javascripts %}
