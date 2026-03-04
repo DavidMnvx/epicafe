@@ -1,0 +1,221 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark' %}
+{% block title %}Galerie | Épicafé{% endblock %}
+
+{% block body %}
+
+{# Mini-hero/banner (comme événements) #}
+{% include 'components/page_banner.html.twig' with {
+  title: 'Galerie',
+  subtitle: 'Souvenirs des événements passés',
+  background: asset('images/Le barroux-galerie.png')
+} %}
+
+<section class="vv-section">
+  <div class="vv-container">
+
+    <h1 class="vv-title">La carte</h1>
+
+    {% for cat in rootCategories %}
+
+      {% if cat.isPublished %}
+
+        <div class="vv-menu-category">
+
+          <h2 class="vv-menu-category-title">
+            {{ cat.name }}
+          </h2>
+
+          {# Items de la catégorie #}
+          {% if cat.items|length > 0 %}
+            <div class="vv-menu-items">
+
+              {% for i in cat.items %}
+
+                {% if i.isPublished %}
+
+                  <div class="vv-menu-item">
+
+                    <div class="vv-menu-item-top">
+
+                      <div class="vv-menu-item-name">
+                        {{ i.name }}
+
+                        {% if i.unit %}
+                          <span class="vv-menu-item-unit">
+                            • {{ i.unit }}
+                          </span>
+                        {% endif %}
+
+                      </div>
+
+                      {% if i.variants|length == 0 and i.price %}
+                        <div class="vv-menu-item-price">
+                          {{ i.price }}€
+                        </div>
+                      {% endif %}
+
+                    </div>
+
+                    {% if i.description %}
+                      <div class="vv-menu-item-desc">
+                        {{ i.description }}
+                      </div>
+                    {% endif %}
+
+                    {% if i.note %}
+                      <div class="vv-menu-item-note">
+                        {{ i.note }}
+                      </div>
+                    {% endif %}
+
+                    {# Variantes #}
+                    {% if i.variants|length > 0 %}
+
+                      <div class="vv-menu-variants">
+
+                        {% for v in i.variants %}
+
+                          <div class="vv-menu-variant">
+
+                            <div class="vv-menu-variant-label">
+                              {{ v.label }}
+                            </div>
+
+                            {% if v.price %}
+                              <div class="vv-menu-variant-price">
+                                {{ v.price }}€
+                              </div>
+                            {% endif %}
+
+                          </div>
+
+                        {% endfor %}
+
+                      </div>
+
+                    {% endif %}
+
+                  </div>
+
+                {% endif %}
+
+              {% endfor %}
+
+            </div>
+          {% endif %}
+
+          {# Sous-catégories #}
+          {% if cat.children|length > 0 %}
+
+            <div class="vv-menu-subcategories">
+
+              {% for sub in cat.children %}
+
+                {% if sub.isPublished %}
+
+                  <div class="vv-menu-subcategory">
+
+                    <h3 class="vv-menu-subcategory-title">
+                      {{ sub.name }}
+                    </h3>
+
+                    {% if sub.items|length > 0 %}
+
+                      <div class="vv-menu-items">
+
+                        {% for i in sub.items %}
+
+                          {% if i.isPublished %}
+
+                            <div class="vv-menu-item">
+
+                              <div class="vv-menu-item-top">
+
+                                <div class="vv-menu-item-name">
+                                  {{ i.name }}
+
+                                  {% if i.unit %}
+                                    <span class="vv-menu-item-unit">
+                                      • {{ i.unit }}
+                                    </span>
+                                  {% endif %}
+
+                                </div>
+
+                                {% if i.variants|length == 0 and i.price %}
+                                  <div class="vv-menu-item-price">
+                                    {{ i.price }}€
+                                  </div>
+                                {% endif %}
+
+                              </div>
+
+                              {% if i.description %}
+                                <div class="vv-menu-item-desc">
+                                  {{ i.description }}
+                                </div>
+                              {% endif %}
+
+                              {% if i.note %}
+                                <div class="vv-menu-item-note">
+                                  {{ i.note }}
+                                </div>
+                              {% endif %}
+
+                              {% if i.variants|length > 0 %}
+
+                                <div class="vv-menu-variants">
+
+                                  {% for v in i.variants %}
+
+                                    <div class="vv-menu-variant">
+
+                                      <div class="vv-menu-variant-label">
+                                        {{ v.label }}
+                                      </div>
+
+                                      {% if v.price %}
+                                        <div class="vv-menu-variant-price">
+                                          {{ v.price }}€
+                                        </div>
+                                      {% endif %}
+
+                                    </div>
+
+                                  {% endfor %}
+
+                                </div>
+
+                              {% endif %}
+
+                            </div>
+
+                          {% endif %}
+
+                        {% endfor %}
+
+                      </div>
+
+                    {% endif %}
+
+                  </div>
+
+                {% endif %}
+
+              {% endfor %}
+
+            </div>
+
+          {% endif %}
+
+        </div>
+
+      {% endif %}
+
+    {% endfor %}
+
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Menu — Builder{% endblock %}
+
+{% block page_content %}
+
+{% block head_stylesheets %}
+  {{ parent() }}
+  <style>
+    
+  </style>
+{% endblock %}
+
+
+<div class="container-fluid menu-builder">
+  <div class="row g-3">
+
+    {# COL GAUCHE : Arbre catégories #}
+    <div class="d-flex flex-column gap-3">
+
+  {# STRUCTURE EN HAUT #}
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex align-items-end justify-content-between gap-3 flex-wrap">
+        <div>
+          <h3 class="h5 mb-1">Structure</h3>
+          <div class="small text-muted">Catégories & sous-catégories</div>
+        </div>
+
+        <form class="d-flex gap-2" data-cat-create>
+          <input class="form-control" name="name" placeholder="Nouvelle catégorie">
+          <button class="btn btn-primary" type="submit">+ Ajouter</button>
+        </form>
+      </div>
+
+      <div class="small text-muted mt-2">Pour une sous-catégorie : sélectionne un parent puis ajoute.</div>
+
+      <div class="d-flex gap-2 mt-2 flex-wrap">
+        <select class="form-select" style="max-width:420px" data-parent-select>
+          <option value="">(Aucun parent) → catégorie</option>
+          {% for c in rootCategories %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+            {% for ch in c.children %}
+              <option value="{{ ch.id }}">↳ {{ c.name }} / {{ ch.name }}</option>
+            {% endfor %}
+          {% endfor %}
+        </select>
+      </div>
+      <hr class="my-3">
+      <div class="vv-tree">
+        {% for c in rootCategories %}
+          <div class="mb-2">
+            <div class="fw-bold">• {{ c.name }}</div>
+            {% if c.children|length %}
+              <div class="ps-3 mt-1">
+                {% for ch in c.children %}
+                  <div class="text-muted">↳ {{ ch.name }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+    {# COL DROITE : Table items #}
+    
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-end justify-content-between gap-2 flex-wrap mb-3">
+            <div>
+              <h3 class="h5 mb-1">Items</h3>
+              <div class="text-muted small">Modifie une ligne → clique “Enregistrer”.</div>
+            </div>
+
+            <form class="d-flex gap-2" data-item-create>
+              <select class="form-select" name="categoryId" required>
+                <option value="">Catégorie…</option>
+                {% for c in rootCategories %}
+                  <option value="{{ c.id }}">{{ c.name }}</option>
+                  {% for ch in c.children %}
+                    <option value="{{ ch.id }}">↳ {{ c.name }} / {{ ch.name }}</option>
+                  {% endfor %}
+                {% endfor %}
+              </select>
+
+              <input class="form-control" name="name" placeholder="Nom (ex: Café expresso)" required>
+              <input class="form-control" name="unit" placeholder="Unité (ex: 25 cl)">
+              <input class="form-control" name="price" placeholder="Prix (ex: 2.50)">
+              <button class="btn btn-primary" type="submit">+ Ajouter</button>
+            </form>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th style="width:32%">Catégorie</th>
+                  <th style="width:28%">Nom</th>
+                  <th style="width:14%">Unité</th>
+                  <th style="width:12%">Prix</th>
+                  <th style="width:18%">Note</th>
+                  <th style="width:10%">Ordre</th>
+                  <th style="width:8%">Pub</th>
+                  <th style="width:20%"></th>
+                </tr>
+              </thead>
+
+            <tbody>
+  {% for i in items %}
+    <tr data-row data-id="{{ i.id }}">
+      <td>
+        <select class="form-select form-select-sm" data-category>
+          {% for c in rootCategories %}
+            <option value="{{ c.id }}" {{ i.category and i.category.id == c.id ? 'selected' : '' }}>
+              {{ c.name }}
+            </option>
+            {% for ch in c.children %}
+              <option value="{{ ch.id }}" {{ i.category and i.category.id == ch.id ? 'selected' : '' }}>
+                ↳ {{ c.name }} / {{ ch.name }}
+              </option>
+            {% endfor %}
+          {% endfor %}
+        </select>
+      </td>
+
+      <td>
+        <div class="d-flex align-items-center gap-2">
+          <input class="form-control form-control-sm" data-name value="{{ i.name }}">
+          <button class="btn btn-sm btn-outline-secondary" type="button" data-add-variant title="Ajouter une variante">+ Variante</button>
+        </div>
+      </td>
+
+      <td>
+        <input class="form-control form-control-sm" data-unit value="{{ i.unit ?? '' }}" placeholder="ex: 25 cl">
+      </td>
+
+      <td>
+        <input class="form-control form-control-sm" data-price value="{{ i.price ?? '' }}" placeholder="2.50">
+      </td>
+
+      <td>
+        <input class="form-control form-control-sm" data-note value="{{ i.note ?? '' }}" placeholder="ex: (coca, oasis...)">
+      </td>
+
+      <td>
+        <input class="form-control form-control-sm" data-position value="{{ i.position }}">
+      </td>
+
+      <td class="text-center">
+        <input class="form-check-input" type="checkbox" data-published {{ i.isPublished ? 'checked' : '' }}>
+      </td>
+
+      <td class="text-end">
+        <button class="btn btn-sm btn-success" type="button" data-save>Enregistrer</button>
+        <button class="btn btn-sm btn-outline-danger" type="button" data-delete>Supprimer</button>
+        <span class="ms-2 small text-muted" data-status></span>
+      </td>
+    </tr>
+
+    {# Variantes de l'item #}
+    {% if i.variants|length %}
+      {% for v in i.variants %}
+        <tr class="table-light" data-variant-row data-id="{{ v.id }}" data-item-id="{{ i.id }}">
+          <td></td>
+          <td colspan="2">
+            <input class="form-control form-control-sm" data-variant-label value="{{ v.label }}" placeholder="Nom variante (ex: 25 cl)">
+          </td>
+          <td>
+            <input class="form-control form-control-sm" data-variant-price value="{{ v.price }}" placeholder="Prix">
+          </td>
+          <td colspan="2"></td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-success" type="button" data-variant-save>Enregistrer</button>
+            <button class="btn btn-sm btn-outline-danger" type="button" data-variant-delete>Supprimer</button>
+            <span class="ms-2 small text-muted" data-variant-status></span>
+          </td>
+        </tr>
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+</tbody>  
+            </table>
+          </div>
+          <input type="hidden" id="menu_builder_token" value="{{ csrf }}">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<script>
+// ===== Helpers =====
+const escapeHtml = (str) =>
+  (str ?? "").toString()
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+const token = document.getElementById("menu_builder_token")?.value || "";
+
+const post = async (url, data) => {
+  const body = new URLSearchParams({ ...data, _token: token });
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body,
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || json.ok === false) throw new Error(json.message || "Erreur");
+  return json;
+};
+
+// ===== Add variant row inline (NO prompt, NO reload) =====
+document.querySelectorAll("tr[data-row]").forEach((itemRow) => {
+  const itemId = itemRow.getAttribute("data-id");
+  const btn = itemRow.querySelector("[data-add-variant]");
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    // évite d’ajouter 10 lignes si spam click
+    if (itemRow.nextElementSibling?.matches('tr[data-variant-row][data-new="1"]')) return;
+
+    const tr = document.createElement("tr");
+    tr.className = "table-light";
+    tr.setAttribute("data-variant-row", "");
+    tr.setAttribute("data-new", "1");
+    tr.setAttribute("data-item-id", itemId);
+
+    tr.innerHTML = `
+      <td></td>
+      <td colspan="2">
+        <input class="form-control form-control-sm" data-variant-label value="" placeholder="Nom variante (ex: 25 cl)">
+      </td>
+      <td>
+        <input class="form-control form-control-sm" data-variant-price value="" placeholder="Prix">
+      </td>
+      <td colspan="3"></td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-success" type="button" data-variant-create>Enregistrer</button>
+        <button class="btn btn-sm btn-outline-danger" type="button" data-variant-cancel>Annuler</button>
+        <span class="ms-2 small text-muted" data-variant-status></span>
+      </td>
+    `;
+
+    itemRow.insertAdjacentElement("afterend", tr);
+
+    // actions ligne
+    const status = tr.querySelector("[data-variant-status]");
+    tr.querySelector("[data-variant-cancel]")?.addEventListener("click", () => tr.remove());
+
+    tr.querySelector("[data-variant-create]")?.addEventListener("click", async () => {
+      const label = tr.querySelector("[data-variant-label]")?.value.trim();
+      const price = tr.querySelector("[data-variant-price]")?.value.trim();
+
+      if (!label) {
+        alert("Nom de variante requis (ex: 25 cl)");
+        return;
+      }
+
+      status.textContent = "…";
+      try {
+        const json = await post(window.ROUTES.admin_menu_variant_create, {
+          itemId,
+          label,
+          price,
+        });
+
+        // devient une ligne “persistée”
+        tr.removeAttribute("data-new");
+        tr.setAttribute("data-id", json.id);
+        tr.querySelector("[data-variant-create]")?.remove();
+        tr.querySelector("[data-variant-cancel]")?.remove();
+        status.textContent = "✅";
+
+        // option : remplacer les inputs avec valeurs propres
+        tr.querySelector("[data-variant-label]").value = json.label ?? "";
+        tr.querySelector("[data-variant-price]").value = json.price ?? "";
+
+      } catch (e) {
+        status.textContent = "❌";
+        alert(e.message);
+      }
+    });
+  });
+});
+</script>
+
+{% endblock %}

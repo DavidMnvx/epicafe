@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use App\Entity\MenuCategory;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,5 +61,10 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Divers');
         yield MenuItem::linkToCrud('Catégories', 'fa fa-tags', Category::class);
+
+        yield MenuItem::section('Menu');
+        yield MenuItem::linkToCrud('Catégories menu', 'fa fa-list', \App\Entity\MenuCategory::class);
+        yield MenuItem::linkToCrud('Lignes menu', 'fa fa-utensils', \App\Entity\MenuItem::class);
+        yield MenuItem::linkToRoute('Menu Builder', 'fa fa-utensils', 'admin_menu_builder');
     }
 }

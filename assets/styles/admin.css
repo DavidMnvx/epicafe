@@ -280,3 +280,104 @@ body.ea .datagrid .table > :not(caption) > * > *{
   position: sticky;
   top: 90px; /* ajuste selon ta navbar admin */
 }
+
+                                                                  /* ===== EA Menu builder ===== */
+
+
+
+
+/* =========================
+   MENU BUILDER (scopé)
+   ========================= */
+
+   .menu-builder .menu-table{
+    border-collapse: separate !important;
+    border-spacing: 0 10px !important;
+  }
+  
+  /* Head */
+  .menu-builder .menu-head th{
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: rgba(0,0,0,.55) !important;
+    border: none !important;
+    padding: 10px 10px !important;
+  }
+  
+  /* Item row premium */
+  .menu-builder tr[data-row] > td{
+    background: hsla(175, 45%, 32%, 0.812) !important;
+    color: hsl(30 10% 14%) !important;              /* ✅ texte lisible */
+    border: 0 !important;
+    padding: 12px 10px !important;
+    vertical-align: middle !important;
+  }
+  
+  /* Coins arrondis */
+  .menu-builder tr[data-row] > td:first-child{ border-radius: 14px 0 0 14px; }
+  .menu-builder tr[data-row] > td:last-child{  border-radius: 0 14px 14px 0; }
+  
+  /* Hover léger premium */
+  .menu-builder tr[data-row]:hover > td{
+    background: hsl(175 45% 32% / 0.18) !important;
+  }
+  
+  /* Inputs */
+  .menu-builder tr[data-row] .form-control,
+  .menu-builder tr[data-row] .form-select{
+    background: #fff !important;
+    color: #111 !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(0,0,0,.12) !important;
+    height: 36px !important;
+    padding: 6px 12px !important;
+  }
+  
+  /* Focus */
+  .menu-builder tr[data-row] .form-control:focus,
+  .menu-builder tr[data-row] .form-select:focus{
+    border-color: rgba(20, 160, 140, .55) !important;
+    box-shadow: 0 0 0 .2rem rgba(20, 160, 140, .18) !important;
+  }
+  
+  /* Boutons actions alignés + plus premium */
+  .menu-builder .btn{
+    border-radius: 999px !important;
+    font-weight: 700 !important;
+  }
+  
+  .menu-builder .btn-success{
+    background: hsl(174, 60%, 7%) !important;
+    border-color: hsl(176, 44%, 8%) !important;
+    color: #eff6f2;
+    font: 60;
+  }
+  
+  .menu-builder .btn-success:hover{
+    background: hsl(175 50% 24%) !important;
+    border-color: hsl(175 50% 24%) !important;
+  }
+  
+  /* Variants */
+  .menu-builder tr[data-variant-row] > td{
+    background: #f6f4ef !important;
+    color: hsl(30 10% 14%) !important;
+    border: 0 !important;
+    padding: 10px 10px !important;
+  }
+  
+  /* Indent + flèche */
+  .menu-builder tr[data-variant-row] > td:nth-child(2){
+    padding-left: 34px !important;
+    position: relative;
+  }
+  
+  .menu-builder tr[data-variant-row] > td:nth-child(2)::before{
+    content:"↳";
+    position:absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: .6;
+  }

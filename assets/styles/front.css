@@ -68,6 +68,8 @@
   html, body{
     height: 100%;
   }
+
+
   
   .vv-body{
     overflow-x: hidden;
@@ -1740,6 +1742,68 @@ body.vv-page .vv-brand__text{
 }
 
 
+                                                                        /* ===== MENU ===== */
+                                                                         /* ============== */
+
+/* ===== MENU DYNAMIQUE ===== */
+
+/* ===== MENU ===== */
+
+.vv-menu-category{
+  margin-bottom:60px;
+}
+
+.vv-menu-category-title{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:20px;
+  border-bottom:2px solid rgba(0,0,0,.06);
+  padding-bottom:6px;
+}
+
+.vv-menu-item{
+  padding:14px 0;
+  border-bottom:1px solid rgba(0,0,0,.06);
+}
+
+.vv-menu-item-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.vv-menu-item-name{
+  font-weight:600;
+  font-size:17px;
+}
+
+.vv-menu-item-unit{
+  font-size:13px;
+  opacity:.6;
+}
+
+.vv-menu-item-price{
+  font-weight:700;
+  color:#0f766e;
+}
+
+.vv-menu-item-desc{
+  font-size:14px;
+  opacity:.7;
+}
+
+.vv-menu-variants{
+  margin-top:6px;
+}
+
+.vv-menu-variant{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  opacity:.8;
+}
+
+
                                                                         /* ==============
                                                                           SERVICES
                                                                         ============== */
@@ -2268,3 +2332,4 @@ body.vv-page .vv-brand__text{
     padding: 2rem 1.6rem;
   }
 }
+
