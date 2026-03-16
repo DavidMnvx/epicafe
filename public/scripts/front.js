@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const section = document.querySelector(".vv-eventsSection");
   const bg = document.querySelector(".vv-eventsSection__bg");
   if (section && bg) {
-    const speed = 0.25;
+    const speed = 0.55;
     const ease = 0.08;
     let current = 0;
     let target = 0;

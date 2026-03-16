@@ -16,7 +16,7 @@ public function index(
     GalleryPhotoRepository $galleryRepo
 ): Response
 {
-    $latestPhotos = $galleryRepo->findPublished(null, 'new', 5);
+    $latestPhotos = $galleryRepo->findPublished(null, 'new', 4);
 
     return $this->render('home/index.html.twig', [
         'upcomingEvents'  => $repo->findUpcoming(3),

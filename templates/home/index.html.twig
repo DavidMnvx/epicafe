@@ -32,7 +32,7 @@
 
 
 
-<section id="bar-section" class="vv-section vv-section--light">
+<section id="bar-section" class="vv-section vv-section--cream">
   <div class="vv-container">
 
     <div class="vv-intro vv-scroll-reveal">
@@ -45,7 +45,7 @@
       </div>
 
       <div class="vv-intro__content">
-        <h2 class="vv-h2">Bienvenue à l’Épicafé</h2>
+        <h2 class="vv-h2">Bienvenue à l’Épi-Café</h2>
 
         <p>
           Au cœur du Barroux, au pied du Ventoux, l’Épicafé est un lieu de vie
@@ -70,7 +70,6 @@
     </div>
 
   </div>
-</section>
 </section>
 
 
@@ -125,6 +124,68 @@
       </div>
 
     </div>
+  </div>
+</section>
+
+                                                                             {# BOUTIQUE #}
+
+
+<section class="vv-section  vv-section--cream">
+  <div class="vv-container">
+
+    <div class="vv-section__head">
+      <h2 class="vv-h2">Produits locaux</h2>
+      <p class="vv-lead">
+        Une sélection rigoureuse de produits authentiques de notre région
+      </p>
+    </div>
+
+    <div class="vv-productsGrid">
+
+      <article class="vv-productCard">
+        <img src="{{ asset('images/Produits-locaux-vin.png') }}" alt="Vins du Ventoux">
+
+        <div class="vv-productCard__body">
+          <h3>Vins du Ventoux</h3>
+          <p>Sélection des meilleurs domaines locaux</p>
+        </div>
+      </article>
+
+      <article class="vv-productCard">
+        <img src="{{ asset('images/Produits-locaux-terroir.png') }}" alt="Produits du terroir">
+
+        <div class="vv-productCard__body">
+          <h3>Produits du terroir</h3>
+          <p>Huile d'olive, miel, confitures artisanales</p>
+        </div>
+      </article>
+
+      <article class="vv-productCard">
+        <img src="{{ asset('images/Produits-from-char.png') }}" alt="Fromages et charcuterie">
+
+        <div class="vv-productCard__body">
+          <h3>Fromages & Charcuterie</h3>
+          <p>Produits frais de producteurs locaux</p>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<section class="vv-section vv-section--accent">
+  <div class="vv-container vv-center">
+
+    <h2 class="vv-h2">Venez découvrir la boutique</h2>
+
+    <p class="vv-lead">
+      Nous vous accueillons au cœur du village du Barroux
+    </p>
+
+    <a href="/contact" class="vv-btn vv-btn--primary">
+      Voir les horaires
+    </a>
+
   </div>
 </section>
 
@@ -206,89 +267,110 @@
 
                                                                         {# SERVICES #}
 
-<section id="services" class="vv-section vv-section--light">
+<section id="services" class="vv-section vv-section--cream">
   <div class="vv-container">
     <div class="vv-section__head vv-scroll-reveal">
       <h2 class="vv-h2">Services pratiques</h2>
-      <p class="vv-lead">Les essentiels du quotidien, au cœur du village.</p>
+      <p class="vv-lead">Plus qu'une épicerie, un véritable service de proximité.</p>
     </div>
 
-    <div class="vv-serviceList vv-scroll-reveal">
+    <div class="vv-servicesGrid vv-scroll-reveal">
 
-      <article class="vv-serviceItem">
-  <div class="vv-serviceItem__icon" aria-hidden="true">🥖</div>
+      <article class="vv-serviceCard">
+        <div class="vv-serviceCard__top">
+          <div class="vv-serviceCard__icon" aria-hidden="true">🥖</div>
 
-  <div class="vv-serviceItem__content">
-    <h3 class="vv-serviceItem__title">Dépôt de pain</h3>
+          <div class="vv-serviceCard__head">
+            <h3 class="vv-serviceCard__title">Dépôt de pain</h3>
+            <p class="vv-serviceCard__subtitle">
+              Pain &amp; viennoiseries chaque matin.
+            </p>
+          </div>
+        </div>
 
-    <p class="vv-serviceItem__text">
-      Pain &amp; viennoiseries chaque matin.
-      <span class="vv-muted">Boulangerie <strong>Le Beffroi</strong> — Caromb 84330.</span>
-    </p>
+        <div class="vv-serviceCard__body">
+          <ul class="vv-serviceCard__list">
+            <li>Retrait le matin</li>
+            <li>Réservation possible</li>
+            <li>Selon disponibilité</li>
+          </ul>
+        </div>
 
-    <div class="vv-serviceItem__chips">
-      <span class="vv-chip">Retrait matin</span>
-      <span class="vv-chip vv-chip--muted">Réservation possible</span>
-      <span class="vv-chip vv-chip--muted">Selon disponibilité</span>
+        <div class="vv-serviceCard__footer">
+          Boulangerie <strong>Le Beffroi</strong> — Caromb
+        </div>
+      </article>
+
+      <article class="vv-serviceCard">
+        <div class="vv-serviceCard__top">
+          <div class="vv-serviceCard__icon">
+            <img src="{{ asset('images/Logos/la-poste-logo.svg') }}" alt="La Poste">
+          </div>
+
+          <div class="vv-serviceCard__head">
+            <h3 class="vv-serviceCard__title">Relais Poste</h3>
+            <p class="vv-serviceCard__subtitle">
+              Services postaux du quotidien.
+            </p>
+          </div>
+        </div>
+
+        <div class="vv-serviceCard__body">
+          <ul class="vv-serviceCard__list">
+            <li>Affranchissement</li>
+            <li>Colissimo &amp; recommandé</li>
+            <li>Services au comptoir</li>
+          </ul>
+        </div>
+
+        <div class="vv-serviceCard__footer">
+          Pratique, local et accessible
+        </div>
+      </article>
+
+      <article class="vv-serviceCard">
+        <div class="vv-serviceCard__top">
+          <div class="vv-serviceCard__icon">
+            <img src="{{ asset('images/Logos/butagaz-logo.svg') }}" alt="Butagaz">
+          </div>
+
+          <div class="vv-serviceCard__head">
+            <h3 class="vv-serviceCard__title">Gaz</h3>
+            <p class="vv-serviceCard__subtitle">
+              Butane &amp; propane selon stock.
+            </p>
+          </div>
+        </div>
+
+        <div class="vv-serviceCard__body">
+          <ul class="vv-serviceCard__list">
+            <li>Bouteilles butane</li>
+            <li>Bouteilles propane</li>
+            <li>Informations au comptoir</li>
+          </ul>
+        </div>
+
+        <div class="vv-serviceCard__footer">
+          Échange selon disponibilité
+        </div>
+      </article>
+
     </div>
-  </div>
-</article>
 
-      <article class="vv-serviceItem">
-  <div class="vv-serviceItem__icon">
-    <img src="{{ asset('images/Logos/la-poste-logo.svg') }}" alt="La Poste">
-  </div>
-
-  <div class="vv-serviceItem__content">
-    <h3 class="vv-serviceItem__title">Relais Poste</h3>
-
-    <p class="vv-serviceItem__text">
-      Services postaux du quotidien.
-    </p>
-
-    <div class="vv-serviceItem__chips">
-      <span class="vv-chip">Colissimo</span>
-      <span class="vv-chip vv-chip--muted">Recommandé</span>
-      <span class="vv-chip vv-chip--muted">Affranchissement</span>
-    </div>
-  </div>
-</article>
-
-      <article class="vv-serviceItem">
-  <div class="vv-serviceItem__icon">
-    <img src="{{ asset('images/Logos/butagaz-logo.svg') }}" alt="Butagaz">
-  </div>
-
-  <div class="vv-serviceItem__content">
-    <h3 class="vv-serviceItem__title">Gaz</h3>
-
-    <p class="vv-serviceItem__text">
-      Butane &amp; Propane.
-      <span class="vv-muted">Échange selon stock.</span>
-    </p>
-
-    <div class="vv-serviceItem__chips">
-      <span class="vv-chip">Butane</span>
-      <span class="vv-chip">Propane</span>
-      <span class="vv-chip vv-chip--muted">Infos au comptoir</span>
-    </div>
-  </div>
-</article>
-    
-
-    </div>
-
-    <div class="vv-servicesNote vv-scroll-reveal">
-      <div class="vv-servicesNote__inner">
-        <strong>Besoin d’un coup de main ?</strong>
-        <span class="vv-muted">On vous renseigne au comptoir.</span>
+    <div class="vv-servicesHelp vv-scroll-reveal">
+      <div class="vv-servicesHelp__inner">
+        <strong>Besoin d’un renseignement ?</strong>
+        <span>Nous vous accueillons au comptoir pour vous orienter.</span>
       </div>
-      <a class="vv-servicesNote__cta" href="#contact">Nous contacter →</a>
+
+      <a class="vv-servicesHelp__btn" href="#contact">Nous contacter</a>
     </div>
   </div>
 </section>
 
                                                                         {# CONTACT / MAP / HORAIRES #}
+
+
 <section id="contact" class="vv-section vv-section--light">
   <div class="vv-container">
     <div class="vv-section__head vv-scroll-reveal">
@@ -304,7 +386,7 @@
             <div class="vv-hours__row"><span>Lundi - Mardi et Jeudi </span><b>7h30 - 18h30</b></div>
             <div class="vv-hours__row"><span>Vendredi - Samedi</span><b>7h30 - 21h30</b></div>
             <div class="vv-hours__row"><span>Dimanche</span><b>8h00 - 12h00</b></div>
-            <div class="vv-hours__row"><span>Fermé le mercredi</div>
+              <div class="vv-hours__row"><span>Fermé le mercredi</span></div>
           </div>
         </div>
 
@@ -355,7 +437,7 @@
             title="Épicafé - Le Barroux">
       </iframe>
     </div>
-      <div class= vv-link-Google> 
+      <div class="vv-link-Google"> 
             <a
               href="https://www.google.com/maps?q=56+Chemin+Neuf+84330+Le+Barroux"
               target="_blank"

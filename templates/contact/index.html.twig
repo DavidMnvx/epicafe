@@ -1,0 +1,154 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark' %}
+{% block title %}Contact - Epicafé{% endblock %}
+
+{% block body %}
+
+{% include 'components/page_banner.html.twig' with {
+  title: 'Contact & Accès',
+  subtitle: 'Nous trouver au cœur du Barroux',
+  background: asset('images/banners-contact.png'),
+  bgClass: 'vv-miniHero--contact'
+} %}
+
+
+<section class="vv-section vv-section--cream">
+
+  <div class="vv-container">
+
+    <div class="vv-team">
+
+      <div class="vv-team__photo">
+
+        <img 
+          src="{{ asset('images/equipe-epicafe.jpg') }}" 
+          alt="L'équipe de l'Épi-Café au Barroux">
+
+      </div>
+
+
+      <div class="vv-team__content">
+
+        <h2 class="vv-h2">L'équipe de l'Épicafé</h2>
+
+        <p>
+          Derrière l’Épi-Café, il y a avant tout une équipe passionnée
+          qui fait vivre ce lieu au quotidien. Ici, on privilégie
+          l’accueil, la convivialité et les échanges simples,
+          comme dans une vraie épicerie de village.
+        </p>
+
+        <p>
+          Que ce soit pour un café du matin, une planche apéritive,
+          un produit local ou simplement un moment de partage,
+          nous sommes toujours heureux de vous accueillir
+          au cœur du Barroux.
+        </p>
+
+        <p >
+          L’Épicafé est avant tout un lieu de rencontre où habitants
+          et visiteurs se retrouvent autour des saveurs du terroir
+          et de la vie du village.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section id="contact" class="vv-section vv-section--light">
+  <div class="vv-container">
+
+    <div class="vv-section__head vv-scroll-reveal">
+      <h2 class="vv-h2">Horaires & Contact</h2>
+      <p class="vv-lead">Nous sommes là pour vous servir</p>
+    </div>
+
+    <div class="vv-contactLayout vv-scroll-reveal">
+
+      <div class="vv-contactLayout__left">
+
+        <div class="vv-panel">
+          <h3 class="vv-h3">Horaires d'ouverture</h3>
+
+          <div class="vv-hours">
+            <div class="vv-hours__row">
+              <span>Lundi - Mardi et Jeudi</span>
+              <b>7h30 - 18h30</b>
+            </div>
+
+            <div class="vv-hours__row">
+              <span>Vendredi - Samedi</span>
+              <b>7h30 - 21h30</b>
+            </div>
+
+            <div class="vv-hours__row">
+              <span>Dimanche</span>
+              <b>8h00 - 12h00</b>
+            </div>
+
+            <div class="vv-hours__note">
+              Fermé le mercredi
+            </div>
+          </div>
+
+        </div>
+        <div class="vv-panel">
+          <h3 class="vv-h3">Informations</h3>
+
+          <div class="vv-infoList">
+            <a href="tel:+33490123456">📞 04 90 12 34 56</a>
+            <a href="mailto:contact@epicafe.fr">✉️ contact@epicafe.fr</a>
+            <div>📍 56 Chemin Neuf — 84330 Le Barroux</div>
+          </div>
+        </div>
+      </div>
+      <div class="vv-contactLayout__right">
+        <div class="vv-panel">
+          <h3 class="vv-h3">Nous contacter</h3>
+
+          <form class="vv-form" method="post" action="#">
+            <label>
+              <span>Nom</span>
+              <input type="text" name="name" required>
+            </label>
+
+            <label>
+              <span>Email</span>
+              <input type="email" name="email" required>
+            </label>
+
+            <label>
+              <span>Message</span>
+              <textarea name="message" rows="5" required></textarea>
+            </label>
+
+            <button class="vv-btn vv-btn--primary vv-btn--full" type="submit">
+              Envoyer le message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="vv-contactMapWrap vv-scroll-reveal">
+      <div class="vv-map">
+        <iframe
+          src="https://www.google.com/maps?q=56%20Chemin%20Neuf%2C%2084330%20Le%20Barroux&output=embed"
+          width="100%"
+          height="100%"
+          style="border:0;"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Épicafé - Le Barroux">
+        </iframe>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

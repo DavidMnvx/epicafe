@@ -5,7 +5,12 @@
 ============== */
 :root{
     --background: 39 23% 96%;
+    --background-soft: 39 23% 92%;
     --foreground: 30 10% 14%;
+
+    --vv-bg-main: #f6f2ec;
+    --vv-bg-cream: #efe6dc;
+    --vv-bg-soft: #faf7f3;
   
     --primary: 175 45% 32%;
     --primary-foreground: 39 23% 96%;
@@ -37,7 +42,7 @@
     --font-serif: "Playfair Display", Georgia, serif;
     --font-sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   
-    --container: 1250px;
+    --container: 1350px;
   }
   
   *,
@@ -70,7 +75,15 @@
   }
 
 
-  
+  .vv-section--cream{
+    background: var(--vv-bg-cream);
+    
+  }
+
+  .vv-section{
+    border-top: 1px solid rgba(0,0,0,0.03);
+  }
+
   .vv-body{
     overflow-x: hidden;
   }
@@ -172,7 +185,7 @@
     background: hsl(var(--primary-dark));
     transform: translateY(-1px) scale(1.03);
   }
-
+  
 
                                                                   /* =========================
                                                                     PAGE BANNER (FULL WIDTH)
@@ -202,21 +215,24 @@
   align-items: end;
 }
 
-/* Fond image + voile */
 .vv-miniHero__bg{
-  position: absolute;
-  inset: 0;
-  /* voile léger + image */
-  background-image: linear-gradient(
-  rgba(20,60,50,0.35),
-  rgba(20,60,50,0.25)
-),
-    var(--vv-miniHero-image);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  position:absolute;
+  inset:0;
 
-  transform: scale(1.03);
+  background-image:
+    linear-gradient(rgba(20,60,50,.35), rgba(20,60,50,.25)),
+    var(--vv-miniHero-image);
+
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+
+  transform:scale(1.04);
+  transition: transform 2.0s ease;
+}
+
+.vv-miniHero:hover .vv-miniHero__bg{
+  transform:scale(1.02);
 }
 
 /* Overrides par page */
@@ -224,7 +240,7 @@
 .vv-miniHero--gallery .vv-miniHero__bg{ background-position:center 40%; }
 .vv-miniHero--menu .vv-miniHero__bg{ background-position:center 27%; }
 .vv-miniHero--partners .vv-miniHero__bg{ background-position:center 57%; }
-
+.vv-miniHero--contact .vv-miniHero__bg{ background-position:center 47%; }
 
 /* Contenu */
 .vv-miniHero__content{
@@ -331,21 +347,30 @@
 
 
   
-  .vv-header.is-scrolled .vv-brand__logo {
-    height: 72px; /* réduit */
-    padding: 0.35rem;
-    border-radius: 0.8rem;
-    box-shadow: var(--shadow-sm);
+  .vv-header.is-scrolled  {  
+    padding: .35rem;  
   }
 
-.vv-nav{
-  height: 70px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 1.5rem;
-}
+   .vv-header.is-scrolled .vv-brand__logo {
+    height: 72px; /* réduit */
+    padding: 0.35rem;
+    transform: translateY(-15px) scale(1.08);
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter:none;
 
+  
+  }
+
+  .vv-nav{
+    height: 70px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between; /* au lieu de center */
+    gap: 1.5rem;
+  }
+
+ 
 /* BRAND */
 .vv-brand {
 position: relative;
@@ -356,32 +381,25 @@ box-shadow: none !important;
 }
 
 
-.vv-brand img,
-.vv-logo {
-background-color: transparent !important;
-box-shadow: none !important;
-filter: none !important;
-mix-blend-mode: normal !important;
-}
 
-.vv-brand__logo {
-height: 156px; 
-padding: 1rem;
-margin-top: 0.1rem;
-margin-right: 22rem;
-transition: all 0.45s cubic-bezier(.4,0,.2,1);
-background: transparent;
-}
-.vv-brand__logo:hover {
-transform: scale(1.25);
-margin-top: 0.1rem;
-}
-
+.vv-brand__logo{
+  height: 135px;
+  padding: 1px;
+  margin-top: 1.5rem;
+  margin-right: 22rem; 
+  border-radius: 50%; 
+  transition: all 0.45s cubic-bezier(.4,0,.2,1);
+  }  
+  
+  .vv-brand__logo:hover{ 
+  transform: translateY(-11px) scale(1.08); 
+  
+  }
 
 .vv-brand__text{
   font-family: var(--font-serif);
-  font-weight: 800;
-  font-size: 1.15rem;
+  font-weight: 1000;
+  font-size: 1.75rem;
   letter-spacing: .2px;
   color: hsl(var(--card));
 }
@@ -394,7 +412,7 @@ margin-top: 0.1rem;
   margin:0;
   padding:0;
   align-items:center;
-  gap: 1.8rem;
+  gap: 2rem; 
 }
 @media (min-width: 768px){
   .vv-nav__links{ display:flex; }
@@ -402,11 +420,15 @@ margin-top: 0.1rem;
 
 .vv-nav__links a{
   position:relative;
-  font-weight: 600;
-  color: 0 8px 18px hsl(0 0% 0% / 0.45);
+  font-size: 1.40rem;
+  font-weight: 650;
+  letter-spacing: .2px;
+  color: hsl(var(--foreground));
   opacity: .95;
   transition: var(--transition-base);
 }
+
+
 
 
 .vv-nav__links a::after{
@@ -517,7 +539,7 @@ body.vv-page .vv-brand__text{
     width:100%;
     height:100%;
     object-fit: cover;
-    object-position: center 25%;
+    object-position: center 20%;
     
   }
   
@@ -535,7 +557,11 @@ body.vv-page .vv-brand__text{
   .vv-hero__shade{
     position:absolute;
     inset:0;
-    background: hsl(var(--foreground) / .22);
+    background: linear-gradient(
+      to bottom,
+      rgba(60,35,10,0.25),
+      rgba(30,15,5,0.45)
+    );
   }
   
   .vv-hero__content{
@@ -550,6 +576,8 @@ body.vv-page .vv-brand__text{
   .vv-hero__inner{
     max-width: 980px;
     padding-top: 2rem;
+    transform: translateX(-160px);
+
   }
   
   .vv-hero__title{
@@ -560,13 +588,15 @@ body.vv-page .vv-brand__text{
     color: hsl(var(--card));
     line-height: 1.05;
     text-shadow: 0 18px 40px hsl(0 0% 0% / .35);
+    transform: translateY(-130px);
   }
   
   .vv-hero__subtitle{
     font-size: clamp(1.15rem, 2vw, 1.8rem);
     margin: 0 0 2.6rem 0;
-    color: hsl(var(--card) / .9);
-    text-shadow: 0 12px 28px hsla(0, 0%, 0%, 0.842);
+    color: hsl(var(--card) / 2.9);
+    
+    transform: translateY(-130px);
   }
   
   @keyframes vv-bounce{
@@ -701,10 +731,53 @@ body.vv-page .vv-brand__text{
   .vv-image-hover:hover img{ transform: scale(1.09);
    }
 
+
+  
+                                                                                    /* ==============
+                                                                                      BOUTIQUE  
+                                                                                    ============== */
+
+
+   .vv-productsGrid{
+    display:grid;
+    gap:1.6rem;
+    margin-top:2rem;
+  }
+  
+  @media(min-width:900px){
+    .vv-productsGrid{
+      grid-template-columns:repeat(3,1fr);
+    }
+  }
+  
+  .vv-productCard{
+    background:hsl(var(--card));
+    border-radius:1.4rem;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+  }
+  
+  .vv-productCard img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+  }
+  
+  .vv-productCard__body{
+    padding:1.3rem;
+  }
+  
+  .vv-productCard h3{
+    margin:0 0 .4rem 0;
+  }
+
+
+
                                                                 /* =========================
                                                                   APÉRO / VINS / COCKTAILS
                                                                 ========================= */
 
+                                                                
                                                                 
 .vv-kicker{
   display:inline-flex;
@@ -1608,8 +1681,8 @@ body.vv-page .vv-brand__text{
 
 .vv-galleryStrip__item{
   position: relative;
-  flex: 0 0 210px;
-  height: 310px;
+  flex: 0 0 310px;
+  height: 410px;
   border-radius: 1.2rem;
   background-size: cover;
   background-position: center;
@@ -1752,10 +1825,6 @@ body.vv-page .vv-brand__text{
                                                                         /* ===== MENU ===== */
                                                                          /* ============== */
 
-/* ===== MENU DYNAMIQUE ===== */
-
-/* ===== MENU ===== */
-
 .vv-menu-category{
   margin-bottom:60px;
 }
@@ -1816,318 +1885,391 @@ body.vv-page .vv-brand__text{
                                                                         ============== */
 
 
-/* =========================
-   SERVICES (Premium)
-========================= */
 
-.vv-serviceList{
-  display: grid;
-  gap: 1.2rem;
-}
-
-/* Desktop: 2 colonnes clean */
-@media (min-width: 900px){
-  .vv-serviceList{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.35rem;
+   .vv-servicesGrid{
+    display: grid;
+    gap: 1.6rem;
+    margin-top: 1.8rem;
   }
-}
-
-
-/* Une carte */
-.vv-serviceItem{
-  position: relative;
-  display: grid;
-  grid-template-columns: 72px 1fr;
-  gap: 1.15rem;
-  align-items: start;
-
-  /* crème (différencie du blanc du site) */
-  background: linear-gradient(
-    180deg,
-    hsl(var(--card)) 0%,
-    hsl(var(--background)) 100%
-  );
-
-  border: 1px solid hsl(var(--border) / .85);
-  border-radius: 1.25rem;
-  padding: 1.25rem 1.25rem;
-
-  box-shadow:
-    0 10px 30px hsl(30 10% 14% / .06),
-    0 1px 0 hsl(0 0% 100% / .35) inset;
-
-  transition: var(--transition-base);
-  overflow: hidden;
-}
-
-.vv-serviceItem::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: radial-gradient(
-    800px 220px at 12% 0%,
-    hsl(var(--primary) / .10),
-    transparent 60%
-  );
-  pointer-events:none;
-}
-
-.vv-serviceItem:hover{
-  transform: translateY(-2px);
-  box-shadow:
-    0 16px 45px hsl(30 10% 14% / .10),
-    0 1px 0 hsl(0 0% 100% / .35) inset;
-}
-
-/* Icône (badge premium, prêt pour mettre un <img> ensuite) */
-.vv-serviceItem__icon img{
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  object-fit: contain;
-  filter: saturate(.95);
-
-  background: linear-gradient(
-    180deg,
-    hsl(var(--card)) 0%,
-    hsl(var(--muted)) 100%
-  );
-
-  border: 1px solid hsl(var(--border));
-  display: grid;
-  place-items: center;
-
-  font-size: 1.35rem;
-  box-shadow: 0 10px 24px hsl(30 10% 14% / .08);
-}
-
-
-/* Titre */
-.vv-serviceItem__title{
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
-  margin: 0 0 .25rem 0;
-  letter-spacing: .2px;
-}
-
-/* Texte */
-.vv-serviceItem__text{
-  margin: 0 0 .65rem 0;
-  color: hsl(var(--muted-foreground));
-  line-height: 1.65;
-}
-
-/* Bullets (plus légers) */
-.vv-serviceItem__bullets{
-  margin: 0;
-  padding-left: 1.05rem;
-  display: grid;
-  gap: .35rem;
-}
-
-.vv-serviceItem__bullets li{
-  color: hsl(var(--muted-foreground));
-  line-height: 1.55;
-}
-
-
-.vv-serviceItem__chips{
-  display:flex;
-  flex-wrap:wrap;
-  gap:.5rem;
-  margin-top:.25rem;
-}
-
-.vv-chip{
-  display:inline-flex;
-  align-items:center;
-  gap:.35rem;
-  padding:.45rem .65rem;
-  border-radius: 999px;
-  border: 1px solid hsl(var(--border));
-  background: hsl(var(--card));
-  color: hsl(var(--foreground));
-  font-weight: 700;
-  font-size: .9rem;
-  box-shadow: 0 6px 16px hsl(30 10% 14% / .05);
-}
-
-.vv-chip--muted{
-  color: hsl(var(--muted-foreground));
-  font-weight: 650;
-}
-
-/* Note en bas */
-.vv-servicesNote{
-  margin-top: 1.35rem;
-  background: linear-gradient(
-    180deg,
-    hsl(var(--secondary)) 0%,
-    hsl(var(--secondary) / .75) 100%
-  );
-  border: 1px solid hsl(var(--border) / .65);
-  border-radius: 1.1rem;
-  padding: 1rem 1.2rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-
-  box-shadow: 0 12px 34px hsl(30 10% 14% / .06);
-}
-
-.vv-servicesNote__inner{
-  display: grid;
-  gap: .15rem;
-}
-
-.vv-servicesNote__cta{
-  font-weight: 850;
-  color: hsl(var(--primary));
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  padding: .65rem .95rem;
-  border-radius: 999px;
-  transition: var(--transition-base);
-  box-shadow: 0 10px 22px hsl(30 10% 14% / .06);
-}
-
-.vv-servicesNote__cta:hover{
-  background: hsl(var(--primary) / .10);
-  color: hsl(var(--primary-dark));
-  transform: translateY(-1px);
-}
-
-/* Responsive */
-@media (max-width: 640px){
-  .vv-serviceItem{
-    grid-template-columns: 54px 1fr;
-    padding: 1.1rem;
+  
+  @media (min-width: 900px){
+    .vv-servicesGrid{
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
-  .vv-serviceItem__icon{
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
-    font-size: 1.2rem;
-  }
-  .vv-servicesNote{
+  
+  .vv-serviceCard{
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    min-height: 100%;
+  
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1.5rem;
+    padding: 1.5rem 1.5rem 1.3rem;
+  
+    box-shadow:
+      0 10px 30px hsl(30 10% 14% / .06),
+      0 2px 10px hsl(30 10% 14% / .04);
+  
+    transition: var(--transition-base);
   }
-}
-/* =========================
-   Services — boost visibilité (patch)
-   ========================= */
-
-/* Donne une vraie respiration à la section */
-.vv-serviceList{
-  margin-top: 1.2rem;
-}
-
-/* Cartes : un peu plus de contraste + bord plus premium */
-.vv-serviceItem{
-  border: 1px solid hsl(var(--border) / .95);
-  background: linear-gradient(
-    180deg,
-    hsl(var(--card)) 0%,
-    hsl(var(--card)) 55%,
-    hsl(var(--background)) 100%
-  );
-}
-
-/* Accent visuel : petite barre à gauche (très efficace) */
-.vv-serviceItem::after{
-  content:"";
-  position:absolute;
-  left: 0;
-  top: 14px;
-  bottom: 14px;
-  width: 4px;
-  border-radius: 999px;
-  background: hsl(var(--primary) / .55);
-  box-shadow: 0 10px 24px hsl(30 10% 14% / .10);
-  opacity: .85;
-}
-
-/* Hover : plus “premium”, sans grossir */
-.vv-serviceItem:hover{
-  transform: translateY(-3px);
-  border-color: hsl(var(--primary) / .25);
-}
-
-/* Icône : tu styles img, mais souvent l’icône est dans un div.
-   On stylise le conteneur + l’image si présente */
-.vv-serviceItem__icon{
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-
-  background: linear-gradient(
-    180deg,
-    hsl(var(--card)) 0%,
-    hsl(var(--muted)) 100%
-  );
-  border: 1px solid hsl(var(--border));
-  box-shadow: 0 10px 24px hsl(30 10% 14% / .08);
-}
-
-/* Image à l’intérieur : s’adapte proprement */
-.vv-serviceItem__icon img{
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
-  border-radius: 12px;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-
-/* Titres : un poil plus “headline” */
-.vv-serviceItem__title{
-  font-size: 1.42rem;
-  line-height: 1.2;
-}
-
-/* Texte : contraste un peu renforcé */
-.vv-serviceItem__text,
-.vv-serviceItem__bullets li{
-  color: hsl(var(--muted-foreground) / .92);
-}
-
-/* Chips : plus visibles, plus “tag” */
-.vv-chip{
-  border-color: hsl(var(--border) / .95);
-  background: hsl(var(--card));
-}
-
-.vv-chip:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 10px 18px hsl(30 10% 14% / .08);
-}
-
-/* Note : plus “CTA” */
-.vv-servicesNote{
-  border-color: hsl(var(--primary) / .18);
-  background: linear-gradient(
-    180deg,
-    hsl(var(--secondary)) 0%,
-    hsl(var(--secondary) / .82) 100%
-  );
-}
-
-.vv-servicesNote__cta{
-  border-color: hsl(var(--primary) / .18);
-}
-
+  
+  .vv-serviceCard:hover{
+    transform: translateY(-3px);
+    box-shadow:
+      0 16px 40px hsl(30 10% 14% / .10),
+      0 4px 12px hsl(30 10% 14% / .05);
+  }
+  
+  .vv-serviceCard__top{
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+  }
+  
+  .vv-serviceCard__icon{
+    width: 58px;
+    height: 58px;
+    border-radius: 1rem;
+    flex: 0 0 58px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: hsl(var(--primary) / .10);
+    color: hsl(var(--primary));
+    border: 1px solid hsl(var(--primary) / .10);
+    font-size: 1.55rem;
+  }
+  
+  .vv-serviceCard__icon img{
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+  }
+  
+  .vv-serviceCard__head{
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+  }
+  
+  .vv-serviceCard__title{
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    line-height: 1.1;
+    color: hsl(var(--foreground));
+  }
+  
+  .vv-serviceCard__subtitle{
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .vv-serviceCard__body{
+    flex: 1;
+    margin-top: .35rem;
+  }
+  
+  .vv-serviceCard__list{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  
+    display: grid;
+    gap: .85rem;
+  }
+  
+  .vv-serviceCard__list li{
+    position: relative;
+    padding-left: 1.3rem;
+    line-height: 1.55;
+    color: hsl(var(--muted-foreground));
+    font-size: 1.02rem;
+  }
+  
+  .vv-serviceCard__list li::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .7em;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: hsl(var(--primary));
+    transform: translateY(-50%);
+  }
+  
+  .vv-serviceCard__footer{
+    margin-top: 1.35rem;
+    padding: .95rem 1rem;
+    border-radius: 1rem;
+  
+    background: hsl(var(--secondary));
+    color: hsl(var(--accent));
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+  }
+  
+  /* Bloc aide en bas */
+  .vv-servicesHelp{
+    margin-top: 1.5rem;
+    padding: 1.15rem 1.25rem;
+    border-radius: 1.25rem;
+  
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+  
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  
+    box-shadow: 0 10px 24px hsl(30 10% 14% / .05);
+  }
+  
+  .vv-servicesHelp__inner{
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+  }
+  
+  .vv-servicesHelp__inner strong{
+    font-size: 1rem;
+    color: hsl(var(--foreground));
+  }
+  
+  .vv-servicesHelp__inner span{
+    color: hsl(var(--muted-foreground));
+    line-height: 1.5;
+  }
+  
+  .vv-servicesHelp__btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  
+    padding: .8rem 1.15rem;
+    border-radius: 999px;
+  
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-weight: 700;
+  
+    transition: var(--transition-base);
+    white-space: nowrap;
+  }
+  
+  .vv-servicesHelp__btn:hover{
+    background: hsl(var(--primary-dark));
+    transform: translateY(-1px);
+  }
+  
+  @media (max-width: 899px){
+    .vv-servicesHelp{
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .vv-servicesHelp__btn{
+      width: 100%;
+    }
+  }
 
                                                                           /* ==============
                                                                             CONTACT / HOURS / MAP
                                                                           ============== */
+  
+/* CONTACT PAGE */
+
+/* TEAM */
+
+.vv-team{
+  display:grid;
+  gap:2.5rem;
+  align-items:center;
+  }
+  
+  @media (min-width:900px){
+  
+  .vv-team{
+  grid-template-columns:1fr 1fr;
+  }
+  
+  }
+  
+  .vv-team__photo img{
+  width:100%;
+  border-radius:1.4rem;
+  box-shadow:0 14px 32px rgba(0,0,0,0.08);
+  object-fit:cover;
+  }
+  
+  .vv-team__content p{
+  margin-bottom:1rem;
+  line-height:1.7;
+  }
+
+
+/* =========================
+   CONTACT — LAYOUT PREMIUM
+   ========================= */
+
+   .vv-contactLayout{
+    align-items:start;
+    display: grid;
+    gap: 1.6rem;
+    margin-top: 2.5rem;
+  }
+  
+  @media (min-width: 1024px){
+    .vv-contactLayout{
+      grid-template-columns: 1.1fr .9fr;
+      align-items: start;
+    }
+  }
+  
+  .vv-contactLayout__left,
+  .vv-contactLayout__right{
+    display: grid;
+    gap: 1.6rem;
+  }
+
+  .vv-contactMapWrap{
+    margin-top:3rem;
+  }
+  
+  /* cards */
+  .vv-panel{
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1.4rem;
+    padding: 1.7rem;
+    box-shadow: 0 12px 30px hsl(30 10% 14% / .06);
+  }
+  
+  /* horaires */
+  .vv-hours{
+    display: grid;
+    gap: 0;
+    margin-top: .6rem;
+  }
+  
+  .vv-hours__row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  
+  .vv-hours__row:last-of-type{
+    border-bottom: 0;
+  }
+  
+  .vv-hours__row b{
+    color: hsl(var(--primary));
+    font-weight: 800;
+  }
+  
+  .vv-hours__note{
+    padding-top: 1rem;
+    color: hsl(var(--foreground));
+  }
+  
+  /* infos */
+  .vv-infoList{
+    display:grid;
+    gap:.95rem;
+    margin-top:.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .vv-infoList a,
+  .vv-infoList div{
+    display:flex;
+    align-items:center;
+    gap:.65rem;
+    line-height:1.6;
+    color:hsl(var(--foreground));
+  }
+  
+  .vv-infoList a:hover{
+    color:hsl(var(--primary));
+  }
+  
+  /* form */
+  .vv-form{
+    display:grid;
+    gap: 1rem;
+    margin-top: .5rem;
+  }
+  
+  .vv-form label span{
+    display:block;
+    font-weight:700;
+    margin-bottom:.45rem;
+  }
+  
+  .vv-form input,
+  .vv-form textarea{
+    width:100%;
+    padding:.95rem 1rem;
+    border-color:hsl(var(--primary));
+    box-shadow:0 0 0 1px hsl(var(--primary)/0.15);
+    border-radius: 1rem;
+    border: 1px solid hsl(var(--input));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    outline: none;
+    transition: var(--transition-base);
+  }
+  
+  .vv-form textarea{
+    resize:none;
+  }
+  
+  .vv-form input:focus,
+  .vv-form textarea:focus{
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 3px hsl(var(--ring) / .18);
+  }
+  
+  /* map */
+  .vv-contactMapWrap{
+    margin-top: 2rem;
+  }
+  
+  .vv-map{
+    height: 360px;
+    border-radius: 1.4rem;
+    overflow:hidden;
+    box-shadow: 0 12px 30px hsl(30 10% 14% / .06);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+  }
+  
+  @media (min-width: 1024px){
+    .vv-map{
+      height: 400px;
+    }
+  }
+
+                                                                                                                                                    /* ==============
+                                                                            CONTACT / HOME                                                                          ============== */
                                                                           
+
+
+
+
   .vv-contact-grid{
     display:grid;
     gap: 2rem;
@@ -2207,6 +2349,9 @@ body.vv-page .vv-brand__text{
     margin-top: 2rem;
     text-align: center;
   }
+
+
+
  
                                                                           /* =================
                                                                             FOOTER

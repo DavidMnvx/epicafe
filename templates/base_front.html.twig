@@ -14,7 +14,7 @@
 </head>
 
 <body class="{{ bodyClass|default('') }}">
-
+{% set bodyClass = 'vv-hero-dark .vv-miniHero__bg-events' %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -59,9 +59,7 @@
         <li><a href="{{ path('gallery_index') }}">Galerie Photos</a></li>
         <li><a href="{{ path('partner_index') }}">Partenaires</a></li>
         <li><a href="{{ path('menu') }}">Menu</a></li>
-        <li>
-          <a class="vv-nav__cta" href={{ path('app_home') }}>📍 Nous trouver</a>
-        </li>
+        <li><a href="{{ path('contact_index') }}">Contact</a></li>
       </ul>
 
       <button class="vv-burger" type="button" aria-label="Menu" aria-expanded="false" data-vv-burger>
@@ -122,7 +120,7 @@
           <li>
             <a href="tel:+33600000000">
               <span class="vv-pill" aria-hidden="true">📞</span>
-              <span>06 00 00 00 00</span>
+              <span>06 99 96 65 25</span>
             </a>
           </li>
 
