@@ -53,11 +53,11 @@ final class PartnerCrudController extends AbstractCrudController
         ->setChoices([
             'Premium' => Partner::TYPE_PREMIUM,
             'Secondaire' => Partner::TYPE_SECONDARY,
-            'Standard' => Partner::TYPE_PARTNER,
+            
         ])
         ->renderAsNativeWidget()
-        ->setHelp('Premium = affichage “grand bloc” avec 3 images. Normal/Secondaire = affichage plus simple.')
-        ->setColumns('col-md-4');
+        ->setHelp('Premium = affichage “grand bloc” avec 3 images. Secondaire = affichage card/photo.')
+        ->setColumns('col-md-3');
 
     yield IntegerField::new('position', 'Ordre')
         ->setHelp('0 = en premier')

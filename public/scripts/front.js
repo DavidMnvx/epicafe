@@ -1,3 +1,19 @@
+document.querySelectorAll('[data-vv-scrollto]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.querySelector(btn.dataset.vvScrollto);
+
+    if (target) {
+      const offset = 80; // hauteur header
+      const y = target.getBoundingClientRect().top + window.scrollY - offset;
+
+      window.scrollTo({
+        top: y,
+        behavior: 'smooth'
+      });
+    }
+  });
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   // ====== NAVBAR SCROLL ======
   const header = document.querySelector("[data-vv-header]");
@@ -24,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const section = document.querySelector(".vv-eventsSection");
   const bg = document.querySelector(".vv-eventsSection__bg");
   if (section && bg) {
-    const speed = 0.55;
+    const speed = 0.35;
     const ease = 0.08;
     let current = 0;
     let target = 0;
@@ -58,4 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
       closeOnOutsideClick: true,
     });
   }
+
+  
 });

@@ -66,10 +66,16 @@
   .ea table.table{
     background: var(--vv-card) !important;
     border-radius: var(--vv-r-lg) !important;
-    overflow: hidden !important;
     border: 1px solid var(--vv-border) !important;
   }
   
+  .ea .dropdown-menu {
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: none;
+  }
+
+
   .ea table.table thead th{
     background: hsl(39 28% 92%) !important;
     color: var(--vv-muted) !important;
@@ -306,7 +312,7 @@ body.ea .datagrid .table > :not(caption) > * > *{
   }
   
   /* Item row premium */
-  .menu-builder tr[data-row] > td{
+  .ea .menu-builder tr[data-row] > td{
     background: hsla(175, 45%, 32%, 0.812) !important;
     color: hsl(30 10% 14%) !important;              /* ✅ texte lisible */
     border: 0 !important;
@@ -381,3 +387,12 @@ body.ea .datagrid .table > :not(caption) > * > *{
     transform: translateY(-50%);
     opacity: .6;
   }
+
+  tr[data-row]:hover {
+    background: #f8f6f2;
+  }
+
+  .table-responsive {
+  overflow: visible !important;
+}
+ 

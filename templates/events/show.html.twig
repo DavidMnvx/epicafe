@@ -1,5 +1,5 @@
 {% extends 'base_front.html.twig' %}
-{% block title %}{{ event.title }} | Épicafé{% endblock %}
+{% block title %}{{ event.title }} | L'Épi-Café{% endblock %}
 
 {% block body %}
 <section class="vv-section vv-section--light">
@@ -10,28 +10,12 @@
       1:'janvier',2:'février',3:'mars',4:'avril',5:'mai',6:'juin',
       7:'juillet',8:'août',9:'septembre',10:'octobre',11:'novembre',12:'décembre'
     } %}
-    {% set daysLong = {1:'lundi',2:'mardi',3:'mercredi',4:'jeudi',5:'vendredi',6:'samedi',7:'dimanche'} %}
+    {% set daysLong = {
+      1:'lundi',2:'mardi',3:'mercredi',4:'jeudi',5:'vendredi',6:'samedi',7:'dimanche'
+    } %}
 
-    {# displayStart vient de ton controller (prochain vendredi/occurrence pour permanent) #}
+    {# displayStart vient du controller #}
     {% set ds = displayStart ?? event.startAt %}
-
-    <header class="vv-section__head vv-scroll-reveal" style="margin-bottom: 2rem;">
-      <h1 class="vv-h2" style="margin-bottom:.5rem;">{{ event.title }}</h1>
-
-      {% if ds %}
-        {% set d = ds|date('j') %}
-        {% set m = ds|date('n') %}
-        {% set y = ds|date('Y') %}
-        {% set dow = ds|date('N') %}
-        <p class="vv-lead" style="max-width: 70ch;">
-          📅 {{ daysLong[dow] }} {{ d }} {{ monthsLong[m] }} {{ y }}
-          — 🕒 {{ ds|date('H:i') }}
-          {% if event.endAt %} à {{ event.endAt|date('H:i') }}{% endif %}
-        </p>
-      {% else %}
-        <p class="vv-lead vv-muted" style="max-width: 70ch;">📅 Date à confirmer</p>
-      {% endif %}
-    </header>
 
     {# ====== Image priorité: upload > URL > default ====== #}
     {% set cover =
@@ -40,96 +24,259 @@
         : (event.imageUrl ?: asset('images/banners-events.png'))
     %}
 
-    <div class="vv-panel vv-scroll-reveal" style="overflow:hidden;">
-      <img
-        src="{{ cover }}"
-        alt="{{ event.title|e }}"
-        style="width:100%; height:360px; object-fit:cover; border-radius:1rem;"
-        loading="lazy"
-      >
+    {# ====== Mode d'affichage ====== #}
+    {% set mode = event.displayMode ?? 'classic' %}
 
-      <div style="padding: 1.6rem 1.6rem 1.8rem;">
+    <header class="vv-section__head vv-scroll-reveal" style="margin-bottom: 2rem; margin-top: 4rem">
+      <h1 class="vv-h2" style="margin-bottom:.5rem;">{{ event.title }}</h1>
 
-        {% if event.description %}
-          <p style="margin:0; line-height:1.75; color:hsl(var(--foreground));">
-            {{ event.description }}
-          </p>
-        {% else %}
-          <p class="vv-muted" style="margin:0;">Plus d’infos à venir.</p>
-        {% endif %}
+      {% if ds %}
+        {% set d = ds|date('j') %}
+        {% set m = ds|date('n') %}
+        {% set y = ds|date('Y') %}
+        {% set dow = ds|date('N') %}
+        <p class="vv-lead" style="max-width: 70ch;">
+  📅 {{ daysLong[dow] }} {{ d }} {{ monthsLong[m] }} {{ y }}
+  — 🕒 {{ ds|date('H:i') }}
+  {% if event.endAt %} à {{ event.endAt|date('H:i') }}{% endif %}
+</p>
+      {% else %}
+        <p class="vv-lead vv-muted" style="max-width: 70ch;">📅 Date à confirmer</p>
+      {% endif %}
+    </header>
 
-        {# ====== MENU ====== #}
-        {% set hasMenu =
-          event.menuStarter or event.menuMain or event.menuDessert or event.menuDessert2 or event.menuPrice or event.menu
-        %}
+    {# =========================================================
+       MODE POSTER
+       ========================================================= #}
+    {% if mode == 'poster' %}
 
-        {% if hasMenu %}
-          <section class="vv-menuCard vv-scroll-reveal" style="margin-top: 1.5rem;">
-            <header class="vv-menuCard__head">
-              <h2 class="vv-h3" style="margin:0;">Au menu</h2>
+      <div class="vv-eventPoster vv-scroll-reveal">
 
-              {% if event.menuPrice %}
-                {# menuPrice = string decimal Doctrine, on force affichage 2 décimales #}
-                {% set price = event.menuPrice|replace({',':'.'}) %}
-                <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
+        <div class="vv-eventPoster__media">
+          <img
+            src="{{ cover }}"
+            alt="{{ event.title|e }}"
+            loading="lazy"
+          >
+        </div>
+
+        <div class="vv-eventPoster__content">
+
+          <div class="vv-panel">
+
+            <h2 class="vv-h3" style="margin-top:0;">Informations</h2>
+
+            {% if event.description %}
+              <p style="margin:0 0 1rem 0; line-height:1.75; color:hsl(var(--foreground));">
+                {{ event.description }}
+              </p>
+            {% else %}
+              <p class="vv-muted" style="margin:0 0 1rem 0;">Plus d’infos à venir.</p>
+            {% endif %}
+
+            <div class="vv-eventPoster__metaList">
+              {% if ds %}
+                <div><strong>Date :</strong> {{ daysLong[dow] }} {{ d }} {{ monthsLong[m] }} {{ y }}</div>
+                <div><strong>Heure :</strong> {{ ds|date('H:i') }}{% if event.endAt %} à {{ event.endAt|date('H:i') }}{% endif %}</div>
               {% endif %}
-            </header>
-
-            <div class="vv-menuCard__body">
-              {% if event.menuStarter %}
-                <div class="vv-menuLine">
-                  <span class="vv-menuLine__label">Entrée</span>
-                  <span class="vv-menuLine__dots"></span>
-                  <span class="vv-menuLine__value">{{ event.menuStarter }}</span>
-                </div>
-              {% endif %}
-
-              {% if event.menuMain %}
-                <div class="vv-menuLine">
-                  <span class="vv-menuLine__label">Plat</span>
-                  <span class="vv-menuLine__dots"></span>
-                  <span class="vv-menuLine__value">{{ event.menuMain }}</span>
-                </div>
-              {% endif %}
-
-              {% if event.menuDessert or event.menuDessert2 %}
-                <div class="vv-menuLine">
-                  <span class="vv-menuLine__label">Dessert</span>
-                  <span class="vv-menuLine__dots"></span>
-                  <span class="vv-menuLine__value">
-                    {{ event.menuDessert }}
-                    {% if event.menuDessert and event.menuDessert2 %}
-                      <span class="vv-menuOr">ou</span>
-                    {% endif %}
-                    {{ event.menuDessert2 }}
-                  </span>
-                </div>
-              {% endif %}
-
-              {% if event.menu %}
-                <div class="vv-menuNote">{{ event.menu }}</div>
-              {% endif %}
+              <div><strong>Lieu :</strong> Épi-Café Le Barroux</div>
             </div>
-          </section>
-        {% endif %}
 
-        {# ====== ACTIONS / RÉSERVATION ====== #}
-        <div class="vv-actions" style="margin-top:1.6rem;">
-          <a class="vv-btn vv-btn--primary" href="{{ path('event_index') }}">← Retour</a>
-
-          <div class="vv-resa">
-            <div class="vv-resa__text">
-              <strong>Réservation par téléphone</strong><br>
-              <span class="vv-muted">Places limitées — pensez à réserver.</span>
-            </div>
-            <a class="vv-btn vv-btn--primary" href="tel:+33400000000">📞 Appeler</a>
           </div>
 
-          
+         
+{% set hasProducts =
+  (event.product1Name or event.product2Name or event.product3Name or event.sideDish or event.offerNote)
+%}
+
+{% set hasClassicMenu =
+  not hasProducts and (
+    event.menuStarter or event.menuMain or event.menuDessert or event.menuDessert2 or event.menuPrice or event.menu
+  )
+%}
+
+{% if hasProducts %}
+  <section class="vv-eventProducts" style="margin-top: 1.2rem;">
+
+    {% if event.product1Name %}
+      <article class="vv-eventProductCard">
+        <header class="vv-eventProductCard__head">
+          <h2 class="vv-h3" style="margin:0;">{{ event.product1Name }}</h2>
+          {% if event.product1Price %}
+            {% set price = event.product1Price|replace({',':'.'}) %}
+            <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
+          {% endif %}
+        </header>
+
+        {% if event.product1Ingredients %}
+          <div class="vv-eventProductCard__body">
+            <p>{{ event.product1Ingredients }}</p>
+          </div>
+        {% endif %}
+      </article>
+    {% endif %}
+
+    {% if event.product2Name %}
+      <article class="vv-eventProductCard">
+        <header class="vv-eventProductCard__head">
+          <h2 class="vv-h3" style="margin:0;">{{ event.product2Name }}</h2>
+          {% if event.product2Price %}
+            {% set price = event.product2Price|replace({',':'.'}) %}
+            <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
+          {% endif %}
+        </header>
+
+        {% if event.product2Ingredients %}
+          <div class="vv-eventProductCard__body">
+            <p>{{ event.product2Ingredients }}</p>
+          </div>
+        {% endif %}
+      </article>
+    {% endif %}
+
+    {% if event.product3Name %}
+      <article class="vv-eventProductCard">
+        <header class="vv-eventProductCard__head">
+          <h2 class="vv-h3" style="margin:0;">{{ event.product3Name }}</h2>
+          {% if event.product3Price %}
+            {% set price = event.product3Price|replace({',':'.'}) %}
+            <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
+          {% endif %}
+        </header>
+
+        {% if event.product3Ingredients %}
+          <div class="vv-eventProductCard__body">
+            <p>{{ event.product3Ingredients }}</p>
+          </div>
+        {% endif %}
+      </article>
+    {% endif %}
+
+    {% if event.sideDish %}
+      <article class="vv-accompagnementBlock">
+        <h2 class="vv-h3" style="margin:0 0 .65rem 0;">Accompagnement</h2>
+        <p style="margin:0; line-height:1.75;">{{ event.sideDish }}</p>
+      </article>
+    {% endif %}
+
+    {% if event.offerNote %}
+      <div class="vv-menuNote">{{ event.offerNote }}</div>
+    {% endif %}
+
+  </section>
+{% endif %}
+
+
+          <div class="vv-actions" style="margin-top:1.4rem;">
+            <a class="vv-btn vv-btn--primary" href="{{ path('event_index') }}">← Retour</a>
+
+            <div class="vv-resa">
+              <div class="vv-resa__text">
+                <strong>Réservation par téléphone</strong><br>
+                <span class="vv-muted">Places limitées — pensez à réserver.</span>
+              </div>
+              <a class="vv-btn vv-btn--primary" href="tel:+33400000000">📞 Appeler</a>
+            </div>
+          </div>
+
         </div>
 
       </div>
-    </div>
+
+    {# =========================================================
+       MODE CLASSIC
+       ========================================================= #}
+    {% else %}
+
+      <div class="vv-panel vv-scroll-reveal" style="overflow:hidden;">
+        <img
+          src="{{ cover }}"
+          alt="{{ event.title|e }}"
+          style="width:100%; height:360px; object-fit:cover; border-radius:1rem;"
+          loading="lazy"
+        >
+
+        <div style="padding: 1.6rem 1.6rem 1.8rem;">
+
+          {% if event.description %}
+            <p style="margin:0; line-height:1.75; color:hsl(var(--foreground));">
+              {{ event.description }}
+            </p>
+          {% else %}
+            <p class="vv-muted" style="margin:0;">Plus d’infos à venir.</p>
+          {% endif %}
+
+          {# ====== MENU ====== #}
+          {% set hasMenu =
+            event.menuStarter or event.menuMain or event.menuDessert or event.menuDessert2 or event.menuPrice or event.menu
+          %}
+
+          {% if hasMenu %}
+            <section class="vv-menuCard vv-scroll-reveal" style="margin-top: 1.5rem;">
+              <header class="vv-menuCard__head">
+                <h2 class="vv-h3" style="margin:0;">Au menu</h2>
+
+                {% if event.menuPrice %}
+                  {% set price = event.menuPrice|replace({',':'.'}) %}
+                  <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
+                {% endif %}
+              </header>
+
+              <div class="vv-menuCard__body">
+                {% if event.menuStarter %}
+                  <div class="vv-menuLine">
+                    <span class="vv-menuLine__label">Entrée</span>
+                    <span class="vv-menuLine__dots"></span>
+                    <span class="vv-menuLine__value">{{ event.menuStarter }}</span>
+                  </div>
+                {% endif %}
+
+                {% if event.menuMain %}
+                  <div class="vv-menuLine">
+                    <span class="vv-menuLine__label">Plat</span>
+                    <span class="vv-menuLine__dots"></span>
+                    <span class="vv-menuLine__value">{{ event.menuMain }}</span>
+                  </div>
+                {% endif %}
+
+                {% if event.menuDessert or event.menuDessert2 %}
+                  <div class="vv-menuLine">
+                    <span class="vv-menuLine__label">Dessert</span>
+                    <span class="vv-menuLine__dots"></span>
+                    <span class="vv-menuLine__value">
+                      {{ event.menuDessert }}
+                      {% if event.menuDessert and event.menuDessert2 %}
+                        <span class="vv-menuOr">ou</span>
+                      {% endif %}
+                      {{ event.menuDessert2 }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {% if event.menu %}
+                  <div class="vv-menuNote">{{ event.menu }}</div>
+                {% endif %}
+              </div>
+            </section>
+          {% endif %}
+
+          {# ====== ACTIONS / RÉSERVATION ====== #}
+          <div class="vv-actions" style="margin-top:1.6rem;">
+            <a class="vv-btn vv-btn--primary" href="{{ path('event_index') }}">← Retour</a>
+
+            <div class="vv-resa">
+              <div class="vv-resa__text">
+                <strong>Réservation par téléphone</strong><br>
+                <span class="vv-muted">Places limitées — pensez à réserver.</span>
+              </div>
+              <a class="vv-btn vv-btn--primary" href="tel:+33400000000">📞 Appeler</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    {% endif %}
 
   </div>
 </section>

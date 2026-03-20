@@ -1,10 +1,58 @@
 {% extends 'base_front.html.twig' %}
 {% set bodyClass = 'vv-hero-dark vv-hero-img' %}
-{% block title %}Galerie | Épicafé{% endblock %}
+{% block title %}Menu | L'épi-Café{% endblock %}
+
+{% macro render_item(i) %}
+  {% if i.isPublished %}
+    {% set hasPricedVariants = false %}
+    {% if i.variants|length > 0 %}
+      {% for v in i.variants %}
+        {% if v.price is not empty %}
+          {% set hasPricedVariants = true %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    <div class="vv-menu-line">
+      <div class="vv-menu-left">
+        <span class="vv-menu-name">{{ i.name }}</span>
+
+        {% if i.unit %}
+          <span class="vv-menu-desc">{{ i.unit }}</span>
+        {% endif %}
+
+        {% if i.description %}
+          <span class="vv-menu-desc">{{ i.description }}</span>
+        {% endif %}
+
+        {% if i.note %}
+          <span class="vv-menu-desc">{{ i.note }}</span>
+        {% endif %}
+      </div>
+
+      {% if i.price and (i.variants|length == 0 or not hasPricedVariants) %}
+        <div class="vv-menu-price">{{ i.price|number_format(2, ',', ' ') }}€</div>
+      {% endif %}
+    </div>
+
+    {% if i.variants|length > 0 %}
+      {% for v in i.variants %}
+        <div class="vv-menu-variant-line">
+          <span class="vv-menu-variant-name">{{ v.label }}</span>
+
+          {% if hasPricedVariants and v.price %}
+            <span class="vv-menu-price">{{ v.price|number_format(2, ',', ' ') }}€</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
+{% import _self as menu %}
 
 {% block body %}
 
-{# Mini-hero/banner (comme événements) #}
 {% include 'components/page_banner.html.twig' with {
   title: 'Menu',
   subtitle: 'Boissons, produits du terroir et plaisirs simples à déguster au cœur du village.',
@@ -12,209 +60,96 @@
   bgClass: 'vv-miniHero--menu'
 } %}
 
-<section class="vv-section">
+<section class="vv-section vv-section--light">
   <div class="vv-container">
 
-    <h1 class="vv-title">La carte</h1>
+    <div class="vv-menuPageHead">
+      <h1 class="vv-title">La carte</h1>
+      <p class="vv-lead">Une présentation plus claire, pensée comme une vraie carte de bistrot : snack, boissons et alcool.</p>
+    </div>
 
-    {% for cat in rootCategories %}
+    {% set sectionOrder = ['SNACK', 'BOISSONS', 'ALCOOL'] %}
 
-      {% if cat.isPublished %}
+    {% for sectionName in sectionOrder %}
+      {% set sectionCategory = null %}
 
-        <div class="vv-menu-category">
+      {% for cat in rootCategories %}
+        {% if cat.isPublished and cat.name|upper == sectionName %}
+          {% set sectionCategory = cat %}
+        {% endif %}
+      {% endfor %}
 
-          <h2 class="vv-menu-category-title">
-            {{ cat.name }}
-          </h2>
+      {% if sectionCategory %}
+        <section class="vv-menuSection">
+          <div class="vv-menuSection__head">
+            <h2 class="vv-menuSection__title">{{ sectionCategory.name }}</h2>
+          </div>
 
-          {# Items de la catégorie #}
-          {% if cat.items|length > 0 %}
-            <div class="vv-menu-items">
+          {% set blocks = [] %}
 
-              {% for i in cat.items %}
-
-                {% if i.isPublished %}
-
-                  <div class="vv-menu-item">
-
-                    <div class="vv-menu-item-top">
-
-                      <div class="vv-menu-item-name">
-                        {{ i.name }}
-
-                        {% if i.unit %}
-                          <span class="vv-menu-item-unit">
-                            • {{ i.unit }}
-                          </span>
-                        {% endif %}
-
-                      </div>
-
-                      {% if i.variants|length == 0 and i.price %}
-                        <div class="vv-menu-item-price">
-                          {{ i.price }}€
-                        </div>
-                      {% endif %}
-
-                    </div>
-
-                    {% if i.description %}
-                      <div class="vv-menu-item-desc">
-                        {{ i.description }}
-                      </div>
-                    {% endif %}
-
-                    {% if i.note %}
-                      <div class="vv-menu-item-note">
-                        {{ i.note }}
-                      </div>
-                    {% endif %}
-
-                    {# Variantes #}
-                    {% if i.variants|length > 0 %}
-
-                      <div class="vv-menu-variants">
-
-                        {% for v in i.variants %}
-
-                          <div class="vv-menu-variant">
-
-                            <div class="vv-menu-variant-label">
-                              {{ v.label }}
-                            </div>
-
-                            {% if v.price %}
-                              <div class="vv-menu-variant-price">
-                                {{ v.price }}€
-                              </div>
-                            {% endif %}
-
-                          </div>
-
-                        {% endfor %}
-
-                      </div>
-
-                    {% endif %}
-
-                  </div>
-
-                {% endif %}
-
-              {% endfor %}
-
-            </div>
+          {% if sectionCategory.items|length > 0 %}
+            {% set blocks = blocks|merge([{
+              title: null,
+              items: sectionCategory.items
+            }]) %}
           {% endif %}
 
-          {# Sous-catégories #}
-          {% if cat.children|length > 0 %}
+          {% for sub in sectionCategory.children %}
+            {% if sub.isPublished and sub.items|length > 0 %}
+              {% set blocks = blocks|merge([{
+                title: sub.name,
+                items: sub.items
+              }]) %}
+            {% endif %}
+          {% endfor %}
 
-            <div class="vv-menu-subcategories">
-
-              {% for sub in cat.children %}
-
-                {% if sub.isPublished %}
-
-                  <div class="vv-menu-subcategory">
-
-                    <h3 class="vv-menu-subcategory-title">
-                      {{ sub.name }}
-                    </h3>
-
-                    {% if sub.items|length > 0 %}
-
-                      <div class="vv-menu-items">
-
-                        {% for i in sub.items %}
-
-                          {% if i.isPublished %}
-
-                            <div class="vv-menu-item">
-
-                              <div class="vv-menu-item-top">
-
-                                <div class="vv-menu-item-name">
-                                  {{ i.name }}
-
-                                  {% if i.unit %}
-                                    <span class="vv-menu-item-unit">
-                                      • {{ i.unit }}
-                                    </span>
-                                  {% endif %}
-
-                                </div>
-
-                                {% if i.variants|length == 0 and i.price %}
-                                  <div class="vv-menu-item-price">
-                                    {{ i.price }}€
-                                  </div>
-                                {% endif %}
-
-                              </div>
-
-                              {% if i.description %}
-                                <div class="vv-menu-item-desc">
-                                  {{ i.description }}
-                                </div>
-                              {% endif %}
-
-                              {% if i.note %}
-                                <div class="vv-menu-item-note">
-                                  {{ i.note }}
-                                </div>
-                              {% endif %}
-
-                              {% if i.variants|length > 0 %}
-
-                                <div class="vv-menu-variants">
-
-                                  {% for v in i.variants %}
-
-                                    <div class="vv-menu-variant">
-
-                                      <div class="vv-menu-variant-label">
-                                        {{ v.label }}
-                                      </div>
-
-                                      {% if v.price %}
-                                        <div class="vv-menu-variant-price">
-                                          {{ v.price }}€
-                                        </div>
-                                      {% endif %}
-
-                                    </div>
-
-                                  {% endfor %}
-
-                                </div>
-
-                              {% endif %}
-
-                            </div>
-
-                          {% endif %}
-
-                        {% endfor %}
-
-                      </div>
-
-                    {% endif %}
-
-                  </div>
-
+          <div class="vv-menuSection__grid">
+            {% for block in blocks %}
+              <div class="vv-menuSubblock">
+                {% if block.title %}
+                  <h3 class="vv-menuSubblock__title">{{ block.title }}</h3>
                 {% endif %}
 
-              {% endfor %}
-
-            </div>
-
-          {% endif %}
-
-        </div>
-
+                <div class="vv-menuSubblock__body">
+                  {% for i in block.items %}
+                    {{ menu.render_item(i) }}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
       {% endif %}
-
     {% endfor %}
+
+    <section class="vv-menuCta">
+  <div class="vv-container">
+
+    <div class="vv-menuCta__inner">
+
+      <div class="vv-menuCta__text">
+        <h2>Envie de passer un bon moment ?</h2>
+        <p>Réservez votre table ou découvrez les prochains événements de l'Épi-Café.</p>
+      </div>
+
+      <div class="vv-menuCta__actions">
+        <a href="tel:+33600000000" class="vv-btn vv-btn-primary">
+          📞 Appeler
+        </a>
+
+        <a href="{{ path('contact_index') }}" class="vv-btn vv-btn-outline">
+          📅 Réserver
+        </a>
+
+        <a href="{{ path('event_index') }}" class="vv-btn vv-btn-ghost">
+          🎶 Événements
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</section>
 
   </div>
 </section>

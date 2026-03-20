@@ -17,6 +17,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 
+
+
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
@@ -41,16 +43,15 @@ class DashboardController extends AbstractDashboardController
 
     public function configureDashboard(): Dashboard
     {
-        return Dashboard::new()->setTitle('Epicafé');
+        return Dashboard::new()->setTitle('Epi-Café');
     }
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
-        yield MenuItem::section('Contenu');
-        yield MenuItem::linkToCrud('Pages', 'fa fa-file', Page::class);
+        yield MenuItem::section('Evenements');
         yield MenuItem::linkToCrud('Événements', 'fa fa-calendar', Event::class);
+        
 
         yield MenuItem::section('Galerie Photos');
         yield MenuItem::linkToCrud('Galerie', 'fa fa-image', GalleryPhoto::class);
@@ -59,12 +60,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Partenaires');
         yield MenuItem::linkToCrud('Partenaires', 'fa fa-handshake', Partner::class);
 
-        yield MenuItem::section('Divers');
-        yield MenuItem::linkToCrud('Catégories', 'fa fa-tags', Category::class);
 
         yield MenuItem::section('Menu');
         yield MenuItem::linkToCrud('Catégories menu', 'fa fa-list', \App\Entity\MenuCategory::class);
         yield MenuItem::linkToCrud('Lignes menu', 'fa fa-utensils', \App\Entity\MenuItem::class);
         yield MenuItem::linkToRoute('Menu Builder', 'fa fa-utensils', 'admin_menu_builder');
+        
     }
 }

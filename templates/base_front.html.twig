@@ -8,6 +8,7 @@
 
 <link rel="stylesheet" href="{{ asset('styles/front.css') }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   {% block head %}
   
   {% endblock %}
@@ -58,6 +59,7 @@
         <li><a href="{{ path('event_index') }}">Événements</a></li>
         <li><a href="{{ path('gallery_index') }}">Galerie Photos</a></li>
         <li><a href="{{ path('partner_index') }}">Partenaires</a></li>
+        <li><a href="{{ path('shop_index') }}">Boutique</a></li>
         <li><a href="{{ path('menu') }}">Menu</a></li>
         <li><a href="{{ path('contact_index') }}">Contact</a></li>
       </ul>
@@ -167,7 +169,7 @@
     </div>
 
     <div class="vv-footer__bottom">
-      © {{ "now"|date("Y") }} Epicafé — Tous droits réservés · Site réalisé par <strong>NosWeb</strong>
+      © {{ "now"|date("Y") }} L'épi-Café — Tous droits réservés · Site réalisé par <strong>NosWeb</strong>
     </div>
 
   </div>

@@ -1,0 +1,141 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark vv-page' %}
+{% block title %}Boutique | L'Épi-Café{% endblock %}
+
+{% block body %}
+
+{% include 'components/page_banner.html.twig' with {
+  title: 'La boutique',
+  subtitle: 'Produits du quotidien, terroir et plaisir de bien manger au cœur du village.',
+  background: asset('images/banners-shop.png'),
+  bgClass: 'vv-miniHero--shop'
+} %}
+
+<section class="vv-section vv-section--light">
+  <div class="vv-container">
+
+    <div class="vv-shopIntro">
+      <div class="vv-shopIntro__content">
+        <p class="vv-kicker">Épicerie de village</p>
+        <h1 class="vv-h2">Une boutique simple, locale et utile</h1>
+        <p class="vv-lead vv-shopIntro__lead">
+          À l’Épi-Café, la boutique réunit l’essentiel du quotidien et le plaisir des bons produits :
+          cave locale, charcuterie, fromages, pain, viennoiseries, œufs fermiers, légumes, produits
+          du quotidien et spécialités du terroir.
+        </p>
+      </div>
+    </div>
+
+    <div class="vv-shopGrid">
+
+      <article class="vv-shopCard">
+        <div class="vv-shopCard__icon">🍷</div>
+        <h3 class="vv-shopCard__title">Vins locaux</h3>
+        <p class="vv-shopCard__text">
+          Une sélection de vins du Ventoux et des environs, à découvrir à la bouteille
+          ou à offrir.
+        </p>
+      </article>
+
+      <article class="vv-shopCard">
+        <div class="vv-shopCard__icon">🧀</div>
+        <h3 class="vv-shopCard__title">Charcuterie & fromages</h3>
+        <p class="vv-shopCard__text">
+          Des produits gourmands à partager, selon les arrivages et les saisons.
+        </p>
+      </article>
+
+      <article class="vv-shopCard">
+        <div class="vv-shopCard__icon">🥖</div>
+        <h3 class="vv-shopCard__title">Pain & viennoiseries</h3>
+        <p class="vv-shopCard__text">
+          Dépôt de pain et viennoiseries pour le quotidien, avec le plaisir du bon produit.
+        </p>
+      </article>
+
+      <article class="vv-shopCard">
+        <div class="vv-shopCard__icon">🥚</div>
+        <h3 class="vv-shopCard__title">Produits fermiers</h3>
+        <p class="vv-shopCard__text">
+          Œufs fermiers et produits simples, pratiques et authentiques pour la maison.
+        </p>
+      </article>
+
+      <article class="vv-shopCard">
+        <div class="vv-shopCard__icon">🥬</div>
+        <h3 class="vv-shopCard__title">Légumes & produits frais</h3>
+        <p class="vv-shopCard__text">
+          Une présence de produits frais selon les saisons, les disponibilités et les arrivages.
+        </p>
+      </article>
+
+      <article class="vv-shopCard">
+        <div class="vv-shopCard__icon">🛒</div>
+        <h3 class="vv-shopCard__title">Produits du quotidien</h3>
+        <p class="vv-shopCard__text">
+          Les essentiels de première nécessité pour dépanner et faciliter la vie du village.
+        </p>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="vv-section vv-section--cream">
+  <div class="vv-container">
+
+    <div class="vv-shopStory">
+      <div class="vv-shopStory__content">
+        <p class="vv-kicker">L’esprit du lieu</p>
+        <h2 class="vv-h2">Une boutique de proximité, ancrée dans le village</h2>
+        <p>
+          L’idée n’est pas d’en faire trop, mais de proposer l’essentiel avec soin :
+          des produits utiles, de bonnes choses à partager, et une sélection locale
+          qui donne envie de revenir.
+        </p>
+        <p>
+          On y vient pour un produit du quotidien, une bonne bouteille, une envie d’apéritif,
+          ou simplement pour retrouver une atmosphère conviviale au pied du Ventoux.
+        </p>
+      </div>
+
+      <div class="vv-shopStory__aside">
+        <div class="vv-shopInfoCard">
+          <h3 class="vv-h3">À retrouver à la boutique</h3>
+          <ul class="vv-shopInfoList">
+            <li>Produits locaux</li>
+            <li>Cave & découvertes</li>
+            <li>Épicerie pratique</li>
+            <li>Arrivages selon saison</li>
+            <li>Conseil sur place</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="vv-section vv-section--light">
+  <div class="vv-container">
+
+    <div class="vv-menuCta">
+      <div class="vv-menuCta__inner">
+        <div class="vv-menuCta__text">
+          <h2>Un besoin, une envie, un produit à retrouver ?</h2>
+          <p>Passez nous voir sur place ou contactez-nous pour en savoir plus sur les arrivages et disponibilités.</p>
+        </div>
+
+        <div class="vv-menuCta__actions">
+          <a href="{{ path('contact_index') }}" class="vv-btn vv-btn--primary">Nous contacter</a>
+          <a href="{{ path('contact_index') }}#hours" class="vv-btn vv-btn--ghost">Voir les horaires</a>
+          <a href="{{ path('app_home') }}" class="vv-btn vv-btn--ghost">Retour à l’accueil</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

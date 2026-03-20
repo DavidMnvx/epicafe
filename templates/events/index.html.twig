@@ -6,20 +6,16 @@
 
 {% include 'components/page_banner.html.twig' with {
   title: 'Événements',
-  subtitle: 'À venir à l’Épicafé',
+  subtitle: 'À venir à l’Épi-Café',
   bgClass: 'vv-miniHero--events'
 } %}
 
 <section class="vv-section vv-section--light">
   <div class="vv-container">
-    <div class="vv-section__head vv-scroll-reveal">
-      
-    
-    </div>
+    <div class="vv-section__head vv-scroll-reveal"></div>
 
     {% if recurringEvents is defined and recurringEvents|length %}
       <div style="height: 2rem;"></div>
-
       <h2 class="vv-h3" style="margin-bottom: 2rem;">Événements permanents</h2>
       <div class="vv-events">
         {% for event in recurringEvents %}
@@ -32,7 +28,7 @@
     {% if upcomingEvents|length %}
       <div class="vv-events">
         {% for event in upcomingEvents %}
-          {% include 'events/_event_row.html.twig' with { event: event } %}
+          {% include 'events/event_row.html.twig' with { event: event } %}
         {% endfor %}
       </div>
     {% else %}
@@ -51,8 +47,6 @@
     {% else %}
       <p class="vv-muted">Pas d’archives pour le moment.</p>
     {% endif %}
-
-   
   </div>
 </section>
 {% endblock %}

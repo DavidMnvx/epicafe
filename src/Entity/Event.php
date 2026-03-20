@@ -82,6 +82,187 @@ class Event
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2, nullable: true)]
     private ?string $menuPrice = null; // Doctrine map decimal => string
 
+    #[ORM\Column(length: 20, options: ['default' => 'classic'])]
+    private ?string $displayMode = 'classic';
+
+    #[ORM\Column(length: 20, options: ['default' => 'menu'])]
+    private ?string $offerType = 'menu';
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $product1Name = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $product1Ingredients = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $product1Price = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $product2Name = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $product2Ingredients = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $product2Price = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $product3Name = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $product3Ingredients = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $product3Price = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $sideDish = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $offerNote = null;
+    public function getOfferType(): ?string
+    {
+        return $this->offerType;
+    }
+
+    public function setOfferType(string $offerType): static
+    {
+        $this->offerType = $offerType;
+        return $this;
+    }
+
+    public function getProduct1Name(): ?string
+    {
+        return $this->product1Name;
+    }
+
+    public function setProduct1Name(?string $value): static
+    {
+        $this->product1Name = $value;
+        return $this;
+    }
+
+    public function getProduct1Ingredients(): ?string
+    {
+        return $this->product1Ingredients;
+    }
+
+    public function setProduct1Ingredients(?string $value): static
+    {
+        $this->product1Ingredients = $value;
+        return $this;
+    }
+
+    public function getProduct1Price(): ?string
+    {
+        return $this->product1Price;
+    }
+
+    public function setProduct1Price(?string $value): static
+    {
+        $this->product1Price = $value;
+        return $this;
+    }
+
+    public function getProduct2Name(): ?string
+    {
+        return $this->product2Name;
+    }
+
+    public function setProduct2Name(?string $value): static
+    {
+        $this->product2Name = $value;
+        return $this;
+    }
+
+    public function getProduct2Ingredients(): ?string
+    {
+        return $this->product2Ingredients;
+    }
+
+    public function setProduct2Ingredients(?string $value): static
+    {
+        $this->product2Ingredients = $value;
+        return $this;
+    }
+
+    public function getProduct2Price(): ?string
+    {
+        return $this->product2Price;
+    }
+
+    public function setProduct2Price(?string $value): static
+    {
+        $this->product2Price = $value;
+        return $this;
+    }
+
+    public function getProduct3Name(): ?string
+    {
+        return $this->product3Name;
+    }
+
+    public function setProduct3Name(?string $value): static
+    {
+        $this->product3Name = $value;
+        return $this;
+    }
+
+    public function getProduct3Ingredients(): ?string
+    {
+        return $this->product3Ingredients;
+    }
+
+    public function setProduct3Ingredients(?string $value): static
+    {
+        $this->product3Ingredients = $value;
+        return $this;
+    }
+
+    public function getProduct3Price(): ?string
+    {
+        return $this->product3Price;
+    }
+
+    public function setProduct3Price(?string $value): static
+    {
+        $this->product3Price = $value;
+        return $this;
+    }
+
+    public function getSideDish(): ?string
+    {
+        return $this->sideDish;
+    }
+
+    public function setSideDish(?string $value): static
+    {
+        $this->sideDish = $value;
+        return $this;
+    }
+
+    public function getOfferNote(): ?string
+    {
+        return $this->offerNote;
+    }
+
+    public function setOfferNote(?string $value): static
+    {
+        $this->offerNote = $value;
+        return $this;
+    }
+
+    public function getDisplayMode(): ?string
+    {
+        return $this->displayMode;
+    }
+
+    public function setDisplayMode(string $displayMode): static
+    {
+        $this->displayMode = $displayMode;
+        return $this;
+    }
+
     public function __construct()
     {
         $now = new \DateTimeImmutable();
@@ -211,38 +392,45 @@ class Event
     public function setMenuDessert(?string $menuDessert): self { $this->menuDessert = $menuDessert; return $this; }
 
     public function getMenuDessert2(): ?string { return $this->menuDessert2; }
-public function setMenuDessert2(?string $menuDessert2): self { $this->menuDessert2 = $menuDessert2; return $this; }
+    public function setMenuDessert2(?string $menuDessert2): self
+    {
+        $this->menuDessert2 = $menuDessert2;
+        return $this;
+    }
 
     public function getMenuPrice(): ?string { return $this->menuPrice; }
     public function setMenuPrice(?string $menuPrice): self { $this->menuPrice = $menuPrice; return $this; }
 
     public function getNextOccurrence(): ?\DateTimeImmutable
-{
-    // Si événement normal, on renvoie startAt
-    if (!$this->isRecurring) {
-        return $this->startAt;
+    {
+        if (!$this->isRecurring) {
+            return $this->startAt;
+        }
+
+        if (!$this->recurringDayOfWeek || !$this->recurringTime) {
+            return null;
+        }
+
+        $now = new \DateTimeImmutable('now');
+        $targetDow = (int) $this->recurringDayOfWeek;
+        $todayDow = (int) $now->format('N');
+
+        $h = (int) $this->recurringTime->format('H');
+        $m = (int) $this->recurringTime->format('i');
+
+        $todayAtTime = $now->setTime($h, $m);
+
+        if ($targetDow === $todayDow) {
+            return ($todayAtTime > $now)
+                ? $todayAtTime
+                : $todayAtTime->modify('+7 days');
+        }
+
+        $daysToAdd = ($targetDow - $todayDow + 7) % 7;
+        if ($daysToAdd === 0) {
+            $daysToAdd = 7;
+        }
+
+        return $now->modify("+{$daysToAdd} days")->setTime($h, $m);
     }
-
-    // Si récurrent mais incomplet, on ne peut pas calculer
-    if (!$this->recurringDayOfWeek || !$this->recurringTime) {
-        return null;
-    }
-
-    $now = new \DateTimeImmutable('now');
-    $targetDow = (int) $this->recurringDayOfWeek; // 1..7 (Mon..Sun)
-    $todayDow  = (int) $now->format('N');
-
-    // prochain jour (si même jour -> semaine suivante)
-    $daysToAdd = ($targetDow - $todayDow + 7) % 7;
-    if ($daysToAdd === 0) {
-        $daysToAdd = 7;
-    }
-
-    $nextDate = $now->modify("+{$daysToAdd} days")->setTime(0, 0);
-
-    $h = (int) $this->recurringTime->format('H');
-    $m = (int) $this->recurringTime->format('i');
-
-    return $nextDate->setTime($h, $m);
-}
 }

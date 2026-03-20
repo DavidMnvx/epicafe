@@ -17,6 +17,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 
 final class EventCrudController extends AbstractCrudController
 {
@@ -57,6 +59,15 @@ final class EventCrudController extends AbstractCrudController
         // 1) Normalise le prix : "19,00" => "19.00"
         if ($event->getMenuPrice() !== null) {
             $event->setMenuPrice(str_replace(',', '.', $event->getMenuPrice()));
+        if ($event->getProduct1Price() !== null) {
+            $event->setProduct1Price(str_replace(',', '.', $event->getProduct1Price()));
+        }
+        if ($event->getProduct2Price() !== null) {
+            $event->setProduct2Price(str_replace(',', '.', $event->getProduct2Price()));
+        }
+        if ($event->getProduct3Price() !== null) {
+            $event->setProduct3Price(str_replace(',', '.', $event->getProduct3Price()));
+        }
         }
 
         // 2) Si permanent => startAt auto (et endAt nul)
@@ -72,7 +83,8 @@ final class EventCrudController extends AbstractCrudController
         // 4) updatedAt si tu veux le tenir à jour ici (optionnel)
         $event->setUpdatedAt(new \DateTimeImmutable());
     }
-
+    
+    
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id')->onlyOnIndex();
@@ -93,7 +105,7 @@ final class EventCrudController extends AbstractCrudController
             ->setColumns('col-md-4')
             ->setRequired(false)
             ->onlyOnForms();
-
+            
         yield TextareaField::new('description', 'Description')
             ->setColumns('col-md-12')
             ->hideOnIndex();
@@ -101,6 +113,14 @@ final class EventCrudController extends AbstractCrudController
         yield BooleanField::new('isPublished', 'Publié')
             ->renderAsSwitch(false)
             ->setColumns('col-md-3');
+
+        yield ChoiceField::new('displayMode')
+            ->setChoices([
+            'Classique' => 'classic',
+            'Affiche (flyer)' => 'poster',           
+        ])
+            ->renderExpanded(false);
+        
 
         /*
         ======================================
@@ -160,7 +180,11 @@ final class EventCrudController extends AbstractCrudController
         ONGLET — MENU
         ======================================
         */
+
+       
         yield FormField::addTab('Menu');
+
+        yield FormField::addFieldset('Menu');
 
         yield TextField::new('menuStarter', 'Entrée')
             ->setColumns('col-md-4')
@@ -181,6 +205,16 @@ final class EventCrudController extends AbstractCrudController
             ->setColumns('col-md-4')
             ->hideOnIndex();
 
+       
+
+        yield TextareaField::new('menu', 'Texte libre (optionnel)')
+            ->setColumns('col-md-12')
+            ->setRequired(false)
+            ->hideOnIndex()
+            ->setHelp('Ex: “Ce vendredi : aïoli / dessert maison…”');
+        
+        yield FormField::addFieldset('Prix du menu');
+
         yield MoneyField::new('menuPrice', 'Prix')
             ->setCurrency('EUR')
             ->setStoredAsCents(false)
@@ -189,12 +223,71 @@ final class EventCrudController extends AbstractCrudController
             ->hideOnIndex()
             ->setHelp('Accepte 19,00 ou 19.00');
 
-        yield TextareaField::new('menu', 'Texte libre (optionnel)')
-            ->setColumns('col-md-12')
+
+        yield FormField::addFieldset('Produits / Burgers');
+
+        yield TextField::new('product1Name', 'Produit 1 - nom')
+            ->setColumns('col-md-4')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield MoneyField::new('product1Price', 'Produit 1 - prix')
+            ->setCurrency('EUR')
+            ->setStoredAsCents(false)
+            ->setColumns('col-md-2')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield TextareaField::new('product1Ingredients', 'Produit 1 - ingrédients')
+            ->setColumns('col-md-6')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield TextField::new('product2Name', 'Produit 2 - nom')
+            ->setColumns('col-md-4')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield MoneyField::new('product2Price', 'Produit 2 - prix')
+            ->setCurrency('EUR')
+            ->setStoredAsCents(false)
+            ->setColumns('col-md-2')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield TextareaField::new('product2Ingredients', 'Produit 2 - ingrédients')
+            ->setColumns('col-md-6')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield TextField::new('product3Name', 'Produit 3 - nom')
+            ->setColumns('col-md-4')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield MoneyField::new('product3Price', 'Produit 3 - prix')
+            ->setCurrency('EUR')
+            ->setStoredAsCents(false)
+            ->setColumns('col-md-2')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield TextareaField::new('product3Ingredients', 'Produit 3 - ingrédients')
+            ->setColumns('col-md-6')
+            ->setRequired(false)
+            ->hideOnIndex();
+        
+        yield TextareaField::new('sideDish', 'Accompagnement')
+            ->setColumns('col-md-6')
             ->setRequired(false)
             ->hideOnIndex()
-            ->setHelp('Ex: “Ce vendredi : aïoli / dessert maison…”');
-
+            ->setHelp('Ex : Pommes de terre grenailles sauce fromagère');
+        
+        yield TextareaField::new('offerNote', 'Note / texte libre')
+            ->setColumns('col-md-6')
+            ->setRequired(false)
+            ->hideOnIndex()
+            ->setHelp('Ex : Réservation conseillée, quantité limitée, etc.');
         /*
         ======================================
         ONGLET — VISUELS

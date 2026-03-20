@@ -47,7 +47,6 @@ final class MenuBuilderController extends AbstractController
         return $this->render('admin/menu/builder.html.twig', [
             'rootCategories' => $roots,
             'items' => $items,
-            'csrf' => $this->getCsrfToken('menu_builder'),
         ]);
     }
 
@@ -163,21 +162,28 @@ final class MenuBuilderController extends AbstractController
     }
 
     #[Route('/admin/menu/item/delete', name: 'admin_menu_item_delete', methods: ['POST'])]
-    public function deleteItem(
-        Request $request,
-        EntityManagerInterface $em,
-        MenuItemRepository $itemRepo,
-    ): JsonResponse {
-        $this->validateCsrf($request);
-
-        $id = (int) $request->request->get('id', 0);
-        $item = $itemRepo->find($id);
-        if (!$item) return $this->json(['ok' => false], 404);
-
+    public function deleteItem(Request $request, EntityManagerInterface $em, MenuItemRepository $repo): JsonResponse
+    {
+        if ($csrfError = $this->validateCsrfJson($request)) {
+            return $csrfError;
+        }
+    
+        $id = $request->request->get('id');
+        $item = $repo->find($id);
+    
+        if (!$item) {
+            return $this->json([
+                'ok' => false,
+                'message' => 'Item introuvable',
+            ], 404);
+        }
+    
         $em->remove($item);
         $em->flush();
-
-        return $this->json(['ok' => true]);
+    
+        return $this->json([
+            'ok' => true,
+        ]);
     }
 
     // ===== Variants =====
@@ -231,7 +237,9 @@ final class MenuBuilderController extends AbstractController
         MenuItemVariantRepository $variantRepo,
         EntityManagerInterface $em
     ): JsonResponse {
-        $this->validateCsrf($request);
+        if ($csrfError = $this->validateCsrfJson($request)) {
+            return $csrfError;
+        }
 
         $id = (int) $request->request->get('id', 0);
         $variant = $variantRepo->find($id);
@@ -285,8 +293,17 @@ final class MenuBuilderController extends AbstractController
         }
     }
 
-    private function getCsrfToken(string $id): string
+    private function validateCsrfJson(Request $request): ?JsonResponse
     {
-        return $this->container->get('security.csrf.token_manager')->getToken($id)->getValue();
+        $token = (string) $request->request->get('_token', '');
+
+        if (!$this->isCsrfTokenValid('menu_builder', $token)) {
+            return $this->json([
+                'ok' => false,
+                'message' => 'CSRF invalide',
+            ], 403);
+        }
+
+        return null;
     }
 }

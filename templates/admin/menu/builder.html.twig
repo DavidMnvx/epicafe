@@ -4,14 +4,6 @@
 
 {% block page_content %}
 
-{% block head_stylesheets %}
-  {{ parent() }}
-  <style>
-    
-  </style>
-{% endblock %}
-
-
 <div class="container-fluid menu-builder">
   <div class="row g-3">
 
@@ -168,8 +160,7 @@
             <input class="form-control form-control-sm" data-variant-label value="{{ v.label }}" placeholder="Nom variante (ex: 25 cl)">
           </td>
           <td>
-            <input class="form-control form-control-sm" data-variant-price value="{{ v.price }}" placeholder="Prix">
-          </td>
+          <input class="form-control form-control-sm" data-variant-price value="{{ v.price is not empty ? v.price : (i.price ?? '') }}" placeholder="Prix">          </td>
           <td colspan="2"></td>
           <td class="text-end">
             <button class="btn btn-sm btn-success" type="button" data-variant-save>Enregistrer</button>
@@ -183,7 +174,7 @@
 </tbody>  
             </table>
           </div>
-          <input type="hidden" id="menu_builder_token" value="{{ csrf }}">
+          <input type="hidden" id="menu_builder_token" value="{{ csrf_token('menu_builder') }}">
         </div>
       </div>
     </div>
@@ -196,6 +187,17 @@
 
 
 
+<script>
+window.ROUTES = {
+  admin_menu_category_create: "{{ path('admin_menu_category_create') }}",
+  admin_menu_item_create: "{{ path('admin_menu_item_create') }}",
+  admin_menu_item_update: "{{ path('admin_menu_item_update') }}",
+  admin_menu_item_delete: "{{ path('admin_menu_item_delete') }}",
+  admin_menu_variant_create: "{{ path('admin_menu_variant_create') }}",
+  admin_menu_variant_update: "{{ path('admin_menu_variant_update') }}",
+  admin_menu_variant_delete: "{{ path('admin_menu_variant_delete') }}"
+};
+</script>
 
 <script>
 // ===== Helpers =====
@@ -221,15 +223,109 @@ const post = async (url, data) => {
   return json;
 };
 
-// ===== Add variant row inline (NO prompt, NO reload) =====
-document.querySelectorAll("tr[data-row]").forEach((itemRow) => {
-  const itemId = itemRow.getAttribute("data-id");
-  const btn = itemRow.querySelector("[data-add-variant]");
-  if (!btn) return;
+// ===== Create category =====
+document.querySelector("[data-cat-create]")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.currentTarget;
+  const name = form.querySelector('[name="name"]')?.value.trim();
+  const parentId = document.querySelector("[data-parent-select]")?.value || "";
 
-  btn.addEventListener("click", () => {
-    // évite d’ajouter 10 lignes si spam click
-    if (itemRow.nextElementSibling?.matches('tr[data-variant-row][data-new="1"]')) return;
+  if (!name) {
+    alert("Nom de catégorie requis");
+    return;
+  }
+
+  try {
+    await post(window.ROUTES.admin_menu_category_create, { name, parentId });
+    window.location.reload();
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+// ===== Create item =====
+document.querySelector("[data-item-create]")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.currentTarget;
+
+  const categoryId = form.querySelector('[name="categoryId"]')?.value || "";
+  const name = form.querySelector('[name="name"]')?.value.trim();
+  const unit = form.querySelector('[name="unit"]')?.value.trim();
+  const price = form.querySelector('[name="price"]')?.value.trim();
+
+  if (!categoryId || !name) {
+    alert("Catégorie et nom requis");
+    return;
+  }
+
+  try {
+    await post(window.ROUTES.admin_menu_item_create, {
+      categoryId,
+      name,
+      unit,
+      price,
+    });
+    window.location.reload();
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+// ===== Save item =====
+document.querySelectorAll("tr[data-row]").forEach((row) => {
+  const saveBtn = row.querySelector("[data-save]");
+  const deleteBtn = row.querySelector("[data-delete]");
+  const addVariantBtn = row.querySelector("[data-add-variant]");
+  const status = row.querySelector("[data-status]");
+  const itemId = row.getAttribute("data-id");
+
+  saveBtn?.addEventListener("click", async () => {
+    const data = {
+      id: itemId,
+      categoryId: row.querySelector("[data-category]")?.value || "",
+      name: row.querySelector("[data-name]")?.value.trim() || "",
+      unit: row.querySelector("[data-unit]")?.value.trim() || "",
+      price: row.querySelector("[data-price]")?.value.trim() || "",
+      note: row.querySelector("[data-note]")?.value.trim() || "",
+      position: row.querySelector("[data-position]")?.value.trim() || "0",
+      isPublished: row.querySelector("[data-published]")?.checked ? "1" : "0",
+    };
+
+    status.textContent = "…";
+    try {
+      await post(window.ROUTES.admin_menu_item_update, data);
+      status.textContent = "✅";
+      setTimeout(() => { status.textContent = ""; }, 1500);
+    } catch (err) {
+      status.textContent = "❌";
+      alert(err.message);
+    }
+  });
+
+  deleteBtn?.addEventListener("click", async () => {
+    if (!confirm("Supprimer cet item ?")) return;
+
+    status.textContent = "…";
+    try {
+      await post(window.ROUTES.admin_menu_item_delete, { id: itemId });
+
+      let next = row.nextElementSibling;
+      while (next && next.matches('tr[data-variant-row][data-item-id="' + itemId + '"]')) {
+        const toRemove = next;
+        next = next.nextElementSibling;
+        toRemove.remove();
+      }
+
+      row.remove();
+    } catch (err) {
+      status.textContent = "❌";
+      alert(err.message);
+    }
+  });
+
+  // ===== Add variant row inline (NO prompt, NO reload) =====
+  addVariantBtn?.addEventListener("click", () => {
+    if (row.nextElementSibling?.matches('tr[data-variant-row][data-new="1"]')) return;
 
     const tr = document.createElement("tr");
     tr.className = "table-light";
@@ -253,10 +349,9 @@ document.querySelectorAll("tr[data-row]").forEach((itemRow) => {
       </td>
     `;
 
-    itemRow.insertAdjacentElement("afterend", tr);
+    row.insertAdjacentElement("afterend", tr);
 
-    // actions ligne
-    const status = tr.querySelector("[data-variant-status]");
+    const variantStatus = tr.querySelector("[data-variant-status]");
     tr.querySelector("[data-variant-cancel]")?.addEventListener("click", () => tr.remove());
 
     tr.querySelector("[data-variant-create]")?.addEventListener("click", async () => {
@@ -268,7 +363,7 @@ document.querySelectorAll("tr[data-row]").forEach((itemRow) => {
         return;
       }
 
-      status.textContent = "…";
+      variantStatus.textContent = "…";
       try {
         const json = await post(window.ROUTES.admin_menu_variant_create, {
           itemId,
@@ -276,24 +371,78 @@ document.querySelectorAll("tr[data-row]").forEach((itemRow) => {
           price,
         });
 
-        // devient une ligne “persistée”
         tr.removeAttribute("data-new");
         tr.setAttribute("data-id", json.id);
         tr.querySelector("[data-variant-create]")?.remove();
         tr.querySelector("[data-variant-cancel]")?.remove();
-        status.textContent = "✅";
-
-        // option : remplacer les inputs avec valeurs propres
+        variantStatus.textContent = "✅";
         tr.querySelector("[data-variant-label]").value = json.label ?? "";
         tr.querySelector("[data-variant-price]").value = json.price ?? "";
 
-      } catch (e) {
-        status.textContent = "❌";
-        alert(e.message);
+        const actionsCell = tr.querySelector("td.text-end");
+        if (actionsCell) {
+          actionsCell.insertAdjacentHTML(
+            "afterbegin",
+            '<button class="btn btn-sm btn-success" type="button" data-variant-save>Enregistrer</button> <button class="btn btn-sm btn-outline-danger" type="button" data-variant-delete>Supprimer</button> '
+          );
+          bindVariantRow(tr);
+        }
+      } catch (err) {
+        variantStatus.textContent = "❌";
+        alert(err.message);
       }
     });
   });
 });
+
+// ===== Existing variant rows =====
+function bindVariantRow(row) {
+  const id = row.getAttribute("data-id");
+  const itemId = row.getAttribute("data-item-id");
+  const status = row.querySelector("[data-variant-status]");
+  const saveBtn = row.querySelector("[data-variant-save]");
+  const deleteBtn = row.querySelector("[data-variant-delete]");
+
+  saveBtn?.addEventListener("click", async () => {
+    const label = row.querySelector("[data-variant-label]")?.value.trim() || "";
+    const price = row.querySelector("[data-variant-price]")?.value.trim() || "";
+
+    if (!label) {
+      alert("Nom de variante requis");
+      return;
+    }
+
+    status.textContent = "…";
+    try {
+      await post(window.ROUTES.admin_menu_variant_update, {
+        id,
+        itemId,
+        label,
+        price,
+      });
+      status.textContent = "✅";
+      setTimeout(() => { status.textContent = ""; }, 1500);
+    } catch (err) {
+      status.textContent = "❌";
+      alert(err.message);
+    }
+  });
+
+  deleteBtn?.addEventListener("click", async () => {
+    if (!confirm("Supprimer cette variante ?")) return;
+
+    status.textContent = "…";
+    try {
+      await post(window.ROUTES.admin_menu_variant_delete, { id });
+      row.remove();
+    } catch (err) {
+      status.textContent = "❌";
+      alert(err.message);
+    }
+  });
+}
+
+document.querySelectorAll("tr[data-variant-row]").forEach(bindVariantRow);
 </script>
 
 {% endblock %}

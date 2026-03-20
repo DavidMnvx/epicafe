@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\MenuItemVariantRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MenuItemVariantRepository::class)]
@@ -48,17 +47,51 @@ class MenuItemVariant
         return $this->label ?: 'Variante';
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int 
+    { 
+        return $this->id; 
+    }
 
-    public function getItem(): ?MenuItem { return $this->item; }
-    public function setItem(?MenuItem $item): self { $this->item = $item; return $this; }
+    public function getItem(): ?MenuItem 
+    { 
+        return $this->item; 
+    }
 
-    public function getLabel(): string { return $this->label; }
-    public function setLabel(string $label): self { $this->label = $label; return $this; }
+    public function setItem(?MenuItem $item): self 
+    { 
+        $this->item = $item; return $this; 
+    }
 
-    public function getPrice(): string { return $this->price; }
-    public function setPrice(string $price): self { $this->price = $price; return $this; }
+    public function getLabel(): string 
+    { 
+        return $this->label; 
+    }
 
-    public function getPosition(): int { return $this->position; }
-    public function setPosition(int $position): self { $this->position = $position; return $this; }
+    public function setLabel(string $label): self 
+    { 
+        $this->label = $label; 
+        return $this; 
+    }
+
+    public function getPrice(): ?string 
+    { 
+        return $this->price; 
+    }
+
+    public function setPrice(?string $price): static
+    { 
+        $this->price = $price; 
+        return $this; 
+    }
+
+    public function getPosition(): int 
+    { 
+        return $this->position; 
+    }
+
+    public function setPosition(int $position): self 
+    { 
+        $this->position = $position; 
+        return $this; 
+    }
 }
