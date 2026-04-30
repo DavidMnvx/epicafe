@@ -30,6 +30,9 @@ RUN { \
         echo "date.timezone=Europe/Paris"; \
     } > /usr/local/etc/php/conf.d/app.ini
 
+# Outils utiles à l'entrypoint (postgres-client pour pg_isready)
+RUN apk add --no-cache postgresql-client bash
+
 WORKDIR /app
 
 # -----------------------------------------------------------------------------
@@ -37,11 +40,7 @@ WORKDIR /app
 # -----------------------------------------------------------------------------
 FROM base AS dev
 
-# php.ini développement (assertions on, error reporting verbose)
 RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
-
-# Le code est monté en volume via compose.override.yaml
-# CMD est défini dans compose.yaml (php -S 0.0.0.0:8000 -t public)
 
 # -----------------------------------------------------------------------------
 # Stage VENDOR — install Composer en cache séparé
@@ -67,19 +66,24 @@ FROM base AS prod
 # php.ini production
 RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
-# Variables d'env de build (peuvent être surchargées au run)
+# Variables d'env nécessaires au BUILD uniquement (dummies, écrasés au runtime
+# par les vraies valeurs venant de compose.prod.yaml + Coolify env vars)
 ENV APP_ENV=prod \
     APP_DEBUG=0 \
+    APP_SECRET=build_time_only_dummy_secret_will_be_overridden_at_runtime \
+    DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy?serverVersion=16 \
+    MAILER_DSN=null://null \
+    DEFAULT_URI=http://localhost \
     SERVER_NAME=":80" \
     FRANKENPHP_CONFIG="worker ./public/index.php"
 
 # Récupère le code + vendor depuis le stage vendor
 COPY --from=vendor --chown=www-data:www-data /app /app
 
-# Asset Mapper compile + warmup cache prod
+# Compilation des assets (pas de DB requise) + cache clear
+# cache:warmup et migrations sont déplacés à l'entrypoint (vraies env vars dispo)
 RUN php bin/console asset-map:compile --no-debug \
  && php bin/console cache:clear --no-debug --no-warmup \
- && php bin/console cache:warmup --no-debug \
  && chown -R www-data:www-data var
 
 # Caddyfile minimaliste pour FrankenPHP
@@ -90,9 +94,15 @@ RUN { \
         echo '  php_server'; \
     } > /etc/caddy/Caddyfile
 
+# Entrypoint : attente DB + migrations + warmup cache puis lance FrankenPHP
+COPY docker/entrypoint.prod.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 EXPOSE 80
 EXPOSE 443
 
-# Healthcheck pour Coolify
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
