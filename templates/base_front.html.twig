@@ -15,7 +15,14 @@
   <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
   <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
   <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
-  <meta name="theme-color" content="#2d685f">
+  <meta name="theme-color" content="#f6f2ec">
+
+  {# Critical CSS — évite le FOUC (flash brun avant chargement de la CSS) #}
+  <style>
+    html,body{margin:0;background:#f6f2ec;color:#211d18;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    body{min-height:100vh;background:linear-gradient(180deg,#efe6dc 0%,#f6f2ec 55%,#efe6dc 100%)}
+    .vv-miniHero,.vv-hero{background:#efe6dc}
+  </style>
 
   <!-- Open Graph (Facebook, LinkedIn, WhatsApp, etc.) -->
   <meta property="og:type"        content="website">
