@@ -2,6 +2,10 @@
 {% set bodyClass = 'vv-hero-dark vv-page' %}
 {% block title %}Boutique | L'Épi-Café{% endblock %}
 
+{% block preloads %}
+  <link rel="preload" as="image" href="{{ site_image('banner_shop', 'images/banners-shop.png') }}" fetchpriority="high">
+{% endblock %}
+
 {#
   Placeholder Unsplash par slug — utilisé tant qu'aucune image n'a été uploadée
   via le CRUD admin (ShopCategory > Image). Dès qu'une vraie photo est ajoutée,

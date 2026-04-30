@@ -2,6 +2,10 @@
 {% set bodyClass = 'vv-hero-dark' %}
 {% block title %}Événements | L'Épi-café{% endblock %}
 
+{% block preloads %}
+  <link rel="preload" as="image" href="{{ site_image('banner_events', 'images/banners-events.png') }}" fetchpriority="high">
+{% endblock %}
+
 {% set months = {
   '01':'Janvier', '02':'Février', '03':'Mars', '04':'Avril',
   '05':'Mai', '06':'Juin', '07':'Juillet', '08':'Août',

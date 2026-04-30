@@ -2,6 +2,10 @@
 {% set bodyClass = 'vv-hero-dark vv-hero-img' %}
 {% block title %}Menu | L'Épi-Café{% endblock %}
 
+{% block preloads %}
+  <link rel="preload" as="image" href="{{ site_image('banner_menu', 'images/banners-menu.png') }}" fetchpriority="high">
+{% endblock %}
+
 {# Mapping icône par section (utilisé dans le sommaire et les titres) #}
 {% set sectionIcons = {
   'SNACK':    '🍔',

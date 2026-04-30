@@ -2,6 +2,10 @@
 {% set bodyClass = 'vv-hero-dark vv-page' %}
 {% block title %}Mentions légales | L'Épi-Café{% endblock %}
 
+{% block preloads %}
+  <link rel="preload" as="image" href="{{ site_image('banner_contact', 'images/banners-contact.png') }}" fetchpriority="high">
+{% endblock %}
+
 {% block body %}
 
   {% include 'components/page_banner.html.twig' with {

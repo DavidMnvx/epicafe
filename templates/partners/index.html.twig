@@ -2,6 +2,10 @@
 {% set bodyClass = 'vv-hero-dark' %}
 {% block title %}Partenaires | L'Épi-café{% endblock %}
 
+{% block preloads %}
+  <link rel="preload" as="image" href="{{ site_image('banner_partners', 'images/banners-partners.png') }}" fetchpriority="high">
+{% endblock %}
+
 {% block body %}
   {% include 'components/page_banner.html.twig' with {
     title: 'Partenaires',

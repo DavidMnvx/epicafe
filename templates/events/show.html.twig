@@ -2,6 +2,10 @@
 {% set bodyClass = 'vv-hero-dark' %}
 {% block title %}{{ event.title }} | L'Épi-Café{% endblock %}
 
+{% block preloads %}
+  <link rel="preload" as="image" href="{{ site_image('banner_events', 'images/banners-events.png') }}" fetchpriority="high">
+{% endblock %}
+
 {% block body %}
 
   {# ====== Localisation FR ====== #}
