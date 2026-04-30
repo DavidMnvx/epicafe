@@ -77,10 +77,16 @@ RUN composer install \
 
 # Caddyfile pour FrankenPHP
 RUN { \
-        echo '{$SERVER_NAME}'; \
+        echo '{'; \
+        echo '  frankenphp {'; \
+        echo '    worker /app/public/index.php'; \
+        echo '  }'; \
+        echo '}'; \
+        echo '{$SERVER_NAME} {'; \
         echo '  root * /app/public'; \
         echo '  encode zstd br gzip'; \
         echo '  php_server'; \
+        echo '}'; \
     } > /etc/caddy/Caddyfile
 
 # Entrypoint qui prépare l'app puis lance FrankenPHP
