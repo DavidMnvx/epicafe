@@ -220,30 +220,43 @@
 .vv-miniHero__bg{
   position:absolute;
   inset:0;
-
-  background-image:
-    linear-gradient(rgba(20,60,50,.35), rgba(20,60,50,.25)),
-    var(--vv-miniHero-image);
-
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
+  overflow:hidden;
 
   transform:scale(1.04);
   transition: transform 2.0s ease;
+}
+
+/* Image de fond servie comme <img> pour chargement prioritaire */
+.vv-miniHero__bgImg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+/* Overlay teinté par-dessus l'image */
+.vv-miniHero__bg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(rgba(20,60,50,.35), rgba(20,60,50,.25));
+  pointer-events:none;
 }
 
 .vv-miniHero:hover .vv-miniHero__bg{
   transform:scale(1.02);
 }
 
-/* Overrides par page */
-.vv-miniHero--events .vv-miniHero__bg{ background-position:center 38%; }
-.vv-miniHero--gallery .vv-miniHero__bg{ background-position:center 40%; }
-.vv-miniHero--menu .vv-miniHero__bg{ background-position:center 27%; }
-.vv-miniHero--partners .vv-miniHero__bg{ background-position:center 57%; }
-.vv-miniHero--contact .vv-miniHero__bg{ background-position:center 47%; }
-.vv-miniHero--shop .vv-miniHero__bg{ background-position:center -97%; }
+/* Overrides de cadrage par page */
+.vv-miniHero--events .vv-miniHero__bgImg{ object-position:center 38%; }
+.vv-miniHero--gallery .vv-miniHero__bgImg{ object-position:center 40%; }
+.vv-miniHero--menu .vv-miniHero__bgImg{ object-position:center 27%; }
+.vv-miniHero--partners .vv-miniHero__bgImg{ object-position:center 57%; }
+.vv-miniHero--contact .vv-miniHero__bgImg{ object-position:center 47%; }
+.vv-miniHero--shop .vv-miniHero__bgImg{ object-position:center 0%; }
 
 /* Contenu */
 .vv-miniHero__content{

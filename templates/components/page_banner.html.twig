@@ -1,10 +1,17 @@
 {# templates/components/page_banner.html.twig #}
+{% set _bannerImg = background|default(site_image('banner_events', 'images/banners-events.png')) %}
 
-
-<section class="vv-miniHero {{ bgClass|default('') }}"
-  style="--vv-miniHero-image: url('{{ background|default(site_image('banner_events', 'images/banners-events.png')) }}');"
->
-  <div class="vv-miniHero__bg" aria-hidden="true"></div>
+<section class="vv-miniHero {{ bgClass|default('') }}">
+  <div class="vv-miniHero__bg" aria-hidden="true">
+    <img
+      src="{{ _bannerImg }}"
+      alt=""
+      class="vv-miniHero__bgImg"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    >
+  </div>
 
   <div class="vv-container vv-miniHero__content">
     <nav class="vv-breadcrumb" aria-label="Fil d’Ariane">
