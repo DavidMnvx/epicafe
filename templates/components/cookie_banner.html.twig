@@ -1,0 +1,67 @@
+{# ============================================================
+   Bandeau cookies RGPD — minimaliste, sans dépendance externe.
+
+   À inclure dans base_front.html.twig juste avant </body>.
+
+   Comportement :
+   - Affiché si aucun choix utilisateur stocké
+   - "Tout accepter" : dépose 1 cookie de consentement (1 an)
+   - "Refuser" : dépose 1 cookie de refus (1 an)
+   - "Personnaliser" : ouvre un mini-panel (cookies essentiels obligatoires)
+
+   Si tu ajoutes plus tard Google Analytics ou autre, conditionne
+   leur chargement sur la valeur du cookie 'epc_cookie_consent'.
+   ============================================================ #}
+
+<div id="vv-cookie-banner" class="vv-cookieBanner" role="dialog" aria-labelledby="vv-cookie-title" aria-describedby="vv-cookie-desc" hidden>
+  <div class="vv-cookieBanner__inner">
+    <div class="vv-cookieBanner__text">
+      <h2 id="vv-cookie-title" class="vv-cookieBanner__title">🍪 Cookies & confidentialité</h2>
+      <p id="vv-cookie-desc">
+        Ce site utilise uniquement des cookies <strong>strictement nécessaires</strong> à son fonctionnement
+        (session, sécurité du formulaire de contact). Aucun cookie de mesure d'audience ni de publicité.
+      </p>
+    </div>
+
+    <div class="vv-cookieBanner__actions">
+      <a href="{{ path('legal_privacy') }}" class="vv-cookieBanner__link">En savoir plus</a>
+      <button type="button" class="vv-btn vv-btn--ghost vv-btn--sm" data-cookie-action="reject">Refuser tout</button>
+      <button type="button" class="vv-btn vv-btn--primary vv-btn--sm" data-cookie-action="accept">Tout accepter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var COOKIE_NAME = 'epc_cookie_consent';
+    var ONE_YEAR    = 365 * 24 * 60 * 60;
+    var banner      = document.getElementById('vv-cookie-banner');
+    if (!banner) return;
+
+    function getCookie(name) {
+      var parts = document.cookie.split(';');
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i].trim();
+        if (p.indexOf(name + '=') === 0) return decodeURIComponent(p.substring(name.length + 1));
+      }
+      return null;
+    }
+    function setCookie(name, value) {
+      document.cookie = name + '=' + encodeURIComponent(value) + '; path=/; max-age=' + ONE_YEAR + '; SameSite=Lax; Secure';
+    }
+
+    if (!getCookie(COOKIE_NAME)) {
+      banner.hidden = false;
+      requestAnimationFrame(function () { banner.classList.add('is-visible'); });
+    }
+
+    banner.querySelectorAll('[data-cookie-action]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var choice = btn.getAttribute('data-cookie-action') === 'accept' ? 'accepted' : 'rejected';
+        setCookie(COOKIE_NAME, choice);
+        banner.classList.remove('is-visible');
+        setTimeout(function () { banner.hidden = true; }, 300);
+      });
+    });
+  })();
+</script>

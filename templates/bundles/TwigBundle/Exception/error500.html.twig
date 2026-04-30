@@ -1,0 +1,40 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark vv-page' %}
+{% block title %}Erreur serveur | L'Épi-Café{% endblock %}
+
+{% block body %}
+  <section class="vv-section vv-section--light vv-errorPage">
+    <div class="vv-container vv-errorPage__inner">
+
+      <div class="vv-errorPage__code" aria-hidden="true">500</div>
+
+      <h1 class="vv-errorPage__title">
+        Oups, un imprévu côté serveur
+      </h1>
+
+      <p class="vv-errorPage__text">
+        Le site rencontre une difficulté technique passagère. L'équipe a été prévenue
+        et travaille à rétablir la situation. Merci de réessayer dans quelques instants.
+      </p>
+
+      <div class="vv-errorPage__actions">
+        <a href="{{ path('app_home') }}" class="vv-btn vv-btn--primary">
+          ← Retour à l'accueil
+        </a>
+        <a href="javascript:window.location.reload()" class="vv-btn vv-btn--ghost">
+          Réessayer
+        </a>
+      </div>
+
+      <p class="vv-errorPage__hint">
+        Le problème persiste ?
+        {% if setting('contact_phone') %}
+          Appelez-nous au <a href="tel:{{ setting('contact_phone')|replace({' ':'','.':'','-':''}) }}">{{ setting('contact_phone') }}</a>.
+        {% else %}
+          <a href="{{ path('contact_index') }}#contact">Contactez-nous</a>.
+        {% endif %}
+      </p>
+
+    </div>
+  </section>
+{% endblock %}

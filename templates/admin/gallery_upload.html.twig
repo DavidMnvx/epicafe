@@ -1,27 +1,42 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block content_title %}Upload multiple{% endblock %}
+{% block content_title %}Upload photos{% endblock %}
 
 {% block main %}
   <div class="content-panel">
-    <form method="post" enctype="multipart/form-data">
-      <div class="form-group">
-        <label>Titre (optionnel)</label>
-        <input class="form-control" name="titlePrefix" placeholder="Ex: Fête du village">
-      </div>
+    <form method="post" enctype="multipart/form-data" class="vv-admin-form">
 
-      <div class="form-group">
-        <label>Date (optionnelle)</label>
-        <input class="form-control" type="date" name="takenAt">
-      </div>
+      <fieldset class="form-fieldset">
+        <legend class="form-fieldset-title">Infos (optionnel)</legend>
 
-      <div class="form-group">
-        <label>Photos (sélection multiple)</label>
-        <input class="form-control" type="file" name="photos[files][]" multiple accept="image/*">
-        <small class="text-muted">Tu peux sélectionner 20 photos d’un coup.</small>
-      </div>
+        <div class="form-group">
+          <label class="form-label" for="upload-title">Titre</label>
+          <input id="upload-title" class="form-control" name="titlePrefix" placeholder="Ex : Fête du village">
+          <small class="form-help">Sera utilisé comme préfixe pour chaque photo importée.</small>
+        </div>
 
-      <button class="btn btn-primary">Importer</button>
+        <div class="form-group">
+          <label class="form-label" for="upload-date">Date</label>
+          <input id="upload-date" class="form-control" type="date" name="takenAt">
+          <small class="form-help">Sert au tri chronologique de la galerie.</small>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-fieldset">
+        <legend class="form-fieldset-title">Photos</legend>
+
+        <div class="form-group">
+          <label class="form-label" for="upload-files">Sélection multiple</label>
+          <input id="upload-files" class="form-control" type="file" name="photos[files][]" multiple accept="image/*">
+          <small class="form-help">Tu peux sélectionner jusqu'à 20 photos d'un coup.</small>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">
+          <i class="fa fa-upload"></i> Importer
+        </button>
+      </div>
     </form>
   </div>
 {% endblock %}

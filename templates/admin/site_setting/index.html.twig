@@ -1,0 +1,124 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+  {% set group_labels = constant('App\\Controller\\Admin\\SiteSettingCrudController::GROUP_LABELS') %}
+
+  {% set group_meta = {
+    'contact':    { color: 'success',   icon: 'fa-phone',                desc: 'Coordonnées affichées dans le footer, le formulaire de contact et les boutons "Appeler".' },
+    'social':     { color: 'info',      icon: 'fa-globe',                desc: 'Liens vers les réseaux sociaux et services externes. Vide = ne s\'affiche pas sur le site.' },
+    'navigation': { color: 'primary',   icon: 'fa-compass',              desc: 'Active ou désactive l\'affichage de chaque page dans la barre de navigation. Une page désactivée reste accessible directement (URL) mais n\'est plus listée dans le menu.' },
+    'closure':    { color: 'warning',   icon: 'fa-triangle-exclamation', desc: 'Bandeau d\'information affiché en haut de toutes les pages. Activable/désactivable instantanément.' },
+    'general':    { color: 'secondary', icon: 'fa-gear',                 desc: 'Informations légales et générales du site.' },
+  } %}
+
+  {% if entities|length == 0 %}
+    <div class="no-results">
+      <p>Aucun paramètre trouvé. Lance <code>php bin/console app:site-settings:seed</code> pour les créer.</p>
+    </div>
+  {% else %}
+    {# Regroupement Twig par groupName #}
+    {% set grouped = {} %}
+    {% for entity in entities %}
+      {% set s = entity.instance %}
+      {% set g = s.groupName %}
+      {% set list = grouped[g]|default([]) %}
+      {% set list = list|merge([entity]) %}
+      {% set grouped = grouped|merge({ (g): list }) %}
+    {% endfor %}
+
+    <div class="vv-settings">
+      {% for group_key, list in grouped %}
+        {% set meta = group_meta[group_key]|default({ color: 'secondary', icon: 'fa-circle', desc: '' }) %}
+
+        <section class="vv-settings__group">
+          <header class="vv-settings__head">
+            <div class="vv-settings__headTitle">
+              <i class="fa {{ meta.icon }}"></i>
+              <h2>{{ group_labels[group_key]|default(group_key) }}</h2>
+            </div>
+            {% if meta.desc %}
+              <p class="vv-settings__headDesc">{{ meta.desc }}</p>
+            {% endif %}
+          </header>
+
+          <div class="vv-settings__grid">
+            {% for entity in list %}
+              {% set s = entity.instance %}
+              {% set edit_url = entity.actions.get('edit') ? entity.actions.get('edit').linkUrl : '#' %}
+              {% set toggle_url = entity.actions.get('toggle') ? entity.actions.get('toggle').linkUrl : null %}
+              {% set is_bool = s.type == 'boolean' %}
+              {% set is_empty = s.value is null or s.value == '' %}
+
+              <article class="vv-setting-card vv-setting-card--{{ meta.color }} {{ is_bool and s.asBool ? 'is-on' : '' }} {{ is_empty and not is_bool ? 'is-empty' : '' }}">
+
+                <div class="vv-setting-card__head">
+                  <h3 class="vv-setting-card__label">{{ s.label }}</h3>
+                  {% if is_empty and not is_bool %}
+                    <span class="vv-setting-card__badge vv-setting-card__badge--empty">Non renseigné</span>
+                  {% endif %}
+                </div>
+
+                {% if s.description %}
+                  <p class="vv-setting-card__desc">{{ s.description }}</p>
+                {% endif %}
+
+                <div class="vv-setting-card__body">
+                  {% if is_bool %}
+                    {# Switch toggle pour les booléens #}
+                    {% if toggle_url %}
+                      <a href="{{ toggle_url }}"
+                         class="vv-toggle {{ s.asBool ? 'is-on' : 'is-off' }}"
+                         role="switch"
+                         aria-checked="{{ s.asBool ? 'true' : 'false' }}"
+                         title="{{ s.asBool ? 'Cliquer pour désactiver' : 'Cliquer pour activer' }}">
+                        <span class="vv-toggle__track">
+                          <span class="vv-toggle__thumb"></span>
+                        </span>
+                        <span class="vv-toggle__label">
+                          {{ s.asBool ? 'Activé' : 'Désactivé' }}
+                        </span>
+                      </a>
+                    {% endif %}
+                  {% else %}
+                    {# Affichage de la valeur courante #}
+                    <div class="vv-setting-card__value">
+                      {% if is_empty %}
+                        <span class="vv-setting-card__value--empty"><em>— vide —</em></span>
+                      {% elseif s.type == 'textarea' %}
+                        <pre>{{ s.value }}</pre>
+                      {% elseif s.type == 'url' %}
+                        <a href="{{ s.value }}" target="_blank" rel="noopener" class="vv-setting-card__link">
+                          <i class="fa fa-arrow-up-right-from-square"></i>
+                          <span>{{ s.value|length > 50 ? s.value|slice(0, 50) ~ '…' : s.value }}</span>
+                        </a>
+                      {% elseif s.type == 'email' %}
+                        <a href="mailto:{{ s.value }}" class="vv-setting-card__link">{{ s.value }}</a>
+                      {% elseif s.type == 'tel' %}
+                        <a href="tel:{{ s.value|replace({' ':'','.':'','-':''}) }}" class="vv-setting-card__link">{{ s.value }}</a>
+                      {% else %}
+                        <span>{{ s.value }}</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+
+                <footer class="vv-setting-card__foot">
+                  <span class="vv-setting-card__key">
+                    <i class="fa fa-code"></i> {{ s.key }}
+                  </span>
+                  <a href="{{ edit_url }}" class="vv-setting-card__editBtn">
+                    <i class="fa fa-pen"></i> Modifier
+                  </a>
+                </footer>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% block delete_form %}
+    {{ include('@EasyAdmin/crud/includes/_delete_form.html.twig') }}
+  {% endblock delete_form %}
+{% endblock main %}

@@ -1,0 +1,57 @@
+# =============================================================================
+# Configuration de PRODUCTION pour Coolify.
+# Coolify lit ce fichier quand on configure "Docker Compose" dans le projet.
+# Tous les secrets viennent de variables d'environnement Coolify (.env).
+# =============================================================================
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: "0"
+      APP_SECRET: "${APP_SECRET}"
+      APP_TIMEZONE: Europe/Paris
+      DEFAULT_URI: "${DEFAULT_URI}"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8"
+      MAILER_DSN: "${MAILER_DSN}"
+      TRUSTED_PROXIES: "127.0.0.1,REMOTE_ADDR"
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      # Persistance des uploads utilisateurs (galerie, partenaires, événements, etc.)
+      - epicafe_uploads:/app/public/uploads
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    volumes:
+      - epicafe_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  epicafe_db_data:
+  epicafe_uploads:

@@ -1,0 +1,9 @@
+framework:
+    rate_limiter:
+        # Limite l'envoi du formulaire de contact :
+        # 5 envois maximum par tranche de 10 minutes par IP.
+        # Évite le spam massif si un bot contourne le captcha.
+        contact_form:
+            policy: 'token_bucket'
+            limit: 5
+            rate: { interval: '10 minutes', amount: 1 }

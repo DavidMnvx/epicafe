@@ -1,40 +1,39 @@
 {% extends 'base_front.html.twig' %}
 {% set bodyClass = 'vv-hero-dark' %}
-{% block title %}Contact - Epicafé{% endblock %}
+{% block title %}Contact & accès | L'Épi-Café{% endblock %}
 
 {% block body %}
 
 {% include 'components/page_banner.html.twig' with {
   title: 'Contact & Accès',
   subtitle: 'Nous trouver au cœur du Barroux',
-  background: asset('images/banners-contact.png'),
+  background: site_image('banner_contact', 'images/banners-contact.png'),
   bgClass: 'vv-miniHero--contact'
 } %}
 
 
+{# ============================================================
+   ÉQUIPE — présentation
+   ============================================================ #}
 <section class="vv-section vv-section--cream">
-
   <div class="vv-container">
 
-    <div class="vv-team">
+    <div class="vv-team vv-scroll-reveal">
 
       <div class="vv-team__photo">
-
-        <img 
-          src="{{ asset('images/equipe-epicafe.jpg') }}" 
+        <img
+          src="{{ site_image('contact_team_photo', 'images/equipe-epicafe.jpg') }}"
           alt="L'équipe de l'Épi-Café au Barroux">
-
       </div>
 
-
       <div class="vv-team__content">
-
-        <h2 class="vv-h2">L'équipe de l'Épicafé</h2>
+        <p class="vv-kicker">Qui on est</p>
+        <h2 class="vv-h2">L'équipe de l'Épi-Café</h2>
 
         <p>
-          Derrière l’Épi-Café, il y a avant tout une équipe passionnée
+          Derrière l'Épi-Café, il y a avant tout une équipe passionnée
           qui fait vivre ce lieu au quotidien. Ici, on privilégie
-          l’accueil, la convivialité et les échanges simples,
+          l'accueil, la convivialité et les échanges simples,
           comme dans une vraie épicerie de village.
         </p>
 
@@ -45,26 +44,28 @@
           au cœur du Barroux.
         </p>
 
-        <p >
-          L’Épicafé est avant tout un lieu de rencontre où habitants
+        <p>
+          L'Épi-Café est avant tout un lieu de rencontre où habitants
           et visiteurs se retrouvent autour des saveurs du terroir
           et de la vie du village.
         </p>
-
       </div>
 
     </div>
 
   </div>
-
 </section>
 
+{# ============================================================
+   HORAIRES, CONTACT & ACCÈS
+   ============================================================ #}
 <section id="contact" class="vv-section vv-section--light">
   <div class="vv-container">
 
     <div class="vv-section__head vv-scroll-reveal">
-      <h2 class="vv-h2">Horaires & Contact</h2>
-      <p class="vv-lead">Nous sommes là pour vous servir</p>
+      <p class="vv-kicker">Nous trouver</p>
+      <h2 class="vv-h2">Horaires, contact & accès</h2>
+      <p class="vv-lead">Au cœur du Barroux, ouvert presque tous les jours.</p>
     </div>
 
     <div class="vv-contactLayout vv-scroll-reveal">
@@ -110,20 +111,55 @@
         <div class="vv-panel">
           <h3 class="vv-h3">Nous contacter</h3>
 
-          <form class="vv-form" method="post" action="#">
+          {# Messages flash après soumission #}
+          {% for msg in app.flashes('contact_success') %}
+            <div class="vv-formAlert vv-formAlert--success" role="status">
+              <span aria-hidden="true">✓</span>
+              <span>{{ msg }}</span>
+            </div>
+          {% endfor %}
+
+          {% for msg in app.flashes('contact_error') %}
+            <div class="vv-formAlert vv-formAlert--error" role="alert">
+              <span aria-hidden="true">⚠</span>
+              <span>{{ msg }}</span>
+            </div>
+          {% endfor %}
+
+          <form class="vv-form" method="post" action="{{ path('contact_send') }}#contact">
+            <input type="hidden" name="_token" value="{{ csrf_token('contact_send') }}">
+
+            {# Honeypot anti-spam : champ caché que les vrais visiteurs ne remplissent jamais #}
+            <div class="vv-form__honeypot" aria-hidden="true">
+              <label for="website-bot">Site web</label>
+              <input type="text" name="website" id="website-bot" tabindex="-1" autocomplete="off">
+            </div>
+
             <label>
               <span>Nom</span>
-              <input type="text" name="name" required>
+              <input type="text" name="name" required maxlength="120" autocomplete="name">
             </label>
 
             <label>
               <span>Email</span>
-              <input type="email" name="email" required>
+              <input type="email" name="email" required autocomplete="email">
             </label>
 
             <label>
               <span>Message</span>
-              <textarea name="message" rows="5" required></textarea>
+              <textarea name="message" rows="5" required minlength="5" maxlength="5000"></textarea>
+            </label>
+
+            {# Captcha math anti-bot — accessible (lecteur d'écran lit la question) #}
+            <label class="vv-form__captcha">
+              <span>{{ captchaQuestion }} <small>(anti-spam)</small></span>
+              <input type="text"
+                     name="captcha_answer"
+                     required
+                     inputmode="numeric"
+                     pattern="-?[0-9]+"
+                     autocomplete="off"
+                     placeholder="Votre réponse">
             </label>
 
             <button class="vv-btn vv-btn--primary vv-btn--full" type="submit">
@@ -134,20 +170,88 @@
       </div>
     </div>
 
+    {# ============================================================
+       CARTE — placeholder RGPD-friendly
+       L'iframe Google Maps charge des cookies tiers, donc on attend
+       le clic explicite de l'utilisateur avant de l'injecter.
+       ============================================================ #}
+    {% set mapsUrl = setting('social_google_maps', 'https://maps.google.com/?q=56+Chemin+Neuf+84330+Le+Barroux') %}
+    {% set mapsEmbedUrl = 'https://www.google.com/maps?q=56%20Chemin%20Neuf%2C%2084330%20Le%20Barroux&output=embed' %}
+
     <div class="vv-contactMapWrap vv-scroll-reveal">
-      <div class="vv-map">
-        <iframe
-          src="https://www.google.com/maps?q=56%20Chemin%20Neuf%2C%2084330%20Le%20Barroux&output=embed"
-          width="100%"
-          height="100%"
-          style="border:0;"
-          allowfullscreen
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          title="Épicafé - Le Barroux">
-        </iframe>
+      <div class="vv-mapConsent" data-map-consent data-embed-url="{{ mapsEmbedUrl }}">
+
+        {# Vue par défaut : aucun appel à Google #}
+        <div class="vv-mapConsent__placeholder" data-map-placeholder>
+          <div class="vv-mapConsent__decor" aria-hidden="true">
+            <span class="vv-mapConsent__pin">📍</span>
+          </div>
+
+          <div class="vv-mapConsent__content">
+            <p class="vv-kicker">Localisation</p>
+            <h3 class="vv-mapConsent__title">L'Épi-Café</h3>
+            <p class="vv-mapConsent__address">
+              56 Chemin Neuf<br>
+              84330 Le Barroux
+            </p>
+
+            <p class="vv-mapConsent__notice">
+              <i class="fa fa-shield-halved" aria-hidden="true"></i>
+              <span>
+                Pour respecter votre vie privée, la carte interactive ne se charge qu'à votre demande.
+                <strong>Google peut déposer des cookies tiers</strong> une fois activée.
+              </span>
+            </p>
+
+            <div class="vv-mapConsent__actions">
+              <button type="button"
+                      class="vv-btn vv-btn--primary"
+                      data-map-load>
+                <i class="fa fa-map" aria-hidden="true"></i>
+                Charger la carte Google
+              </button>
+
+              <a href="{{ mapsUrl }}"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 class="vv-btn vv-btn--ghost">
+                <i class="fa fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                Ouvrir dans Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
+
+    <script>
+      (function() {
+        const root = document.querySelector('[data-map-consent]');
+        if (!root) return;
+        const btn = root.querySelector('[data-map-load]');
+        const placeholder = root.querySelector('[data-map-placeholder]');
+        const embedUrl = root.dataset.embedUrl;
+
+        if (!btn || !placeholder || !embedUrl) return;
+
+        btn.addEventListener('click', function() {
+          const iframe = document.createElement('iframe');
+          iframe.src = embedUrl;
+          iframe.title = 'Épi-Café — Le Barroux (Google Maps)';
+          iframe.loading = 'lazy';
+          iframe.allowFullscreen = true;
+          iframe.referrerPolicy = 'no-referrer-when-downgrade';
+          iframe.style.border = '0';
+          iframe.style.width = '100%';
+          iframe.style.height = '100%';
+
+          // On remplace le placeholder par l'iframe
+          placeholder.replaceWith(iframe);
+          root.classList.add('is-loaded');
+        });
+      })();
+    </script>
 
   </div>
 </section>

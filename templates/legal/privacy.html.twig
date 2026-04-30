@@ -1,0 +1,146 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark vv-page' %}
+{% block title %}Politique de confidentialité | L'Épi-Café{% endblock %}
+
+{% block body %}
+
+  {% include 'components/page_banner.html.twig' with {
+    title: 'Politique de confidentialité',
+    subtitle: 'Comment nous gérons vos données personnelles.',
+    background: site_image('banner_contact', 'images/banners-contact.png'),
+    bgClass: 'vv-miniHero--legal'
+  } %}
+
+  <section class="vv-section vv-section--light">
+    <div class="vv-container vv-legal">
+
+      <p class="vv-legal__intro">
+        L'Épi-Café s'engage à respecter la vie privée des visiteurs du site et à protéger leurs données personnelles
+        conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi française "Informatique et Libertés".
+      </p>
+
+      <h2>1. Responsable du traitement</h2>
+      <p>
+        {% if setting('site_owner_name') %}
+          <strong>{{ setting('site_owner_name') }}</strong> —
+        {% endif %}
+        L'Épi-Café{% if setting('contact_address') %}, {{ setting('contact_address')|replace({"\n": ', '}) }}{% endif %}.
+        {% if setting('contact_email') %}
+          Contact :
+          <a href="mailto:{{ setting('contact_email') }}">{{ setting('contact_email') }}</a>.
+        {% endif %}
+      </p>
+
+      <h2>2. Données collectées</h2>
+      <p>Le site collecte uniquement les données nécessaires au fonctionnement de ses services :</p>
+      <ul>
+        <li>
+          <strong>Formulaire de contact</strong> : nom, adresse email, contenu du message.
+          Ces données sont utilisées uniquement pour répondre à votre demande.
+        </li>
+        <li>
+          <strong>Données de connexion (logs serveur)</strong> : adresse IP, type de navigateur, pages visitées.
+          Conservées 12 mois maximum à des fins de sécurité et de mesure d'audience.
+        </li>
+      </ul>
+      <p>
+        Aucune autre donnée n'est collectée sans votre consentement explicite.
+      </p>
+
+      <h2>3. Finalités du traitement</h2>
+      <ul>
+        <li>Répondre à votre demande de contact</li>
+        <li>Assurer la sécurité du site (détection d'abus, prévention du spam)</li>
+        <li>Améliorer le fonctionnement du site (mesure d'audience anonyme)</li>
+      </ul>
+
+      <h2>4. Base légale</h2>
+      <p>
+        Le traitement des données du formulaire de contact repose sur votre <strong>consentement</strong>
+        (envoi du formulaire = consentement explicite). Les logs serveur reposent sur l'<strong>intérêt légitime</strong>
+        de l'éditeur à assurer la sécurité de son site.
+      </p>
+
+      <h2>5. Durée de conservation</h2>
+      <ul>
+        <li>Messages du formulaire de contact : <strong>12 mois</strong> après la dernière interaction</li>
+        <li>Logs serveur : <strong>12 mois</strong></li>
+      </ul>
+
+      <h2>6. Destinataires des données</h2>
+      <p>
+        Vos données ne sont <strong>jamais cédées, vendues ni partagées</strong> avec des tiers à des fins commerciales.
+        Seuls le responsable du site et son hébergeur ({{ setting('legal_hosting_name', '— hébergeur —') }}) ont accès aux données techniques nécessaires au fonctionnement.
+      </p>
+
+      <h2>7. Cookies</h2>
+      <p>
+        Le site utilise uniquement des <strong>cookies techniques essentiels</strong> à son fonctionnement :
+      </p>
+      <ul>
+        <li>Session de navigation (PHPSESSID) — nécessaire au formulaire de contact (jeton CSRF, captcha anti-spam, messages de confirmation)</li>
+        <li>Authentification de l'administrateur sur la zone d'administration (uniquement pour le gérant)</li>
+      </ul>
+      <p>
+        Ces cookies ne nécessitent pas de consentement préalable car ils sont strictement nécessaires
+        à la fourniture du service demandé (article 82 de la loi Informatique et Libertés).
+        <strong>Aucun cookie de tracking, de publicité ou d'analyse tiers n'est déposé par défaut.</strong>
+      </p>
+
+      <h3 style="margin-top: 1.5rem;">Carte Google Maps (page Contact)</h3>
+      <p>
+        La carte interactive de localisation utilise un service de Google qui peut déposer des cookies
+        tiers (<code>NID</code>, <code>OGPC</code>, etc.). Pour respecter votre vie privée,
+        <strong>cette carte n'est pas chargée automatiquement</strong> : un placeholder s'affiche à la place,
+        et l'iframe Google Maps n'est activée qu'après un <strong>clic explicite</strong> de votre part
+        sur le bouton "Charger la carte Google".
+      </p>
+      <p>
+        Si vous ne souhaitez pas voir vos données partagées avec Google, utilisez le lien
+        "Ouvrir dans Google Maps" qui vous redirige vers le site Google sans rien charger sur cette page.
+      </p>
+
+      <h3 style="margin-top: 1.5rem;">Polices Google Fonts</h3>
+      <p>
+        Le site charge ses polices typographiques (Playfair Display, Inter) depuis le service Google Fonts.
+        Ce service ne dépose pas de cookie, mais transmet l'adresse IP du visiteur à Google
+        au moment du chargement initial. Cette pratique est tolérée en France.
+      </p>
+
+      <h2>8. Vos droits</h2>
+      <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+      <ul>
+        <li><strong>Droit d'accès</strong> : connaître les données vous concernant</li>
+        <li><strong>Droit de rectification</strong> : corriger une donnée inexacte</li>
+        <li><strong>Droit à l'effacement</strong> : demander la suppression de vos données</li>
+        <li><strong>Droit d'opposition</strong> : refuser le traitement de vos données</li>
+        <li><strong>Droit à la portabilité</strong> : recevoir vos données dans un format réutilisable</li>
+        <li><strong>Droit de réclamation</strong> auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener">www.cnil.fr</a>)</li>
+      </ul>
+
+      <h2>9. Comment exercer vos droits</h2>
+      <p>
+        Pour exercer ces droits, contactez-nous par email à
+        {% if setting('contact_email') %}
+          <a href="mailto:{{ setting('contact_email') }}">{{ setting('contact_email') }}</a>
+        {% else %}
+          <em>(email à renseigner dans l'admin)</em>
+        {% endif %}
+        ou par courrier à l'adresse postale indiquée dans les
+        <a href="{{ path('legal_mentions') }}">mentions légales</a>.
+        Une réponse vous sera apportée sous un délai d'un mois maximum.
+      </p>
+
+      <h2>10. Modifications</h2>
+      <p>
+        Cette politique peut être mise à jour. La date de dernière modification est indiquée ci-dessous.
+      </p>
+
+      <p class="vv-legal__updated">
+        Dernière mise à jour : {{ "now"|date("d/m/Y") }}
+      </p>
+
+    </div>
+  </section>
+
+{% endblock %}

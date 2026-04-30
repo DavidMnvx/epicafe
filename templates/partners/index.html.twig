@@ -1,38 +1,65 @@
 {% extends 'base_front.html.twig' %}
 {% set bodyClass = 'vv-hero-dark' %}
-{% block title %}Partenaires | Épicafé{% endblock %}
+{% block title %}Partenaires | L'Épi-café{% endblock %}
 
 {% block body %}
   {% include 'components/page_banner.html.twig' with {
     title: 'Partenaires',
     subtitle: 'Caves & domaines sélectionnés — terroir, conseil, convivialité.',
-    background: asset('images/banners-partners.png'),
+    background: site_image('banner_partners', 'images/banners-partners.png'),
     bgClass: 'vv-miniHero--partners'
   } %}
 
-<section id="partners" class="vv-section vv-section--light">
+{# ============================================================
+   INTRO — philosophie des partenariats
+   ============================================================ #}
+<section class="vv-section vv-section--light">
+  <div class="vv-container">
+    <div class="vv-partnersIntro vv-scroll-reveal">
+      <p class="vv-kicker">Avec qui on travaille</p>
+      <h1 class="vv-h2 vv-partnersIntro__title">Des producteurs qu'on connaît, qu'on aime, qu'on recommande</h1>
+      <p class="vv-lead">
+        À l'Épi-Café, on ne vend pas pour vendre. Les caves, domaines et producteurs présentés ici
+        sont des partenaires de longue date — choisis pour leur savoir-faire, leur proximité,
+        et le plaisir qu'on a à partager leurs produits.
+      </p>
+    </div>
+  </div>
+</section>
+
+{% set hasPremium = false %}
+{% set hasStandard = false %}
+{% set hasSecondary = false %}
+
+{# ============================================================
+   PREMIUM — domaines mis à l'honneur
+   ============================================================ #}
+{% set premiumPartners = [] %}
+{% for p in partners %}
+  {% if p.isPublished and p.type == 'premium' %}
+    {% set premiumPartners = premiumPartners|merge([p]) %}
+  {% endif %}
+{% endfor %}
+
+{% if premiumPartners|length > 0 %}
+  {% set hasPremium = true %}
+<section id="partners" class="vv-section vv-section--cream">
   <div class="vv-container">
 
     <div class="vv-section__head vv-scroll-reveal">
-      
-      <h2 class="vv-lead">Caves & domaines sélectionnés — terroir, conseil, convivialité.</h2>
+      <p class="vv-kicker">À l'honneur</p>
+      <h2 class="vv-h2">Nos domaines partenaires</h2>
+      <p class="vv-lead">Des maisons avec qui on collabore au quotidien — vins, huiles, savoir-faire du terroir.</p>
     </div>
 
-    {# ===== PREMIUM ===== #}
     {% set premiumIndex = 0 %}
-    {% set hasPremium = false %}
-    {% set hasStandard = false %}
-    {% set hasSecondary = false %}
-
     <div class="vv-partnersPremium">
-      {% for p in partners %}
-        {% if p.isPublished and p.type == 'premium' %}
-          {% set hasPremium = true %}
+      {% for p in premiumPartners %}
           {% set premiumIndex = premiumIndex + 1 %}
 
           <article class="vv-partnerBlock vv-scroll-reveal {{ (premiumIndex is even) ? 'is-reversed' : '' }}">
             <div class="vv-partnerBlock__text">
-              <div class="vv-kicker">PARTENAIRE</div>
+              <p class="vv-kicker">Domaine partenaire</p>
 
               <h3 class="vv-partnerBlock__title">{{ p.name }}</h3>
 
@@ -95,16 +122,36 @@
               </div>
             </div>
           </article>
-        {% endif %}
       {% endfor %}
     </div>
 
-    {# ===== STANDARD ===== #}
-    <div class="vv-partnersStandard">
-      {% for p in partners %}
-        {% if p.isPublished and p.type == 'standard' %}
-          {% set hasStandard = true %}
+  </div>
+</section>
+{% endif %}
 
+{# ============================================================
+   STANDARD — partenaires locaux
+   ============================================================ #}
+{% set standardPartners = [] %}
+{% for p in partners %}
+  {% if p.isPublished and p.type == 'standard' %}
+    {% set standardPartners = standardPartners|merge([p]) %}
+  {% endif %}
+{% endfor %}
+
+{% if standardPartners|length > 0 %}
+  {% set hasStandard = true %}
+<section class="vv-section vv-section--light">
+  <div class="vv-container">
+
+    <div class="vv-section__head vv-scroll-reveal">
+      <p class="vv-kicker">Collaborations</p>
+      <h2 class="vv-h2">Partenaires locaux</h2>
+      <p class="vv-lead">Producteurs et acteurs du territoire avec qui on travaille régulièrement.</p>
+    </div>
+
+    <div class="vv-partnersStandard">
+      {% for p in standardPartners %}
           {% set standardImage =
             p.heroImageFileName
               ? asset('uploads/partners/' ~ p.heroImageFileName)
@@ -123,7 +170,7 @@
             </div>
 
             <div class="vv-partnerStandard__content">
-              <div class="vv-kicker">PARTENAIRE</div>
+              <p class="vv-kicker">Partenaire local</p>
               <h3 class="vv-partnerStandard__title">{{ p.name }}</h3>
 
               {% if p.description %}
@@ -137,74 +184,103 @@
               {% endif %}
             </div>
           </article>
-        {% endif %}
       {% endfor %}
     </div>
 
-    {# ===== SECONDARY ===== #}
+  </div>
+</section>
+{% endif %}
+
+{# ============================================================
+   SECONDARY — autres maisons
+   ============================================================ #}
+{% set secondaryPartners = [] %}
+{% for p in partners %}
+  {% if p.isPublished and p.type in ['secondary', 'partner'] %}
+    {% set secondaryPartners = secondaryPartners|merge([p]) %}
+  {% endif %}
+{% endfor %}
+
+{% if secondaryPartners|length > 0 %}
+  {% set hasSecondary = true %}
+<section class="vv-section vv-section--cream">
+  <div class="vv-container">
+
     <div class="vv-partnersMiniWrap">
       <div class="vv-section__head vv-scroll-reveal">
-        <h3 class="vv-h3">Autres partenaires</h3>
-        <p class="vv-lead">Une sélection de domaines, caves et maisons locales.</p>
+        <p class="vv-kicker">Et aussi</p>
+        <h2 class="vv-h2">Autres maisons & domaines</h2>
+        <p class="vv-lead">Une sélection complémentaire de caves, producteurs et savoir-faire locaux.</p>
       </div>
 
       <div class="vv-partnersMiniGrid">
-        {% for p in partners %}
-          {% if p.isPublished and p.type in ['secondary', 'partner'] %}
-            {% set hasSecondary = true %}
+        {% for p in secondaryPartners %}
+          {% set miniImage =
+            p.heroImageFileName
+              ? asset('uploads/partners/' ~ p.heroImageFileName)
+              : asset('images/partner-hero-placeholder.jpg')
+          %}
 
-            {% set miniImage =
-              p.heroImageFileName
-                ? asset('uploads/partners/' ~ p.heroImageFileName)
-                : asset('images/partner-hero-placeholder.jpg')
-            %}
-
-            {% if p.websiteUrl %}
-              <a class="vv-partnerMiniCard vv-scroll-reveal" href="{{ p.websiteUrl }}" target="_blank" rel="noreferrer">
-                <div class="vv-partnerMiniCard__media">
-                  <img src="{{ miniImage }}" alt="{{ p.name|e }}">
-                </div>
-                <div class="vv-partnerMiniCard__body">
-                  <h4>{{ p.name }}</h4>
-                  {% if p.description %}
-                    <p>{% set text = p.description %}
-                        {% if text|length > 90 %}
-                          {{ text|slice(0, 90)|split(' ')|slice(0, -1)|join(' ') ~ '…' }}
-                        {% else %}
-                          {{ text }}
-                        {% endif %}
-                    </p>
-                  {% endif %}
-                </div>
-              </a>
-            {% else %}
-              <article class="vv-partnerMiniCard vv-scroll-reveal">
-                <div class="vv-partnerMiniCard__media">
-                  <img src="{{ miniImage }}" alt="{{ p.name|e }}">
-                </div>
-                <div class="vv-partnerMiniCard__body">
-                  <h4>{{ p.name }}</h4>
-                  {% if p.description %}
-                    <p>{% set text = p.description %}
-                        {% if text|length > 90 %}
-                          {{ text|slice(0, 90)|split(' ')|slice(0, -1)|join(' ') ~ '…' }}
-                        {% else %}
-                          {{ text }}
-                        {% endif %}
-                      </p>
-                  {% endif %}
-                </div>
-              </article>
-            {% endif %}
+          {% if p.websiteUrl %}
+            <a class="vv-partnerMiniCard vv-scroll-reveal" href="{{ p.websiteUrl }}" target="_blank" rel="noreferrer">
+              <div class="vv-partnerMiniCard__media">
+                <img src="{{ miniImage }}" alt="{{ p.name|e }}">
+              </div>
+              <div class="vv-partnerMiniCard__body">
+                <h4>{{ p.name }}</h4>
+                {% if p.description %}
+                  <p>
+                    {%- set text = p.description -%}
+                    {%- if text|length > 90 -%}
+                      {{ text|slice(0, 90)|split(' ')|slice(0, -1)|join(' ') ~ '…' }}
+                    {%- else -%}
+                      {{ text }}
+                    {%- endif -%}
+                  </p>
+                {% endif %}
+              </div>
+            </a>
+          {% else %}
+            <article class="vv-partnerMiniCard vv-scroll-reveal">
+              <div class="vv-partnerMiniCard__media">
+                <img src="{{ miniImage }}" alt="{{ p.name|e }}">
+              </div>
+              <div class="vv-partnerMiniCard__body">
+                <h4>{{ p.name }}</h4>
+                {% if p.description %}
+                  <p>
+                    {%- set text = p.description -%}
+                    {%- if text|length > 90 -%}
+                      {{ text|slice(0, 90)|split(' ')|slice(0, -1)|join(' ') ~ '…' }}
+                    {%- else -%}
+                      {{ text }}
+                    {%- endif -%}
+                  </p>
+                {% endif %}
+              </div>
+            </article>
           {% endif %}
         {% endfor %}
       </div>
     </div>
 
-    {% if not hasPremium and not hasStandard and not hasSecondary %}
-      <p class="vv-muted" style="margin-top:1rem;">Aucun partenaire publié pour le moment.</p>
-    {% endif %}
-
   </div>
 </section>
+{% endif %}
+
+{# ============================================================
+   ÉTAT VIDE
+   ============================================================ #}
+{% if not hasPremium and not hasStandard and not hasSecondary %}
+<section class="vv-section vv-section--light">
+  <div class="vv-container">
+    <div class="vv-emptyBlock vv-scroll-reveal">
+      <span class="vv-emptyBlock__icon">🤝</span>
+      <h3>Aucun partenaire publié pour le moment</h3>
+      <p>Les partenaires de l'Épi-Café seront présentés ici très bientôt.</p>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 {% endblock %}

@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\GalleryPhoto;
-use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
@@ -12,9 +16,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
 
 final class GalleryPhotoCrudController extends AbstractCrudController
 {
+    use PublishableBatchActionsTrait;
+
     public static function getEntityFqcn(): string
     {
         return GalleryPhoto::class;
@@ -25,57 +33,74 @@ final class GalleryPhotoCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Photo')
             ->setEntityLabelInPlural('Galerie')
-            ->setDefaultSort(['takenAt' => 'DESC']);
+            ->setDefaultSort(['takenAt' => 'DESC'])
+            ->setSearchFields(['title'])
+            ->showEntityActionsInlined();
     }
 
-    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    public function configureActions(Actions $actions): Actions
     {
-        if ($entityInstance instanceof GalleryPhoto) {
-            $entityInstance->touch();
-        }
-        parent::persistEntity($entityManager, $entityInstance);
+        $actions = $actions
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $a) => $a->setLabel('Nouvelle photo'));
+
+        return $this->addPublishableBatchActions($actions);
     }
 
-    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    public function configureFilters(Filters $filters): Filters
     {
-        if ($entityInstance instanceof GalleryPhoto) {
-            $entityInstance->touch();
-        }
-        parent::updateEntity($entityManager, $entityInstance);
+        return $filters
+            ->add(BooleanFilter::new('isPublished', 'Publié'))
+            ->add(DateTimeFilter::new('takenAt', 'Prise le'));
     }
 
     public function configureFields(string $pageName): iterable
     {
-        yield FormField::addTab('Infos');
-
+        // ===== Colonnes d'index =====
         yield IdField::new('id')->onlyOnIndex();
-
-        // ✅ Aperçu (index)
         yield ImageField::new('fileName', 'Aperçu')
             ->setBasePath('uploads/gallery')
             ->onlyOnIndex();
+        yield TextField::new('title', 'Titre')->onlyOnIndex();
+        yield DateField::new('takenAt', 'Date')->onlyOnIndex();
+        yield BooleanField::new('isPublished', 'Publié')->onlyOnIndex();
+
+        // ===== Formulaire =====
+        yield FormField::addTab('Infos')
+            ->setIcon('fa fa-circle-info')
+            ->setHelp(
+                'Pour IMPORTER plusieurs photos d’un coup, utilise "Upload photos" dans le menu de gauche. '
+                . 'Cette page sert à éditer le titre, la date et la publication d’une photo déjà importée.'
+            );
 
         yield TextField::new('title', 'Titre')
-            ->setColumns('col-md-6');
+            ->setColumns('col-md-6')
+            ->setHelp('Titre affiché au survol de la photo sur le site (ex : "Fête du village 2024").')
+            ->onlyOnForms();
 
-        yield DateField::new('takenAt', 'Date')
-            ->setHelp('Optionnel (sert pour le tri chronologique)')
-            ->setColumns('col-md-3');
+        yield DateField::new('takenAt', 'Date de la photo')
+            ->setHelp('Optionnel — sert au tri chronologique de la galerie (les plus récentes en premier).')
+            ->setColumns('col-md-3')
+            ->onlyOnForms();
 
-        // ✅ Statut publication (je te conseille de le garder)
-        // Si tu veux le retirer complètement -> supprime ces 2 lignes
         yield BooleanField::new('isPublished', 'Publié')
             ->renderAsSwitch(false)
-            ->setColumns('col-md-3');
+            ->setColumns('col-md-3')
+            ->setHelp('Décoche pour cacher cette photo de la galerie publique.')
+            ->onlyOnForms();
 
-        // ✅ Aperçu en édition (lecture seule)
-        yield FormField::addTab('Image');
+        yield FormField::addTab('Image')
+            ->setIcon('fa fa-image')
+            ->setHelp(
+                'Le fichier image ne peut pas être modifié ici. '
+                . 'Pour remplacer une photo : supprime-la puis ré-importe la nouvelle via "Upload photos". '
+                . 'Tailles recommandées : 1600 px de large, JPG ou WebP, max 500 Ko. '
+                . 'Les photos plus grandes sont acceptées mais ralentissent le site.'
+            );
 
         yield TextField::new('fileName', 'Fichier')
-            ->onlyOnForms()
             ->setFormTypeOption('disabled', true)
-            ->setHelp('Upload via "Upload multiple" (menu admin).');
-
-       
+            ->setHelp('Nom du fichier sur le serveur (lecture seule). Pour importer de nouvelles photos, utilise "Upload photos" dans le menu.')
+            ->onlyOnForms();
     }
 }

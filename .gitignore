@@ -11,9 +11,23 @@
 .env.local
 .env.*.local
 .env.test.local
+.env.prod
+.env.production
 
 ### Secrets ###
 config/secrets/prod/prod.decrypt.private.php
+
+### Uploads utilisateurs (persistés via volume Docker en prod) ###
+/public/uploads/events/*
+/public/uploads/gallery/*
+/public/uploads/partners/*
+/public/uploads/shop/*
+/public/uploads/site/*
+!/public/uploads/events/.gitkeep
+!/public/uploads/gallery/.gitkeep
+!/public/uploads/partners/.gitkeep
+!/public/uploads/shop/.gitkeep
+!/public/uploads/site/.gitkeep
 
 ### IDE ###
 /.idea/

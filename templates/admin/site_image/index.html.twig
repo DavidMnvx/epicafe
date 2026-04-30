@@ -1,0 +1,78 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+  {% set entity_class = entities|length > 0 ? entities|first.name : '' %}
+
+  {% if entities|length == 0 %}
+    <div class="no-results">
+      <p>Aucun emplacement d'image. Lance <code>php bin/console app:site-images:seed</code>.</p>
+    </div>
+  {% else %}
+    <div class="vv-site-images-grid">
+      {% for entity in entities %}
+        {% set image = entity.instance %}
+        {% set edit_action = entity.actions.get('edit') %}
+        {% set preview_url = null %}
+
+        {% if image.fileName %}
+          {% set preview_url = asset('uploads/site/' ~ image.fileName) %}
+        {% elseif image.fallbackPath %}
+          {% set preview_url = asset(image.fallbackPath) %}
+        {% endif %}
+
+        <article class="vv-site-image-card">
+          <a class="vv-site-image-card__preview"
+             href="{{ edit_action ? edit_action.linkUrl : '#' }}"
+             aria-label="Modifier {{ image.label }}">
+            {% if preview_url %}
+              <img src="{{ preview_url }}" alt="{{ image.label }}" loading="lazy">
+            {% else %}
+              <div class="vv-site-image-card__placeholder">
+                <i class="fa fa-image"></i>
+              </div>
+            {% endif %}
+
+            <span class="vv-site-image-card__status
+              {{ image.fileName ? 'is-custom' : 'is-default' }}">
+              {{ image.fileName ? 'Personnalisée' : 'Par défaut' }}
+            </span>
+          </a>
+
+          <div class="vv-site-image-card__body">
+            <h3 class="vv-site-image-card__title">{{ image.label }}</h3>
+            <code class="vv-site-image-card__slug">{{ image.slug }}</code>
+
+            {% if image.description %}
+              <p class="vv-site-image-card__desc">{{ image.description }}</p>
+            {% endif %}
+
+            <div class="vv-site-image-card__meta">
+              <span>
+                <i class="fa fa-clock"></i>
+                {{ image.updatedAt|format_datetime('short', 'short', locale='fr') }}
+              </span>
+            </div>
+          </div>
+
+          <div class="vv-site-image-card__actions">
+            {% if edit_action %}
+              <a href="{{ edit_action.linkUrl }}" class="btn btn-primary">
+                <i class="fa fa-pen"></i> Modifier l'image
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if paginator.hasPreviousPage or paginator.hasNextPage %}
+      <div class="datagrid-pagination-wrapper mt-4">
+        {{ include('@EasyAdmin/crud/paginator.html.twig') }}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% block delete_form %}
+    {{ include('@EasyAdmin/crud/includes/_delete_form.html.twig') }}
+  {% endblock delete_form %}
+{% endblock main %}

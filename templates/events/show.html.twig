@@ -1,221 +1,143 @@
 {% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark' %}
 {% block title %}{{ event.title }} | L'Épi-Café{% endblock %}
 
 {% block body %}
-<section class="vv-section vv-section--light">
-  <div class="vv-container">
 
-    {# ====== Date FR (sans intl) ====== #}
-    {% set monthsLong = {
-      1:'janvier',2:'février',3:'mars',4:'avril',5:'mai',6:'juin',
-      7:'juillet',8:'août',9:'septembre',10:'octobre',11:'novembre',12:'décembre'
-    } %}
-    {% set daysLong = {
-      1:'lundi',2:'mardi',3:'mercredi',4:'jeudi',5:'vendredi',6:'samedi',7:'dimanche'
-    } %}
+  {# ====== Localisation FR ====== #}
+  {% set monthsLong = {
+    1:'janvier',2:'février',3:'mars',4:'avril',5:'mai',6:'juin',
+    7:'juillet',8:'août',9:'septembre',10:'octobre',11:'novembre',12:'décembre'
+  } %}
+  {% set daysLong = {
+    1:'lundi',2:'mardi',3:'mercredi',4:'jeudi',5:'vendredi',6:'samedi',7:'dimanche'
+  } %}
+  {% set daysLongPlural = {
+    1:'les lundis',2:'les mardis',3:'les mercredis',4:'les jeudis',5:'les vendredis',6:'les samedis',7:'les dimanches'
+  } %}
 
-    {# displayStart vient du controller #}
-    {% set ds = displayStart ?? event.startAt %}
+  {% set ds = displayStart ?? event.startAt %}
+  {# Flyer / photo de l'événement — affiché en grand DANS la page (pas en banner) #}
+  {% set flyer = event.imageFileName
+      ? asset('uploads/events/' ~ event.imageFileName)
+      : (event.imageUrl ?: null) %}
+  {# Banner = visuel générique de la page événements (pas le flyer) #}
+  {% set bannerBg = site_image('banner_events', 'images/banners-events.png') %}
 
-    {# ====== Image priorité: upload > URL > default ====== #}
-    {% set cover =
-      event.imageFileName
-        ? asset('uploads/events/' ~ event.imageFileName)
-        : (event.imageUrl ?: asset('images/banners-events.png'))
-    %}
+  {# ====== Sous-titre date pour le banner ====== #}
+  {% set bannerSubtitle = '' %}
+  {% if event.isRecurring and event.recurringDayOfWeek %}
+    {% set timeStr = event.recurringTime ? event.recurringTime|date('H:i') : '' %}
+    {% set bannerSubtitle = 'Rendez-vous hebdomadaire — tous ' ~ daysLongPlural[event.recurringDayOfWeek] ~ (timeStr ? ' à ' ~ timeStr : '') %}
+  {% elseif ds %}
+    {% set d = ds|date('j') %}
+    {% set m = ds|date('n') %}
+    {% set y = ds|date('Y') %}
+    {% set dow = ds|date('N') %}
+    {% set bannerSubtitle = daysLong[dow] ~ ' ' ~ d ~ ' ' ~ monthsLong[m] ~ ' ' ~ y ~ ' • ' ~ ds|date('H:i') %}
+  {% else %}
+    {% set bannerSubtitle = 'Date à confirmer' %}
+  {% endif %}
 
-    {# ====== Mode d'affichage ====== #}
-    {% set mode = event.displayMode ?? 'classic' %}
+  {% include 'components/page_banner.html.twig' with {
+    title: event.title,
+    subtitle: bannerSubtitle,
+    background: bannerBg,
+    bgClass: 'vv-miniHero--event'
+  } %}
 
-    <header class="vv-section__head vv-scroll-reveal" style="margin-bottom: 2rem; margin-top: 4rem">
-      <h1 class="vv-h2" style="margin-bottom:.5rem;">{{ event.title }}</h1>
+  {# ============================================================
+     QUICK INFO — chips date / heure / lieu / récurrence / prix
+     ============================================================ #}
+  <section class="vv-section vv-section--light vv-eventShow__quickSection">
+    <div class="vv-container">
+      <div class="vv-eventShow__quick vv-scroll-reveal">
 
-      {% if ds %}
-        {% set d = ds|date('j') %}
-        {% set m = ds|date('n') %}
-        {% set y = ds|date('Y') %}
-        {% set dow = ds|date('N') %}
-        <p class="vv-lead" style="max-width: 70ch;">
-  📅 {{ daysLong[dow] }} {{ d }} {{ monthsLong[m] }} {{ y }}
-  — 🕒 {{ ds|date('H:i') }}
-  {% if event.endAt %} à {{ event.endAt|date('H:i') }}{% endif %}
-</p>
-      {% else %}
-        <p class="vv-lead vv-muted" style="max-width: 70ch;">📅 Date à confirmer</p>
-      {% endif %}
-    </header>
+        {% if event.isRecurring %}
+          <span class="vv-eventChip vv-eventChip--accent">
+            <i class="fa fa-rotate"></i> Permanent — {{ daysLongPlural[event.recurringDayOfWeek] ?? 'chaque semaine' }}
+          </span>
+        {% endif %}
 
-    {# =========================================================
-       MODE POSTER
-       ========================================================= #}
-    {% if mode == 'poster' %}
+        {% if ds %}
+          <span class="vv-eventChip">
+            <i class="fa fa-calendar"></i>
+            {% if event.isRecurring %}
+              Prochain : {{ daysLong[ds|date('N')] }} {{ ds|date('j') }} {{ monthsLong[ds|date('n')] }}
+            {% else %}
+              {{ daysLong[ds|date('N')] }} {{ ds|date('j') }} {{ monthsLong[ds|date('n')] }} {{ ds|date('Y') }}
+            {% endif %}
+          </span>
 
-      <div class="vv-eventPoster vv-scroll-reveal">
+          <span class="vv-eventChip">
+            <i class="fa fa-clock"></i>
+            {{ ds|date('H:i') }}{% if event.endAt %} — {{ event.endAt|date('H:i') }}{% endif %}
+          </span>
+        {% endif %}
 
-        <div class="vv-eventPoster__media">
-          <img
-            src="{{ cover }}"
-            alt="{{ event.title|e }}"
-            loading="lazy"
-          >
-        </div>
+        <span class="vv-eventChip">
+          <i class="fa fa-location-dot"></i> Épi-Café · Le Barroux
+        </span>
 
-        <div class="vv-eventPoster__content">
+        {% if event.menuPrice %}
+          {% set price = event.menuPrice|replace({',':'.'}) %}
+          <span class="vv-eventChip vv-eventChip--price">
+            <i class="fa fa-tag"></i> Menu {{ price|number_format(2, ',', ' ') }} €
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  </section>
 
-          <div class="vv-panel">
+  {# ============================================================
+     CORPS — 2 colonnes (description + sidebar réservation)
+     ============================================================ #}
+  <section class="vv-section vv-section--light vv-eventShow__bodySection">
+    <div class="vv-container">
+      <div class="vv-eventShow__layout">
 
-            <h2 class="vv-h3" style="margin-top:0;">Informations</h2>
+        {# ---------- COLONNE PRINCIPALE ---------- #}
+        <main class="vv-eventShow__main vv-scroll-reveal">
+
+          {# Flyer / photo de l'événement — visuel central qui dit "à quoi ça ressemble" #}
+          {% if flyer %}
+            <figure class="vv-eventFlyer">
+              <a href="{{ flyer }}" target="_blank" rel="noopener" class="vv-eventFlyer__link" aria-label="Agrandir le visuel">
+                <img src="{{ flyer }}" alt="Visuel — {{ event.title|e }}" loading="lazy">
+                <span class="vv-eventFlyer__zoom" aria-hidden="true">
+                  <i class="fa fa-magnifying-glass-plus"></i>
+                </span>
+              </a>
+              <figcaption class="vv-eventFlyer__caption">
+                <i class="fa fa-image"></i>
+                Visuel de l'événement
+              </figcaption>
+            </figure>
+          {% endif %}
+
+          {# Description #}
+          <article class="vv-eventShow__intro">
+            <p class="vv-kicker">À propos de cette soirée</p>
+            <h2 class="vv-eventShow__sectionTitle">L'événement en quelques mots</h2>
 
             {% if event.description %}
-              <p style="margin:0 0 1rem 0; line-height:1.75; color:hsl(var(--foreground));">
-                {{ event.description }}
-              </p>
+              {% for paragraph in event.description|split('\n\n') %}
+                {% set paragraph = paragraph|trim %}
+                {% if paragraph %}
+                  <p class="vv-eventShow__desc">{{ paragraph|nl2br }}</p>
+                {% endif %}
+              {% endfor %}
             {% else %}
-              <p class="vv-muted" style="margin:0 0 1rem 0;">Plus d’infos à venir.</p>
+              <p class="vv-muted vv-eventShow__desc">Description à venir — passez nous voir au comptoir pour en savoir plus.</p>
             {% endif %}
+          </article>
 
-            <div class="vv-eventPoster__metaList">
-              {% if ds %}
-                <div><strong>Date :</strong> {{ daysLong[dow] }} {{ d }} {{ monthsLong[m] }} {{ y }}</div>
-                <div><strong>Heure :</strong> {{ ds|date('H:i') }}{% if event.endAt %} à {{ event.endAt|date('H:i') }}{% endif %}</div>
-              {% endif %}
-              <div><strong>Lieu :</strong> Épi-Café Le Barroux</div>
-            </div>
-
-          </div>
-
-         
-{% set hasProducts =
-  (event.product1Name or event.product2Name or event.product3Name or event.sideDish or event.offerNote)
-%}
-
-{% set hasClassicMenu =
-  not hasProducts and (
-    event.menuStarter or event.menuMain or event.menuDessert or event.menuDessert2 or event.menuPrice or event.menu
-  )
-%}
-
-{% if hasProducts %}
-  <section class="vv-eventProducts" style="margin-top: 1.2rem;">
-
-    {% if event.product1Name %}
-      <article class="vv-eventProductCard">
-        <header class="vv-eventProductCard__head">
-          <h2 class="vv-h3" style="margin:0;">{{ event.product1Name }}</h2>
-          {% if event.product1Price %}
-            {% set price = event.product1Price|replace({',':'.'}) %}
-            <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
-          {% endif %}
-        </header>
-
-        {% if event.product1Ingredients %}
-          <div class="vv-eventProductCard__body">
-            <p>{{ event.product1Ingredients }}</p>
-          </div>
-        {% endif %}
-      </article>
-    {% endif %}
-
-    {% if event.product2Name %}
-      <article class="vv-eventProductCard">
-        <header class="vv-eventProductCard__head">
-          <h2 class="vv-h3" style="margin:0;">{{ event.product2Name }}</h2>
-          {% if event.product2Price %}
-            {% set price = event.product2Price|replace({',':'.'}) %}
-            <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
-          {% endif %}
-        </header>
-
-        {% if event.product2Ingredients %}
-          <div class="vv-eventProductCard__body">
-            <p>{{ event.product2Ingredients }}</p>
-          </div>
-        {% endif %}
-      </article>
-    {% endif %}
-
-    {% if event.product3Name %}
-      <article class="vv-eventProductCard">
-        <header class="vv-eventProductCard__head">
-          <h2 class="vv-h3" style="margin:0;">{{ event.product3Name }}</h2>
-          {% if event.product3Price %}
-            {% set price = event.product3Price|replace({',':'.'}) %}
-            <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
-          {% endif %}
-        </header>
-
-        {% if event.product3Ingredients %}
-          <div class="vv-eventProductCard__body">
-            <p>{{ event.product3Ingredients }}</p>
-          </div>
-        {% endif %}
-      </article>
-    {% endif %}
-
-    {% if event.sideDish %}
-      <article class="vv-accompagnementBlock">
-        <h2 class="vv-h3" style="margin:0 0 .65rem 0;">Accompagnement</h2>
-        <p style="margin:0; line-height:1.75;">{{ event.sideDish }}</p>
-      </article>
-    {% endif %}
-
-    {% if event.offerNote %}
-      <div class="vv-menuNote">{{ event.offerNote }}</div>
-    {% endif %}
-
-  </section>
-{% endif %}
-
-
-          <div class="vv-actions" style="margin-top:1.4rem;">
-            <a class="vv-btn vv-btn--primary" href="{{ path('event_index') }}">← Retour</a>
-
-            <div class="vv-resa">
-              <div class="vv-resa__text">
-                <strong>Réservation par téléphone</strong><br>
-                <span class="vv-muted">Places limitées — pensez à réserver.</span>
-              </div>
-              <a class="vv-btn vv-btn--primary" href="tel:+33400000000">📞 Appeler</a>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-    {# =========================================================
-       MODE CLASSIC
-       ========================================================= #}
-    {% else %}
-
-      <div class="vv-panel vv-scroll-reveal" style="overflow:hidden;">
-        <img
-          src="{{ cover }}"
-          alt="{{ event.title|e }}"
-          style="width:100%; height:360px; object-fit:cover; border-radius:1rem;"
-          loading="lazy"
-        >
-
-        <div style="padding: 1.6rem 1.6rem 1.8rem;">
-
-          {% if event.description %}
-            <p style="margin:0; line-height:1.75; color:hsl(var(--foreground));">
-              {{ event.description }}
-            </p>
-          {% else %}
-            <p class="vv-muted" style="margin:0;">Plus d’infos à venir.</p>
-          {% endif %}
-
-          {# ====== MENU ====== #}
-          {% set hasMenu =
-            event.menuStarter or event.menuMain or event.menuDessert or event.menuDessert2 or event.menuPrice or event.menu
-          %}
-
+          {# Menu classique (entrée / plat / dessert) #}
+          {% set hasMenu = event.menuStarter or event.menuMain or event.menuDessert or event.menuDessert2 or event.menu %}
           {% if hasMenu %}
-            <section class="vv-menuCard vv-scroll-reveal" style="margin-top: 1.5rem;">
+            <section class="vv-menuCard vv-eventShow__block">
               <header class="vv-menuCard__head">
-                <h2 class="vv-h3" style="margin:0;">Au menu</h2>
-
+                <h2 class="vv-eventShow__sectionTitle">Au menu</h2>
                 {% if event.menuPrice %}
                   {% set price = event.menuPrice|replace({',':'.'}) %}
                   <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
@@ -260,24 +182,144 @@
             </section>
           {% endif %}
 
-          {# ====== ACTIONS / RÉSERVATION ====== #}
-          <div class="vv-actions" style="margin-top:1.6rem;">
-            <a class="vv-btn vv-btn--primary" href="{{ path('event_index') }}">← Retour</a>
+          {# Produits (burgers, plats à la carte, etc.) #}
+          {% set hasProducts = event.product1Name or event.product2Name or event.product3Name %}
+          {% if hasProducts %}
+            <section class="vv-eventShow__block">
+              <header class="vv-eventShow__blockHead">
+                <h2 class="vv-eventShow__sectionTitle">Produits proposés</h2>
+              </header>
 
-            <div class="vv-resa">
-              <div class="vv-resa__text">
-                <strong>Réservation par téléphone</strong><br>
-                <span class="vv-muted">Places limitées — pensez à réserver.</span>
+              <div class="vv-eventProducts">
+                {% for n in [1, 2, 3] %}
+                  {% set name = attribute(event, 'product' ~ n ~ 'Name') %}
+                  {% set price = attribute(event, 'product' ~ n ~ 'Price') %}
+                  {% set ingredients = attribute(event, 'product' ~ n ~ 'Ingredients') %}
+
+                  {% if name %}
+                    <article class="vv-eventProductCard">
+                      <header class="vv-eventProductCard__head">
+                        <h3 class="vv-eventProductCard__title">{{ name }}</h3>
+                        {% if price %}
+                          {% set p = price|replace({',':'.'}) %}
+                          <div class="vv-menuCard__price">{{ p|number_format(2, ',', ' ') }} €</div>
+                        {% endif %}
+                      </header>
+                      {% if ingredients %}
+                        <div class="vv-eventProductCard__body">
+                          <p>{{ ingredients }}</p>
+                        </div>
+                      {% endif %}
+                    </article>
+                  {% endif %}
+                {% endfor %}
               </div>
-              <a class="vv-btn vv-btn--primary" href="tel:+33400000000">📞 Appeler</a>
-            </div>
+            </section>
+          {% endif %}
+
+          {# Accompagnement & note finale #}
+          {% if event.sideDish or event.offerNote %}
+            <section class="vv-eventShow__block">
+              {% if event.sideDish %}
+                <article class="vv-accompagnementBlock">
+                  <h3 class="vv-eventShow__blockTitle">Accompagnement</h3>
+                  <p>{{ event.sideDish }}</p>
+                </article>
+              {% endif %}
+
+              {% if event.offerNote %}
+                <div class="vv-menuNote vv-eventShow__note">{{ event.offerNote }}</div>
+              {% endif %}
+            </section>
+          {% endif %}
+
+          {# Retour catalogue #}
+          <div class="vv-eventShow__back">
+            <a class="vv-btn vv-btn--ghost" href="{{ path('event_index') }}">
+              ← Voir tous les événements
+            </a>
           </div>
+        </main>
 
-        </div>
+        {# ---------- SIDEBAR ---------- #}
+        <aside class="vv-eventShow__sidebar vv-scroll-reveal">
+          <div class="vv-eventShow__sidebarSticky">
+
+            <div class="vv-eventShow__resaCard">
+              <p class="vv-kicker">Réservation</p>
+              <h3 class="vv-eventShow__resaTitle">
+                {% if event.isRecurring %}
+                  Pensez à réserver
+                {% else %}
+                  Places limitées
+                {% endif %}
+              </h3>
+              <p class="vv-eventShow__resaText">
+                {% if event.isRecurring %}
+                  Pour participer dans les meilleures conditions, prévenez-nous à l'avance.
+                {% else %}
+                  Pour cet événement spécial, on vous conseille de réserver votre table.
+                {% endif %}
+              </p>
+
+              <a class="vv-btn vv-btn--primary vv-btn--full" href="{{ path('contact_index') }}#contact">
+                <i class="fa fa-phone"></i> Nous contacter
+              </a>
+            </div>
+
+            <dl class="vv-eventShow__infoList">
+              <div class="vv-eventShow__infoItem">
+                <dt><i class="fa fa-calendar"></i> Quand</dt>
+                <dd>
+                  {% if event.isRecurring %}
+                    Tous {{ daysLongPlural[event.recurringDayOfWeek] ?? 'les semaines' }}
+                    {% if event.recurringTime %} à {{ event.recurringTime|date('H:i') }}{% endif %}
+                  {% elseif ds %}
+                    {{ daysLong[ds|date('N')] }} {{ ds|date('j') }} {{ monthsLong[ds|date('n')] }} {{ ds|date('Y') }}
+                  {% else %}
+                    Date à confirmer
+                  {% endif %}
+                </dd>
+              </div>
+
+              {% if ds %}
+                <div class="vv-eventShow__infoItem">
+                  <dt><i class="fa fa-clock"></i> Heure</dt>
+                  <dd>
+                    {{ ds|date('H:i') }}{% if event.endAt %} — {{ event.endAt|date('H:i') }}{% endif %}
+                  </dd>
+                </div>
+              {% endif %}
+
+              <div class="vv-eventShow__infoItem">
+                <dt><i class="fa fa-location-dot"></i> Lieu</dt>
+                <dd>
+                  Épi-Café<br>
+                  56 Chemin Neuf<br>
+                  84330 Le Barroux
+                </dd>
+              </div>
+
+              {% if event.menuPrice %}
+                <div class="vv-eventShow__infoItem">
+                  <dt><i class="fa fa-tag"></i> Tarif menu</dt>
+                  <dd>{{ event.menuPrice|replace({',':'.'})|number_format(2, ',', ' ') }} €</dd>
+                </div>
+              {% endif %}
+
+              {% if event.isRecurring %}
+                <div class="vv-eventShow__infoItem">
+                  <dt><i class="fa fa-rotate"></i> Fréquence</dt>
+                  <dd>Hebdomadaire — chaque semaine</dd>
+                </div>
+              {% endif %}
+            </dl>
+
+          </div>
+        </aside>
+
       </div>
+    </div>
+  </section>
 
-    {% endif %}
-
-  </div>
-</section>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-home' %}
 
 {% block title %}L'Épicerie du Barroux - Bar & Produits locaux au cœur du Ventoux{% endblock %}
 
@@ -8,7 +9,7 @@
 <section class="vv-hero" data-vv-hero aria-label="Hero">
   <div class="vv-hero__bg" data-vv-parallax>
     <img
-      src="{{ asset('images/Accueil-2.jpg') }}"
+      src="{{ site_image('home_hero', 'images/Accueil-2.jpg') }}"
       alt="Le Barroux et le Mont Ventoux"
       class="vv-hero__img"
     >
@@ -20,7 +21,6 @@
     <div class="vv-hero__inner vv-animate-fade-in">
       <h1 class="vv-hero__title">Votre épicerie de village</h1>
       <p class="vv-hero__subtitle">Au pied du Ventoux</p>
-
     </div>
     <button class="vv-hero__chevron" type="button" aria-label="Descendre" data-vv-scrollto="#bar-section">
       ⌄
@@ -28,40 +28,42 @@
   </div>
 </section>
 
-                                                                       {# SECTION  INTRO #}
-
-
-
+{# ============================================================
+   INTRO — Bienvenue
+   ============================================================ #}
 <section id="bar-section" class="vv-section vv-section--cream">
   <div class="vv-container">
 
     <div class="vv-intro vv-scroll-reveal">
-      
+
       <div class="vv-intro__media">
-        <img 
-          src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop"
-          alt="L’Épicafé au Barroux"
+        <img
+          src="{{ site_image('home_intro_photo', 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop') }}"
+          alt="L'Épi-Café au Barroux"
         >
       </div>
 
       <div class="vv-intro__content">
-        <h2 class="vv-h2">Bienvenue à l’Épi-Café</h2>
+        <p class="vv-kicker">L'épi-café</p>
+        <h2 class="vv-h2">Bienvenue au cœur du village</h2>
 
         <p>
-          Au cœur du Barroux, au pied du Ventoux, l’Épicafé est un lieu de vie
+          Au cœur du Barroux, au pied du Mont Ventoux, l'Épi-Café est un lieu de vie
           où se croisent habitants, visiteurs et amateurs de bons produits.
         </p>
 
         <p>
-          On s’y retrouve pour un café, un verre de vin, une planche apéritive,
+          On s'y retrouve pour un café, un verre de vin, une planche apéritive,
           mais aussi pour les services du quotidien : dépôt de pain,
           point poste, épicerie et restauration rapide le midi.
         </p>
 
         <p class="vv-intro__links">
-          <a href="#events">Événements</a>
+          <a href="#apero">Apéro</a>
           <span>•</span>
           <a href="#products">Produits locaux</a>
+          <span>•</span>
+          <a href="#events">Événements</a>
           <span>•</span>
           <a href="#contact">Nous trouver</a>
         </p>
@@ -73,22 +75,21 @@
 </section>
 
 
-                                                           {# SECTION PLANCHES / VINS / COCKTAILS #}
-
-
-<section id="apero" class="vv-section vv-section--light" >
-  <div class="vv-container" style= "margin-bottom: 4rem;
-">
+{# ============================================================
+   APÉRO — planches, vins, cocktails
+   ============================================================ #}
+<section id="apero" class="vv-section vv-section--light">
+  <div class="vv-container">
     <div class="vv-apero vv-scroll-reveal">
 
       <div class="vv-apero__content">
         <p class="vv-kicker">À partager</p>
 
-        <h2 class="vv-h2" style="margin-bottom:.8rem;">
+        <h2 class="vv-h2 vv-apero__title">
           Planches apéro, bons vins & cocktails
         </h2>
 
-        <p class="vv-lead" style="margin:0; max-width: 60ch;">
+        <p class="vv-lead vv-apero__lead">
           Ici, on aime les choses simples et bien faites : une planche généreuse,
           un verre de Ventoux, et le plaisir de se retrouver.
         </p>
@@ -112,13 +113,13 @@
       <div class="vv-apero__media" aria-hidden="true">
         <div class="vv-apero__collage">
           <img class="vv-apero__img vv-apero__img--a"
-               src="{{ asset('images/apero-3.avif') }}"
+               src="{{ site_image('home_apero_1', 'images/apero-3.avif') }}"
                alt="">
           <img class="vv-apero__img vv-apero__img--b"
-               src="{{ asset('images/apero-2.avif') }}"
+               src="{{ site_image('home_apero_2', 'images/apero-2.avif') }}"
                alt="">
           <img class="vv-apero__img vv-apero__img--c"
-               src="{{ asset('images/apero-1.avif') }}"
+               src="{{ site_image('home_apero_3', 'images/apero-1.avif') }}"
                alt="">
         </div>
       </div>
@@ -127,23 +128,24 @@
   </div>
 </section>
 
-                                                                             {# BOUTIQUE #}
-
-
-<section class="vv-section  vv-section--cream">
+{# ============================================================
+   PRODUITS LOCAUX — sélection terroir
+   ============================================================ #}
+<section id="products" class="vv-section vv-section--cream">
   <div class="vv-container">
 
-    <div class="vv-section__head">
+    <div class="vv-section__head vv-scroll-reveal">
+      <p class="vv-kicker">Sélection terroir</p>
       <h2 class="vv-h2">Produits locaux</h2>
       <p class="vv-lead">
-        Une sélection rigoureuse de produits authentiques de notre région
+        Une sélection rigoureuse de produits authentiques de notre région.
       </p>
     </div>
 
-    <div class="vv-productsGrid">
+    <div class="vv-productsGrid vv-scroll-reveal">
 
       <article class="vv-productCard">
-        <img src="{{ asset('images/Produits-locaux-vin.png') }}" alt="Vins du Ventoux">
+        <img src="{{ site_image('home_product_wine', 'images/Produits-locaux-vin.png') }}" alt="Vins du Ventoux">
 
         <div class="vv-productCard__body">
           <h3>Vins du Ventoux</h3>
@@ -152,7 +154,7 @@
       </article>
 
       <article class="vv-productCard">
-        <img src="{{ asset('images/Produits-locaux-terroir.png') }}" alt="Produits du terroir">
+        <img src="{{ site_image('home_product_terroir', 'images/Produits-locaux-terroir.png') }}" alt="Produits du terroir">
 
         <div class="vv-productCard__body">
           <h3>Produits du terroir</h3>
@@ -161,10 +163,10 @@
       </article>
 
       <article class="vv-productCard">
-        <img src="{{ asset('images/Produits-from-char.png') }}" alt="Fromages et charcuterie">
+        <img src="{{ site_image('home_product_cheese', 'images/Produits-from-char.png') }}" alt="Fromages et charcuterie">
 
         <div class="vv-productCard__body">
-          <h3>Fromages & Charcuterie</h3>
+          <h3>Fromages & charcuterie</h3>
           <p>Produits frais de producteurs locaux</p>
         </div>
       </article>
@@ -173,103 +175,89 @@
   </div>
 </section>
 
-<section class="vv-section vv-section--accent">
-  <div class="vv-container vv-center">
+{# ============================================================
+   BOUTIQUE — aperçu + lien vers la page boutique
+   ============================================================ #}
+<section class="vv-section vv-section--light">
+  <div class="vv-container vv-shopHome vv-scroll-reveal">
 
-    <h2 class="vv-h2">Venez découvrir la boutique</h2>
+    <div class="vv-shopHome__media">
+      <img src="{{ site_image('home_shop_preview', 'images/boutique-home.png') }}" alt="La boutique de l'Épi-Café">
+    </div>
 
-    <p class="vv-lead">
-      Nous vous accueillons au cœur du village du Barroux
-    </p>
+    <div class="vv-shopHome__content">
+      <p class="vv-kicker">La boutique</p>
+      <h2 class="vv-h2">Venez visiter la boutique</h2>
+      <p class="vv-lead">
+        Produits locaux, vins du Ventoux, fruits et légumes de saison…
+        découvrez une sélection authentique au cœur du village.
+      </p>
 
-    <a href="{{ path('shop_index') }}" class="vv-btn vv-btn--primary">
-      Boutique
-    </a>
+      <a href="{{ path('shop_index') }}" class="vv-btn vv-btn--primary">
+        Découvrir la boutique
+      </a>
+    </div>
 
   </div>
 </section>
 
-
-                                                                             {# EVENTS #}
-
+{# ============================================================
+   ÉVÉNEMENTS — agenda + permanents
+   ============================================================ #}
 <section id="events" class="vv-section vv-section--secondary vv-eventsSection">
   {# Fond parallax #}
   <div class="vv-eventsSection__bg"
-       style="background-image:url('{{ asset('images/banners-events.png') }}');">
+       style="background-image:url('{{ site_image('banner_events', 'images/banners-events.png') }}');">
   </div>
   <div class="vv-eventsSection__veil"></div>
 
   <div class="vv-container vv-eventsSection__inner">
     <div class="vv-section__head vv-scroll-reveal">
-      <h2 class="vv-h2">Événements</h2>
-      <p class="vv-lead">À venir à l’Épicafé</p>
+      <p class="vv-kicker">Agenda</p>
+      <h2 class="vv-h2">Événements à venir</h2>
+      <p class="vv-lead">Concerts, soirées à thème et rendez-vous hebdomadaires.</p>
     </div>
 
-    {# Récurrents #}
+    {# Rendez-vous permanents #}
     {% if recurringEvents is defined and recurringEvents|length %}
-      <h3 class="vv-h3" style="margin-bottom: 1rem;">Rendez-vous régulier</h3>
-
-      <div class="vv-events">
-        {% for event in recurringEvents %}
-          {% include 'events/event_row.html.twig' with { event: event } %}
-        {% endfor %}
+      <div class="vv-eventsBlock vv-scroll-reveal">
+        <h3 class="vv-h3 vv-eventsBlock__title">Chaque semaine</h3>
+        <div class="vv-events">
+          {% for event in recurringEvents %}
+            {% include 'events/event_row.html.twig' with { event: event } %}
+          {% endfor %}
+        </div>
       </div>
-
-      <div style="height: 2rem;"></div>
     {% endif %}
 
-    {# À venir #}
+    {# À venir (ponctuels) #}
     {% if upcomingEvents is defined and upcomingEvents|length %}
-      <div class="vv-events">
-        {% for event in upcomingEvents %}
-          {% include 'events/event_row.html.twig' with { event: event } %}
-        {% endfor %}
+      <div class="vv-eventsBlock vv-scroll-reveal">
+        <h3 class="vv-h3 vv-eventsBlock__title">Prochainement</h3>
+        <div class="vv-events">
+          {% for event in upcomingEvents %}
+            {% include 'events/event_row.html.twig' with { event: event } %}
+          {% endfor %}
+        </div>
       </div>
 
-      <div class="vv-center vv-scroll-reveal" style="margin-top: 1.5rem;">
+      <div class="vv-center vv-scroll-reveal vv-eventsBlock__cta">
         <a class="vv-btn vv-btn--primary" href="{{ path('event_index') }}">Voir tous les événements</a>
       </div>
-    {% else %}
-      <p class="vv-muted">Aucun événement à venir pour le moment.</p>
+    {% elseif not recurringEvents|length %}
+      <p class="vv-muted vv-center">Aucun événement à venir pour le moment.</p>
     {% endif %}
   </div>
 </section>
 
 
-                                                                        {# GALLERY#}
-
-{% if latestPhotos is defined and latestPhotos|length %}
-<section id="gallery-preview" class="vv-section vv-section--light">
-  <div class="vv-container">
-    <div class="vv-section__head vv-scroll-reveal">
-      <h2 class="vv-h2">Galerie</h2>
-      <p class="vv-lead">Quelques souvenirs des derniers moments à l’Épicafé.</p>
-    </div>
-
-    <div class="vv-galleryStrip vv-scroll-reveal" aria-label="Aperçu galerie">
-      {% for p in latestPhotos %}
-        {% set src = asset('uploads/gallery/' ~ p.fileName) %}
-        <a class="vv-galleryStrip__item"
-           href="{{ path('gallery_index') }}"
-           style="background-image:url('{{ src }}')"
-           aria-label="Ouvrir la galerie"></a>
-      {% endfor %}
-    </div>
-
-    <div class="vv-center vv-scroll-reveal" style="margin-top:1.3rem;">
-      <a class="vv-btn vv-btn--primary" href="{{ path('gallery_index') }}">Voir toute la galerie</a>
-    </div>
-  </div>
-</section>
-{% endif %}
-
-
-
-                                                                        {# SERVICES #}
-
+{# ============================================================
+   SERVICES — pain, poste, gaz
+   ============================================================ #}
 <section id="services" class="vv-section vv-section--cream">
   <div class="vv-container">
     <div class="vv-section__head vv-scroll-reveal">
+      <p class="vv-kicker">Au quotidien</p>
       <h2 class="vv-h2">Services pratiques</h2>
       <p class="vv-lead">Plus qu'une épicerie, un véritable service de proximité.</p>
     </div>
@@ -368,14 +356,49 @@
   </div>
 </section>
 
-                                                                        {# CONTACT / MAP / HORAIRES #}
 
 
-<section id="contact" class="vv-section vv-section--light">
+{# ============================================================
+   GALERIE — aperçu
+   ============================================================ #}
+{% if latestPhotos is defined and latestPhotos|length %}
+<section id="gallery-preview" class="vv-section vv-section--light">
   <div class="vv-container">
     <div class="vv-section__head vv-scroll-reveal">
-      <h2 class="vv-h2">Horaires & Contact</h2>
-      <p class="vv-lead">Nous sommes là pour vous servir</p>
+      <p class="vv-kicker">En images</p>
+      <h2 class="vv-h2">Galerie</h2>
+      <p class="vv-lead">Quelques souvenirs des derniers moments à l'Épi-Café.</p>
+    </div>
+
+    <div class="vv-galleryStrip vv-scroll-reveal" aria-label="Aperçu galerie">
+      {% for p in latestPhotos %}
+        {% set src = asset('uploads/gallery/' ~ p.fileName) %}
+        <a class="vv-galleryStrip__item"
+           href="{{ path('gallery_index') }}"
+           style="background-image:url('{{ src }}')"
+           aria-label="Ouvrir la galerie"></a>
+      {% endfor %}
+    </div>
+
+    <div class="vv-center vv-scroll-reveal" style="margin-top:1.3rem;">
+      <a class="vv-btn vv-btn--primary" href="{{ path('gallery_index') }}">Voir toute la galerie</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+
+
+
+{# ============================================================
+   CONTACT — horaires, infos, map, formulaire
+   ============================================================ #}
+<section id="contact" class="vv-section vv-section--cream">
+  <div class="vv-container">
+    <div class="vv-section__head vv-scroll-reveal">
+      <p class="vv-kicker">Nous trouver</p>
+      <h2 class="vv-h2">Horaires & contact</h2>
+      <p class="vv-lead">Au cœur du Barroux, ouvert presque tous les jours.</p>
     </div>
 
     <div class="vv-contact-grid">
@@ -449,10 +472,4 @@
         </div>
     </div>
 </section>
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('scripts/front.js') }}"></script>
-{% endblock %}
-
 {% endblock %}

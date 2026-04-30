@@ -1,0 +1,120 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark vv-page' %}
+{% block title %}Mentions légales | L'Épi-Café{% endblock %}
+
+{% block body %}
+
+  {% include 'components/page_banner.html.twig' with {
+    title: 'Mentions légales',
+    subtitle: 'Informations légales du site et de l\'établissement.',
+    background: site_image('banner_contact', 'images/banners-contact.png'),
+    bgClass: 'vv-miniHero--legal'
+  } %}
+
+  <section class="vv-section vv-section--light">
+    <div class="vv-container vv-legal">
+
+      <h2>1. Éditeur du site</h2>
+      <p>
+        Le présent site est édité par
+        {% if setting('site_owner_name') %}
+          <strong>{{ setting('site_owner_name') }}</strong>,
+        {% else %}
+          <em>(nom du / des gérants à compléter dans l'admin)</em>,
+        {% endif %}
+        exploitant l'établissement <strong>L'Épi-Café</strong>.
+      </p>
+      <ul>
+        {% if setting('site_legal_form') %}
+          <li>Forme juridique : {{ setting('site_legal_form') }}</li>
+        {% endif %}
+        {% if setting('site_siret') %}
+          <li>SIRET : {{ setting('site_siret') }}</li>
+        {% endif %}
+        <li>
+          Adresse : {{ setting('contact_address', '56 Chemin Neuf — 84330 Le Barroux')|nl2br }}
+        </li>
+        {% if setting('contact_phone') %}
+          <li>Téléphone : <a href="tel:{{ setting('contact_phone')|replace({' ':'','.':'','-':''}) }}">{{ setting('contact_phone') }}</a></li>
+        {% endif %}
+        {% if setting('contact_email') %}
+          <li>Email : <a href="mailto:{{ setting('contact_email') }}">{{ setting('contact_email') }}</a></li>
+        {% endif %}
+      </ul>
+
+      <h2>2. Directeur de la publication</h2>
+      <p>
+        {% if setting('site_owner_name') %}
+          {{ setting('site_owner_name') }}
+        {% else %}
+          <em>(à compléter dans l'admin → Paramètres du site → Général)</em>
+        {% endif %}
+      </p>
+
+      <h2>3. Hébergeur</h2>
+      {% if setting('legal_hosting_name') %}
+        <p>
+          Le site est hébergé par <strong>{{ setting('legal_hosting_name') }}</strong>.
+        </p>
+        <ul>
+          {% if setting('legal_hosting_address') %}
+            <li>Adresse : {{ setting('legal_hosting_address')|nl2br }}</li>
+          {% endif %}
+          {% if setting('legal_hosting_phone') %}
+            <li>Téléphone : {{ setting('legal_hosting_phone') }}</li>
+          {% endif %}
+        </ul>
+      {% else %}
+        <p><em>(informations hébergeur à compléter dans l'admin → Paramètres du site → Général)</em></p>
+      {% endif %}
+
+      <h2>4. Propriété intellectuelle</h2>
+      <p>
+        L'ensemble des contenus (textes, images, photos, logos, graphismes, structure du site) est protégé par le droit d'auteur.
+        Toute reproduction, représentation, modification ou publication, totale ou partielle, est interdite sans autorisation écrite préalable.
+      </p>
+      <p>
+        Les images de produits et photos d'illustration peuvent provenir de banques d'images libres de droits (Unsplash, Pexels)
+        ou être la propriété de leurs auteurs respectifs.
+      </p>
+
+      <h2>5. Crédits</h2>
+      <p>
+        Site conçu et développé sur mesure. Polices : Playfair Display, Cormorant Garamond, Inter (Google Fonts).
+      </p>
+
+      <h2>6. Responsabilité</h2>
+      <p>
+        L'éditeur s'efforce d'assurer l'exactitude et la mise à jour des informations diffusées sur ce site, dont il se réserve le droit
+        de modifier le contenu à tout moment et sans préavis. Toutefois, il ne peut garantir l'exactitude, la précision ou
+        l'exhaustivité des informations mises à disposition.
+      </p>
+      <p>
+        L'utilisateur est seul responsable de l'utilisation qu'il fait des informations présentes sur ce site.
+      </p>
+
+      <h2>7. Liens externes</h2>
+      <p>
+        Ce site peut contenir des liens vers d'autres sites web. L'éditeur n'exerce aucun contrôle sur ces sites
+        et ne saurait être tenu responsable de leur contenu.
+      </p>
+
+      <h2>8. Données personnelles</h2>
+      <p>
+        Pour toute information relative au traitement des données personnelles collectées sur ce site,
+        consultez notre <a href="{{ path('legal_privacy') }}">politique de confidentialité</a>.
+      </p>
+
+      <h2>9. Droit applicable</h2>
+      <p>
+        Les présentes mentions légales sont régies par le droit français. En cas de litige, les tribunaux français seront seuls compétents.
+      </p>
+
+      <p class="vv-legal__updated">
+        Dernière mise à jour : {{ "now"|date("d/m/Y") }}
+      </p>
+
+    </div>
+  </section>
+
+{% endblock %}

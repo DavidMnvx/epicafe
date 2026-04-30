@@ -1,6 +1,6 @@
 {% extends 'base_front.html.twig' %}
 {% set bodyClass = 'vv-hero-dark' %}
-{% block title %}Galerie | Épicafé{% endblock %}
+{% block title %}Galerie | L'Épi-café{% endblock %}
 
 {% block body  %}
 
@@ -8,19 +8,19 @@
 {% include 'components/page_banner.html.twig' with {
   title: 'Galerie',
   subtitle: 'Instants capturés à l’Épi-Café, entre événements, rencontres et moments partagés.',
-  background: asset('images/Le barroux-galerie.png'),
+  background: site_image('banner_gallery', 'images/Le barroux-galerie.png'),
   bgClass: 'vv-miniHero--gallery'
 } %}
 
 <section class="vv-section vv-section--light">
   <div class="vv-container">
 
-    {# INTRO AJOUTÉE #}
-    <div class="vv-pageIntro vv-scroll-reveal" style="text-align:center; max-width:720px; margin:0 auto 2.5rem;">
+    {# INTRO #}
+    <div class="vv-section__head vv-scroll-reveal">
       <p class="vv-kicker">Ambiance & souvenirs</p>
       <h2 class="vv-h2">Un aperçu de la vie à l’Épi-Café</h2>
       <p class="vv-lead">
-        Concerts, soirées, rencontres et moments simples du quotidien…
+        Concerts, soirées, rencontres et moments simples du quotidien —
         découvrez l’atmosphère du lieu à travers quelques images.
       </p>
     </div>
@@ -28,8 +28,8 @@
     {# TOOLBAR #}
     <div class="vv-galleryToolbar vv-scroll-reveal">
       <div class="vv-galleryToolbar__left">
-        <h3 class="vv-h3" style="margin:0;">Dernières photos</h3>
-        <p class="vv-muted" style="margin:.25rem 0 0;">Clique pour agrandir</p>
+        <h3 class="vv-galleryToolbar__title">Dernières photos</h3>
+        <p class="vv-galleryToolbar__hint">Clique pour agrandir</p>
       </div>
 
       <form class="vv-galleryToolbar__right" method="get">
@@ -78,7 +78,11 @@
         {% endfor %}
       </div>
     {% else %}
-      <p class="vv-muted">Aucune photo pour le moment.</p>
+      <div class="vv-emptyBlock vv-scroll-reveal">
+        <span class="vv-emptyBlock__icon">📷</span>
+        <h3>Aucune photo pour le moment</h3>
+        <p>La galerie se remplira au fur et à mesure des moments à partager.</p>
+      </div>
     {% endif %}
 
   </div>

@@ -14,13 +14,33 @@ final class EventController extends AbstractController
     #[Route('/evenements', name: 'event_index')]
     public function index(EventRepository $repo): Response
     {
+        $upcoming = $repo->findUpcoming();
+        $recurring = $repo->findBy(['isRecurring' => true, 'isPublished' => true]);
+        $past = $repo->findPast();
+
+        // Événement vedette = le prochain à venir (non permanent)
+        $featured = $upcoming[0] ?? null;
+        $upcomingRest = array_slice($upcoming, 1);
+
+        // Regroupement par mois (clé = "YYYY-MM")
+        $byMonth = [];
+        foreach ($upcomingRest as $event) {
+            $start = $event->getStartAt();
+            if ($start === null) {
+                continue;
+            }
+            $key = $start->format('Y-m');
+            $byMonth[$key][] = $event;
+        }
+        ksort($byMonth);
+
         return $this->render('events/index.html.twig', [
-            'upcomingEvents' => $repo->findUpcoming(),
-            'pastEvents'     => $repo->findPast(),
-            'recurringEvents'=> $repo->findBy([
-                'isRecurring' => true,
-                'isPublished' => true,
-            ]),
+            'featured'         => $featured,
+            'upcomingByMonth'  => $byMonth,
+            'recurringEvents'  => $recurring,
+            'pastEvents'       => array_slice($past, 0, 3),
+            'pastTotal'        => count($past),
+            'upcomingTotal'    => count($upcoming),
         ]);
     }
 

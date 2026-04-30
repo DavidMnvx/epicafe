@@ -1,0 +1,120 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark vv-page' %}
+{% block title %}Aperçu — {{ category.name }} | Admin{% endblock %}
+
+{# Placeholders Unsplash (mêmes que sur la page boutique) #}
+{% set placeholderImages = {
+  'produits-locaux':       'https://images.unsplash.com/photo-1518843875459-f738682238a6?w=1600&auto=format&fit=crop&q=80',
+  'cave-et-vins':          'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&auto=format&fit=crop&q=80',
+  'fromages-charcuterie':  'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=1200&auto=format&fit=crop&q=80',
+  'pain-et-depot':         'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&auto=format&fit=crop&q=80',
+} %}
+{% set defaultPlaceholder = 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&auto=format&fit=crop&q=80' %}
+{% set chapterImg = category.imageFileName
+    ? asset('uploads/shop/' ~ category.imageFileName)
+    : (category.imageUrl ?: (placeholderImages[category.slug]|default(defaultPlaceholder))) %}
+
+{% block body %}
+
+  {# Bandeau d'aperçu — visible uniquement en mode preview #}
+  <div class="vv-previewBar">
+    <div class="vv-container vv-previewBar__inner">
+      <div class="vv-previewBar__info">
+        <span class="vv-previewBar__badge">
+          <i class="fa fa-eye"></i> Aperçu admin
+        </span>
+        <span class="vv-previewBar__meta">
+          {% if category.isPublished %}
+            <span class="text-success">● Publié</span>
+          {% else %}
+            <span class="text-warning">● Brouillon (non visible sur le site)</span>
+          {% endif %}
+          · Position #{{ category.position }}
+        </span>
+      </div>
+      <div class="vv-previewBar__actions">
+        <a href="{{ path('admin', { crudControllerFqcn: 'App\\Controller\\Admin\\ShopCategoryCrudController', crudAction: 'edit', entityId: category.id }) }}"
+           class="vv-btn vv-btn--ghost vv-btn--sm">
+          <i class="fa fa-pen"></i> Modifier
+        </a>
+        <a href="{{ path('shop_index') }}#chapter-{{ category.slug }}"
+           class="vv-btn vv-btn--ghost vv-btn--sm">
+          <i class="fa fa-globe"></i> Voir sur le site
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {# Article unique — même rendu que sur la page boutique #}
+  <article class="vv-shopMag vv-shopMag--timeline vv-shopMag--preview">
+
+    <header class="vv-shopMag__header">
+      <div class="vv-container vv-shopMag__headerInner">
+        <p class="vv-kicker">Aperçu de l'article</p>
+        <h1 class="vv-shopMag__title">{{ category.name }}</h1>
+        <p class="vv-shopMag__byline">Vue isolée · {{ category.updatedAt|date('d/m/Y H:i') }}</p>
+      </div>
+    </header>
+
+    <div class="vv-container vv-shopMag__railWrap">
+      <div class="vv-shopMag__rail">
+        <section class="vv-shopMag__chapter vv-shopMag__chapter--right is-in-view">
+
+          <div class="vv-shopMag__dot" aria-hidden="true">
+            <span class="vv-shopMag__dotInner">{{ '%02d'|format(category.position ?: 1) }}</span>
+          </div>
+
+          <div class="vv-shopMag__chapterCard">
+            <header class="vv-shopMag__chapterHead">
+              <p class="vv-shopMag__chapterTag">Aperçu</p>
+              {% if category.kicker %}
+                <p class="vv-kicker vv-shopMag__chapterKicker">{{ category.kicker }}</p>
+              {% endif %}
+              <h2 class="vv-shopMag__chapterTitle">{{ category.name }}</h2>
+            </header>
+
+            <figure class="vv-shopMag__chapterFigure">
+              <img src="{{ chapterImg }}" alt="{{ category.name }}">
+            </figure>
+
+            <div class="vv-shopMag__chapterBody">
+              {% if category.description %}
+                {% for paragraph in category.description|split('\n\n') %}
+                  {% set paragraph = paragraph|trim %}
+                  {% if paragraph %}
+                    <p class="vv-shopMag__chapterText">{{ paragraph|nl2br }}</p>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                <p class="vv-muted"><em>Pas de description renseignée.</em></p>
+              {% endif %}
+
+              {% set items = category.highlightLines %}
+              {% if items|length > 0 %}
+                <p class="vv-shopMag__inlineList">
+                  <em>Ce qu'on trouve&nbsp;:</em>
+                  {% for item in items %}{{ item }}{% if not loop.last %} · {% endif %}{% endfor %}.
+                </p>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+
+        {% if category.pullQuote %}
+          <aside class="vv-shopMag__pullQuote">
+            <div class="vv-shopMag__dot vv-shopMag__dot--quote vv-shopMag__dot--quoteOpen" aria-hidden="true">
+              <span class="vv-shopMag__dotInner"></span>
+            </div>
+            <blockquote>«&nbsp;{{ category.pullQuote|trim }}&nbsp;»</blockquote>
+            <cite>— {{ category.pullQuoteAuthor ?: "L'esprit de l'Épi-Café" }}</cite>
+            <div class="vv-shopMag__dot vv-shopMag__dot--quote vv-shopMag__dot--quoteClose" aria-hidden="true">
+              <span class="vv-shopMag__dotInner"></span>
+            </div>
+          </aside>
+        {% endif %}
+      </div>
+    </div>
+
+  </article>
+
+{% endblock %}

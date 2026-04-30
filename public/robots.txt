@@ -1,0 +1,15 @@
+# robots.txt — L'Épi-Café
+# https://epicafe.fr (à adapter avec le vrai domaine)
+
+User-agent: *
+
+# Pages d'admin et zones privées : pas indexer
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+
+# Préférence : on autorise tout le reste
+Allow: /
+
+# Sitemap dynamique
+Sitemap: /sitemap.xml

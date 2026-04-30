@@ -1,0 +1,31 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark vv-page' %}
+{% block title %}Erreur | L'Épi-Café{% endblock %}
+
+{% block body %}
+  <section class="vv-section vv-section--light vv-errorPage">
+    <div class="vv-container vv-errorPage__inner">
+
+      <div class="vv-errorPage__code" aria-hidden="true">{{ status_code }}</div>
+
+      <h1 class="vv-errorPage__title">
+        Une erreur est survenue
+      </h1>
+
+      <p class="vv-errorPage__text">
+        {% if status_text %}
+          {{ status_text }}
+        {% else %}
+          Une erreur inattendue s'est produite.
+        {% endif %}
+      </p>
+
+      <div class="vv-errorPage__actions">
+        <a href="{{ path('app_home') }}" class="vv-btn vv-btn--primary">
+          ← Retour à l'accueil
+        </a>
+      </div>
+
+    </div>
+  </section>
+{% endblock %}

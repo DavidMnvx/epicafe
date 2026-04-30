@@ -5,11 +5,19 @@ namespace App\Entity;
 use App\Repository\EventRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\Table(name: 'event')]
+#[ORM\HasLifecycleCallbacks]
 class Event
 {
+    public const STATUS_UPCOMING  = 'upcoming';
+    public const STATUS_PAST      = 'past';
+    public const STATUS_RECURRING = 'recurring';
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -331,9 +339,77 @@ class Event
         $this->startAt = $nextDate;
     }
 
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $now = new \DateTimeImmutable();
+        $this->createdAt ??= $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     public function touchUpdatedAt(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function getStatus(): string
+    {
+        if ($this->isRecurring) {
+            return self::STATUS_RECURRING;
+        }
+
+        $reference = $this->endAt ?? $this->startAt;
+        if ($reference === null) {
+            return self::STATUS_UPCOMING;
+        }
+
+        return $reference >= new \DateTimeImmutable('now')
+            ? self::STATUS_UPCOMING
+            : self::STATUS_PAST;
+    }
+
+    public function setStatus(string $status): self
+    {
+        // Champ virtuel — lecture seule. Laissé pour compat EasyAdmin.
+        return $this;
+    }
+
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context): void
+    {
+        if ($this->isRecurring) {
+            if ($this->recurringDayOfWeek === null) {
+                $context->buildViolation('Le jour est requis pour un événement permanent.')
+                    ->atPath('recurringDayOfWeek')
+                    ->addViolation();
+            }
+            if ($this->recurringTime === null) {
+                $context->buildViolation('L\'heure est requise pour un événement permanent.')
+                    ->atPath('recurringTime')
+                    ->addViolation();
+            }
+        }
+
+        if ($this->startAt !== null && $this->endAt !== null && $this->endAt < $this->startAt) {
+            $context->buildViolation('La date de fin doit être postérieure à la date de début.')
+                ->atPath('endAt')
+                ->addViolation();
+        }
+
+        foreach (['menuPrice', 'product1Price', 'product2Price', 'product3Price'] as $field) {
+            $value = $this->{$field};
+            if ($value !== null && $value !== '' && (float) str_replace(',', '.', (string) $value) < 0) {
+                $context->buildViolation('Le prix doit être positif.')
+                    ->atPath($field)
+                    ->addViolation();
+            }
+        }
     }
 
     // ===== Getters/Setters =====

@@ -1,52 +1,230 @@
 {% extends 'base_front.html.twig' %}
 {% set bodyClass = 'vv-hero-dark' %}
-{% block title %}Événements | Épicafé{% endblock %}
+{% block title %}Événements | L'Épi-café{% endblock %}
+
+{% set months = {
+  '01':'Janvier', '02':'Février', '03':'Mars', '04':'Avril',
+  '05':'Mai', '06':'Juin', '07':'Juillet', '08':'Août',
+  '09':'Septembre', '10':'Octobre', '11':'Novembre', '12':'Décembre'
+} %}
+{% set shortMonths = {
+  1:'janv.', 2:'févr.', 3:'mars', 4:'avr.', 5:'mai', 6:'juin',
+  7:'juil.', 8:'août', 9:'sept.', 10:'oct.', 11:'nov.', 12:'déc.'
+} %}
+{% set days = { 1:'Lun', 2:'Mar', 3:'Mer', 4:'Jeu', 5:'Ven', 6:'Sam', 7:'Dim' } %}
 
 {% block body %}
 
 {% include 'components/page_banner.html.twig' with {
   title: 'Événements',
-  subtitle: 'À venir à l’Épi-Café',
+  subtitle: 'Concerts, soirées à thème, rendez-vous hebdomadaires — toute la vie de l\'Épi-Café.',
+  background: site_image('banner_events', 'images/banners-events.png'),
   bgClass: 'vv-miniHero--events'
 } %}
 
-<section class="vv-section vv-section--light">
+{# ============================================================
+   BANDE STATS (contexte rapide)
+   ============================================================ #}
+<section class="vv-section vv-section--light vv-eventsStatsSection">
   <div class="vv-container">
-    <div class="vv-section__head vv-scroll-reveal"></div>
+    <div class="vv-eventsStats vv-scroll-reveal">
+      <div class="vv-eventStat">
+        <span class="vv-eventStat__value">{{ upcomingTotal }}</span>
+        <span class="vv-eventStat__label">Événement{{ upcomingTotal > 1 ? 's' : '' }} à venir</span>
+      </div>
+      <div class="vv-eventStat">
+        <span class="vv-eventStat__value">{{ recurringEvents|length }}</span>
+        <span class="vv-eventStat__label">Rendez-vous permanent{{ recurringEvents|length > 1 ? 's' : '' }}</span>
+      </div>
+      <div class="vv-eventStat">
+        <span class="vv-eventStat__value">{{ pastTotal }}</span>
+        <span class="vv-eventStat__label">Événement{{ pastTotal > 1 ? 's' : '' }} passé{{ pastTotal > 1 ? 's' : '' }}</span>
+      </div>
+      <div class="vv-eventStat vv-eventStat--cta">
+        <a href="{{ path('contact_index') }}" class="vv-btn vv-btn--primary">Réserver une table</a>
+      </div>
+    </div>
+  </div>
+</section>
 
-    {% if recurringEvents is defined and recurringEvents|length %}
-      <div style="height: 2rem;"></div>
-      <h2 class="vv-h3" style="margin-bottom: 2rem;">Événements permanents</h2>
+{# ============================================================
+   FEATURED — prochain grand événement
+   ============================================================ #}
+{% if featured %}
+  {% set featuredImg = featured.imageFileName
+      ? asset('uploads/events/' ~ featured.imageFileName)
+      : (featured.imageUrl ?: site_image('banner_events', 'images/banners-events.png')) %}
+
+  <section class="vv-section vv-section--light vv-eventsFeaturedSection">
+    <div class="vv-container">
+      <div class="vv-section__head vv-scroll-reveal">
+        <p class="vv-kicker">Prochainement</p>
+        <h2 class="vv-h2">Le prochain rendez-vous</h2>
+      </div>
+
+      <article class="vv-eventFeatured vv-scroll-reveal">
+        <a href="{% if featured.slug %}{{ path('event_show', { slug: featured.slug }) }}{% else %}#{% endif %}"
+           class="vv-eventFeatured__media">
+          <img src="{{ featuredImg }}" alt="{{ featured.title|e }}" loading="lazy">
+          <div class="vv-eventFeatured__gradient" aria-hidden="true"></div>
+
+          {% if featured.startAt %}
+            <div class="vv-eventFeatured__badge">
+              <strong>{{ featured.startAt|date('d') }}</strong>
+              <span>{{ shortMonths[featured.startAt|date('n')] }}</span>
+              <em>{{ days[featured.startAt|date('N')] }}</em>
+            </div>
+          {% endif %}
+        </a>
+
+        <div class="vv-eventFeatured__body">
+          <h3 class="vv-eventFeatured__title">{{ featured.title }}</h3>
+
+          {% if featured.description %}
+            <p class="vv-eventFeatured__desc">{{ featured.description }}</p>
+          {% endif %}
+
+          <div class="vv-eventFeatured__meta">
+            {% if featured.startAt %}
+              <span class="vv-eventMeta">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                {{ featured.startAt|date('l d F') }}
+              </span>
+              <span class="vv-eventMeta">
+                <i class="fa fa-clock" aria-hidden="true"></i>
+                {{ featured.startAt|date('H:i') }}
+                {% if featured.endAt %} — {{ featured.endAt|date('H:i') }}{% endif %}
+              </span>
+            {% endif %}
+            <span class="vv-eventMeta">
+              <i class="fa fa-location-dot" aria-hidden="true"></i>
+              Épi-Café, Le Barroux
+            </span>
+          </div>
+
+          {% if featured.menuStarter or featured.menuMain or featured.menuDessert or featured.product1Name %}
+            <div class="vv-eventFeatured__menu">
+              <p class="vv-kicker" style="margin-bottom:.4rem;">Au menu</p>
+              <ul class="vv-eventFeatured__menuList">
+                {% if featured.menuStarter %}<li><span>🥗</span>{{ featured.menuStarter }}</li>{% endif %}
+                {% if featured.menuMain    %}<li><span>🍽️</span>{{ featured.menuMain }}</li>{% endif %}
+                {% if featured.menuDessert %}<li><span>🍰</span>{{ featured.menuDessert }}</li>{% endif %}
+                {% if featured.product1Name %}<li><span>🍔</span>{{ featured.product1Name }}</li>{% endif %}
+                {% if featured.product2Name %}<li><span>🍔</span>{{ featured.product2Name }}</li>{% endif %}
+                {% if featured.product3Name %}<li><span>🍔</span>{{ featured.product3Name }}</li>{% endif %}
+              </ul>
+              {% if featured.menuPrice %}
+                <p class="vv-eventFeatured__price">
+                  <strong>{{ featured.menuPrice|number_format(2, ',', ' ') }}€</strong>
+                  <span>menu complet</span>
+                </p>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          <div class="vv-eventFeatured__actions">
+            {% if featured.slug %}
+              <a href="{{ path('event_show', { slug: featured.slug }) }}" class="vv-btn vv-btn--primary">
+                Voir le détail
+              </a>
+            {% endif %}
+            <a href="{{ path('contact_index') }}" class="vv-btn vv-btn--ghost">
+              Réserver
+            </a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+{% endif %}
+
+{# ============================================================
+   RENDEZ-VOUS PERMANENTS
+   ============================================================ #}
+{% if recurringEvents|length %}
+  <section class="vv-section vv-section--cream">
+    <div class="vv-container">
+      <div class="vv-section__head vv-scroll-reveal">
+        <p class="vv-kicker">Chaque semaine</p>
+        <h2 class="vv-h2">Les rendez-vous permanents</h2>
+        <p class="vv-lead">Ces événements reviennent régulièrement — pas besoin de réserver à chaque fois.</p>
+      </div>
+
       <div class="vv-events">
         {% for event in recurringEvents %}
           {% include 'events/event_row.html.twig' with { event: event } %}
         {% endfor %}
       </div>
-    {% endif %}
+    </div>
+  </section>
+{% endif %}
 
-    <h2 class="vv-h3" style="margin-bottom: 2rem; margin-top: 3rem;">À venir</h2>
-    {% if upcomingEvents|length %}
-      <div class="vv-events">
-        {% for event in upcomingEvents %}
-          {% include 'events/event_row.html.twig' with { event: event } %}
-        {% endfor %}
+{# ============================================================
+   AGENDA — regroupement par mois
+   ============================================================ #}
+{% if upcomingByMonth|length %}
+  <section class="vv-section vv-section--light">
+    <div class="vv-container">
+      <div class="vv-section__head vv-scroll-reveal">
+        <p class="vv-kicker">Agenda</p>
+        <h2 class="vv-h2">À venir à l'Épi-Café</h2>
       </div>
-    {% else %}
-      <p class="vv-muted">Aucun événement à venir.</p>
-    {% endif %}
 
-    <div style="height: 2rem;"></div>
+      {% for monthKey, events in upcomingByMonth %}
+        {% set year = monthKey|slice(0, 4) %}
+        {% set monthNum = monthKey|slice(5, 2) %}
 
-    <h2 class="vv-h3" style="margin-bottom: 1rem;">Archives</h2>
-    {% if pastEvents|length %}
-      <div class="vv-events">
+        <div class="vv-eventsMonth vv-scroll-reveal">
+          <header class="vv-eventsMonth__head">
+            <h3 class="vv-eventsMonth__title">
+              {{ months[monthNum] }} <span>{{ year }}</span>
+            </h3>
+            <span class="vv-eventsMonth__count">
+              {{ events|length }} événement{{ events|length > 1 ? 's' : '' }}
+            </span>
+          </header>
+
+          <div class="vv-events">
+            {% for event in events %}
+              {% include 'events/event_row.html.twig' with { event: event } %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% elseif not featured %}
+  <section class="vv-section vv-section--light">
+    <div class="vv-container">
+      <div class="vv-emptyBlock vv-scroll-reveal">
+        <span class="vv-emptyBlock__icon">📅</span>
+        <h3>Aucun événement programmé pour le moment</h3>
+        <p>Repasse bientôt ou suis-nous pour être prévenu des prochaines soirées.</p>
+        <a href="{{ path('contact_index') }}" class="vv-btn vv-btn--primary">Nous contacter</a>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{# ============================================================
+   ARCHIVES — aperçu compact
+   ============================================================ #}
+{% if pastEvents|length %}
+  <section class="vv-section vv-section--cream">
+    <div class="vv-container">
+      <div class="vv-section__head vv-scroll-reveal">
+        <p class="vv-kicker">Souvenirs</p>
+        <h2 class="vv-h2">Les derniers événements</h2>
+        <p class="vv-lead">Un aperçu des rendez-vous passés — pour se souvenir des bons moments.</p>
+      </div>
+
+      <div class="vv-events vv-events--archives">
         {% for event in pastEvents %}
           {% include 'events/event_row.html.twig' with { event: event } %}
         {% endfor %}
       </div>
-    {% else %}
-      <p class="vv-muted">Pas d’archives pour le moment.</p>
-    {% endif %}
-  </div>
-</section>
+    </div>
+  </section>
+{% endif %}
+
 {% endblock %}

@@ -2,140 +2,172 @@
 {% set bodyClass = 'vv-hero-dark vv-page' %}
 {% block title %}Boutique | L'Épi-Café{% endblock %}
 
+{#
+  Placeholder Unsplash par slug — utilisé tant qu'aucune image n'a été uploadée
+  via le CRUD admin (ShopCategory > Image). Dès qu'une vraie photo est ajoutée,
+  elle prend le dessus automatiquement.
+#}
+{% set placeholderImages = {
+  'produits-locaux':       'https://images.unsplash.com/photo-1518843875459-f738682238a6?w=1600&auto=format&fit=crop&q=80',
+  'cave-et-vins':          'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&auto=format&fit=crop&q=80',
+  'fromages-charcuterie':  'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=1200&auto=format&fit=crop&q=80',
+  'pain-et-depot':         'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&auto=format&fit=crop&q=80',
+  'miel-du-ventoux':       'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1200&auto=format&fit=crop&q=80',
+  'bieres-locales':        'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=1200&auto=format&fit=crop&q=80',
+  'vins-du-ventoux':       'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&auto=format&fit=crop&q=80',
+  'huile-olive':           'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=1200&auto=format&fit=crop&q=80',
+  'oeufs-fermiers':        'https://images.unsplash.com/photo-1518569656558-1f25e69d93d7?w=1200&auto=format&fit=crop&q=80',
+  'produits-frais':        'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&auto=format&fit=crop&q=80',
+  'pain-viennoiseries':    'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&auto=format&fit=crop&q=80',
+} %}
+{% set defaultPlaceholder = 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&auto=format&fit=crop&q=80' %}
+
 {% block body %}
 
 {% include 'components/page_banner.html.twig' with {
   title: 'La boutique',
-  subtitle: 'Produits du quotidien, terroir et plaisir de bien manger au cœur du village.',
-  background: asset('images/banners-shop.png'),
+  subtitle: 'Une épicerie de village, pensée pour le quotidien et le plaisir.',
+  background: site_image('banner_shop', 'images/banners-shop.png'),
   bgClass: 'vv-miniHero--shop'
 } %}
 
-<section class="vv-section vv-section--light">
-  <div class="vv-container">
+<article class="vv-shopMag vv-shopMag--timeline">
 
-    <div class="vv-shopIntro">
-      <div class="vv-shopIntro__content">
-        <p class="vv-kicker">Épicerie de village</p>
-        <h1 class="vv-h2">Une boutique simple, locale et utile</h1>
-        <p class="vv-lead vv-shopIntro__lead">
-          À l’Épi-Café, la boutique réunit l’essentiel du quotidien et le plaisir des bons produits :
-          cave locale, charcuterie, fromages, pain, viennoiseries, œufs fermiers, légumes, produits
-          du quotidien et spécialités du terroir.
-        </p>
+  {# ---------- En-tête / chapeau d'article ---------- #}
+  <header class="vv-shopMag__header vv-scroll-reveal">
+    <div class="vv-container vv-shopMag__headerInner">
+      <p class="vv-kicker">Reportage maison</p>
+      <h1 class="vv-shopMag__title">
+        L'Épi-Café : une épicerie qui ressemble au village
+      </h1>
+      <p class="vv-shopMag__deck">
+        Au pied du Mont Ventoux, dans une commune où chaque commerce compte, l'Épi-Café
+        a fait le choix d'une épicerie à hauteur d'habitant : utile, locale, conviviale.
+        Voici ce qu'on y trouve, et pourquoi ça compte.
+      </p>
+      <p class="vv-shopMag__byline">Le Barroux • Sélection 2026</p>
+    </div>
+  </header>
+
+  {# ============================================================
+     TIMELINE — fil vertical avec dots cliquables/animés au scroll
+     ============================================================ #}
+  {% if categories|length > 0 %}
+    <div class="vv-container vv-shopMag__railWrap">
+      <div class="vv-shopMag__rail" data-shop-timeline>
+
+        {% for cat in categories %}
+          {% set chapterImg = cat.imageFileName
+              ? asset('uploads/shop/' ~ cat.imageFileName)
+              : (cat.imageUrl ?: (placeholderImages[cat.slug]|default(defaultPlaceholder))) %}
+          {% set side = loop.index is odd ? 'left' : 'right' %}
+
+          <section class="vv-shopMag__chapter vv-shopMag__chapter--{{ side }}"
+                   id="chapter-{{ cat.slug }}"
+                   data-chapter-index="{{ loop.index }}">
+
+            <div class="vv-shopMag__dot" aria-hidden="true">
+              <span class="vv-shopMag__dotInner">{{ '%02d'|format(loop.index) }}</span>
+            </div>
+
+            <div class="vv-shopMag__chapterCard">
+              <header class="vv-shopMag__chapterHead">
+                <p class="vv-shopMag__chapterTag">Chapitre {{ '%02d'|format(loop.index) }}</p>
+                {% if cat.kicker %}
+                  <p class="vv-kicker vv-shopMag__chapterKicker">{{ cat.kicker }}</p>
+                {% endif %}
+                <h2 class="vv-shopMag__chapterTitle">{{ cat.name }}</h2>
+              </header>
+
+              <figure class="vv-shopMag__chapterFigure">
+                <img src="{{ chapterImg }}" alt="{{ cat.name }}" loading="lazy">
+              </figure>
+
+              <div class="vv-shopMag__chapterBody">
+                {% if cat.description %}
+                  {# Une ligne vide dans la description => nouveau paragraphe #}
+                  {% for paragraph in cat.description|split('\n\n') %}
+                    {% set paragraph = paragraph|trim %}
+                    {% if paragraph %}
+                      <p class="vv-shopMag__chapterText">{{ paragraph|nl2br }}</p>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+
+                {% set items = cat.highlightLines %}
+                {% if items|length > 0 %}
+                  <p class="vv-shopMag__inlineList">
+                    <em>Ce qu'on trouve&nbsp;:</em>
+                    {% for item in items %}{{ item }}{% if not loop.last %} · {% endif %}{% endfor %}.
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+          </section>
+
+          {# Pull quote attachée à cet article (si la cliente l'a renseignée dans le CRUD) #}
+          {% if cat.pullQuote and not loop.last %}
+            <aside class="vv-shopMag__pullQuote vv-scroll-reveal" data-shop-quote>
+              <div class="vv-shopMag__dot vv-shopMag__dot--quote vv-shopMag__dot--quoteOpen" aria-hidden="true">
+                <span class="vv-shopMag__dotInner"></span>
+              </div>
+              <blockquote>«&nbsp;{{ cat.pullQuote|trim }}&nbsp;»</blockquote>
+              <cite>— {{ cat.pullQuoteAuthor ?: "L'esprit de l'Épi-Café" }}</cite>
+              <div class="vv-shopMag__dot vv-shopMag__dot--quote vv-shopMag__dot--quoteClose" aria-hidden="true">
+                <span class="vv-shopMag__dotInner"></span>
+              </div>
+            </aside>
+          {% endif %}
+        {% endfor %}
+
       </div>
     </div>
+  {% endif %}
 
-    <div class="vv-shopGrid">
+  {# ---------- CONCLUSION ---------- #}
+  <section class="vv-shopMag__closing vv-scroll-reveal">
+    <div class="vv-container vv-shopMag__closingInner">
+      <p class="vv-kicker">Pour finir</p>
+      <h2 class="vv-shopMag__closingTitle">
+        Une boutique de proximité, simple et juste
+      </h2>
+      <p>
+        L'Épi-Café n'a pas vocation à remplacer le supermarché. C'est l'inverse :
+        c'est l'épicerie où l'on s'arrête en sortant du four à pain, où l'on commande
+        sa bouteille avant l'apéro, où l'on dépose son colis et où l'on reprend une
+        conversation avec le voisin. Un service, du goût, une atmosphère.
+      </p>
+      <p>
+        Passez voir, demandez conseil — la boutique évolue avec les saisons et les
+        rencontres.
+      </p>
 
-      <article class="vv-shopCard">
-        <div class="vv-shopCard__icon">🍷</div>
-        <h3 class="vv-shopCard__title">Vins locaux</h3>
-        <p class="vv-shopCard__text">
-          Une sélection de vins du Ventoux et des environs, à découvrir à la bouteille
-          ou à offrir.
-        </p>
-      </article>
-
-      <article class="vv-shopCard">
-        <div class="vv-shopCard__icon">🧀</div>
-        <h3 class="vv-shopCard__title">Charcuterie & fromages</h3>
-        <p class="vv-shopCard__text">
-          Des produits gourmands à partager, selon les arrivages et les saisons.
-        </p>
-      </article>
-
-      <article class="vv-shopCard">
-        <div class="vv-shopCard__icon">🥖</div>
-        <h3 class="vv-shopCard__title">Pain & viennoiseries</h3>
-        <p class="vv-shopCard__text">
-          Dépôt de pain et viennoiseries pour le quotidien, avec le plaisir du bon produit.
-        </p>
-      </article>
-
-      <article class="vv-shopCard">
-        <div class="vv-shopCard__icon">🥚</div>
-        <h3 class="vv-shopCard__title">Produits fermiers</h3>
-        <p class="vv-shopCard__text">
-          Œufs fermiers et produits simples, pratiques et authentiques pour la maison.
-        </p>
-      </article>
-
-      <article class="vv-shopCard">
-        <div class="vv-shopCard__icon">🥬</div>
-        <h3 class="vv-shopCard__title">Légumes & produits frais</h3>
-        <p class="vv-shopCard__text">
-          Une présence de produits frais selon les saisons, les disponibilités et les arrivages.
-        </p>
-      </article>
-
-      <article class="vv-shopCard">
-        <div class="vv-shopCard__icon">🛒</div>
-        <h3 class="vv-shopCard__title">Produits du quotidien</h3>
-        <p class="vv-shopCard__text">
-          Les essentiels de première nécessité pour dépanner et faciliter la vie du village.
-        </p>
-      </article>
-
-    </div>
-
-  </div>
-</section>
-
-<section class="vv-section vv-section--cream">
-  <div class="vv-container">
-
-    <div class="vv-shopStory">
-      <div class="vv-shopStory__content">
-        <p class="vv-kicker">L’esprit du lieu</p>
-        <h2 class="vv-h2">Une boutique de proximité, ancrée dans le village</h2>
-        <p>
-          L’idée n’est pas d’en faire trop, mais de proposer l’essentiel avec soin :
-          des produits utiles, de bonnes choses à partager, et une sélection locale
-          qui donne envie de revenir.
-        </p>
-        <p>
-          On y vient pour un produit du quotidien, une bonne bouteille, une envie d’apéritif,
-          ou simplement pour retrouver une atmosphère conviviale au pied du Ventoux.
-        </p>
-      </div>
-
-      <div class="vv-shopStory__aside">
-        <div class="vv-shopInfoCard">
-          <h3 class="vv-h3">À retrouver à la boutique</h3>
-          <ul class="vv-shopInfoList">
-            <li>Produits locaux</li>
-            <li>Cave & découvertes</li>
-            <li>Épicerie pratique</li>
-            <li>Arrivages selon saison</li>
-            <li>Conseil sur place</li>
-          </ul>
-        </div>
+      <div class="vv-shopMag__closingActions">
+        <a href="{{ path('contact_index') }}" class="vv-btn vv-btn--primary">Nous contacter</a>
+        <a href="{{ path('contact_index') }}#hours" class="vv-btn vv-btn--ghost">Horaires d'ouverture</a>
+        <a href="{{ path('app_home') }}" class="vv-btn vv-btn--ghost">Retour à l'accueil</a>
       </div>
     </div>
+  </section>
 
-  </div>
-</section>
+</article>
 
-<section class="vv-section vv-section--light">
-  <div class="vv-container">
+{# Activation progressive des dots au scroll #}
+<script>
+  (function() {
+    const sections = document.querySelectorAll('[data-chapter-index]');
+    if (!sections.length || !('IntersectionObserver' in window)) return;
 
-    <div class="vv-menuCta">
-      <div class="vv-menuCta__inner">
-        <div class="vv-menuCta__text">
-          <h2>Un besoin, une envie, un produit à retrouver ?</h2>
-          <p>Passez nous voir sur place ou contactez-nous pour en savoir plus sur les arrivages et disponibilités.</p>
-        </div>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in-view');
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -25% 0px' });
 
-        <div class="vv-menuCta__actions">
-          <a href="{{ path('contact_index') }}" class="vv-btn vv-btn--primary">Nous contacter</a>
-          <a href="{{ path('contact_index') }}#hours" class="vv-btn vv-btn--ghost">Voir les horaires</a>
-          <a href="{{ path('app_home') }}" class="vv-btn vv-btn--ghost">Retour à l’accueil</a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
+    sections.forEach((s) => observer.observe(s));
+  })();
+</script>
 
 {% endblock %}

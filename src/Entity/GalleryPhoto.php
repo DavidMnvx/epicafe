@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GalleryPhotoRepository::class)]
 #[ORM\Table(name: 'gallery_photo')]
+#[ORM\HasLifecycleCallbacks]
 class GalleryPhoto
 {
     #[ORM\Id]
@@ -54,6 +55,20 @@ class GalleryPhoto
     public function __toString(): string
     {
         return $this->title ?: 'Photo';
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $now = new \DateTimeImmutable();
+        $this->createdAt = $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function touch(): void

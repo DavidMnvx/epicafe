@@ -1,0 +1,63 @@
+{% extends '@EasyAdmin/crud/edit.html.twig' %}
+
+{% block main %}
+  {% set cat = entity.instance %}
+  {% set preview_url = cat.id ? path('shop_preview', { slug: cat.slug }) : null %}
+
+  <div class="vv-shopEdit">
+    <div class="vv-shopEdit__form">
+      {{ parent() }}
+    </div>
+
+    {% if preview_url %}
+      <aside class="vv-shopEdit__preview" aria-label="Aperçu de l'article">
+        <header class="vv-shopEdit__previewHead">
+          <span class="vv-shopEdit__previewBadge">
+            <i class="fa fa-eye"></i> Aperçu en direct
+          </span>
+          <div class="vv-shopEdit__previewLinks">
+            <a href="{{ preview_url }}" target="_blank" rel="noopener" title="Ouvrir dans un nouvel onglet">
+              <i class="fa fa-arrow-up-right-from-square"></i>
+            </a>
+            <button type="button" class="vv-shopEdit__refresh" title="Recharger l'aperçu" data-shopedit-refresh>
+              <i class="fa fa-rotate-right"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="vv-shopEdit__previewFrame">
+          <iframe
+            data-shopedit-iframe
+            src="{{ preview_url }}"
+            title="Aperçu — {{ cat.name }}"
+            loading="lazy"></iframe>
+        </div>
+
+        <p class="vv-shopEdit__previewHelp">
+          <i class="fa fa-info-circle"></i>
+          L'aperçu reflète la <strong>version sauvegardée</strong>.
+          Après "Enregistrer", clique sur 🔄 pour recharger.
+        </p>
+      </aside>
+
+      <script>
+        (function() {
+          const btn = document.querySelector('[data-shopedit-refresh]');
+          const iframe = document.querySelector('[data-shopedit-iframe]');
+          if (btn && iframe) {
+            btn.addEventListener('click', () => {
+              iframe.src = iframe.src;
+            });
+          }
+        })();
+      </script>
+    {% else %}
+      <aside class="vv-shopEdit__preview vv-shopEdit__preview--empty">
+        <p>
+          <i class="fa fa-info-circle"></i>
+          L'aperçu sera disponible après la première sauvegarde de l'article.
+        </p>
+      </aside>
+    {% endif %}
+  </div>
+{% endblock %}

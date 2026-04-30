@@ -1,0 +1,115 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+  {% if entities|length == 0 %}
+    <div class="no-results">
+      <p>Aucun article boutique. Clique sur "Nouvelle catégorie" pour en créer un, ou lance
+        <code>php bin/console app:shop-categories:seed</code>.</p>
+    </div>
+  {% else %}
+    <div class="vv-shop-cards-grid">
+      {% for entity in entities %}
+        {% set cat = entity.instance %}
+        {% set edit_url = entity.actions.get('edit') ? entity.actions.get('edit').linkUrl : '#' %}
+        {% set preview_url = entity.actions.get('previewArticle') ? entity.actions.get('previewArticle').linkUrl : null %}
+        {% set move_up_url = entity.actions.get('moveUp') ? entity.actions.get('moveUp').linkUrl : null %}
+        {% set move_down_url = entity.actions.get('moveDown') ? entity.actions.get('moveDown').linkUrl : null %}
+        {% set delete_url = entity.actions.get('delete') ? entity.actions.get('delete').linkUrl : null %}
+        {% set image_url = cat.imageFileName
+            ? asset('uploads/shop/' ~ cat.imageFileName)
+            : (cat.imageUrl ?: null) %}
+
+        <article class="vv-shop-card {{ cat.isPublished ? '' : 'is-unpublished' }}">
+
+          {# Numéro d'ordre + dot publication #}
+          <div class="vv-shop-card__topbar">
+            <span class="vv-shop-card__pos" title="Ordre d'affichage">#{{ cat.position }}</span>
+            <span class="vv-shop-card__publish {{ cat.isPublished ? 'is-on' : 'is-off' }}">
+              <i class="vv-dot"></i>
+              {{ cat.isPublished ? 'Publié' : 'Brouillon' }}
+            </span>
+          </div>
+
+          <a class="vv-shop-card__media" href="{{ edit_url }}" aria-label="Modifier {{ cat.name }}">
+            {% if image_url %}
+              <img src="{{ image_url }}" alt="{{ cat.name }}" loading="lazy">
+            {% else %}
+              <div class="vv-shop-card__placeholder">
+                <span>{{ cat.icon ?: '🛒' }}</span>
+              </div>
+            {% endif %}
+          </a>
+
+          <div class="vv-shop-card__body">
+            {% if cat.kicker %}
+              <p class="vv-shop-card__kicker">{{ cat.kicker }}</p>
+            {% endif %}
+
+            <h3 class="vv-shop-card__title">{{ cat.name }}</h3>
+
+            {% if cat.description %}
+              <p class="vv-shop-card__excerpt">
+                {%- set txt = cat.description|striptags -%}
+                {%- if txt|length > 140 -%}
+                  {{ txt|slice(0, 140)|split(' ')|slice(0, -1)|join(' ') ~ '…' }}
+                {%- else -%}
+                  {{ txt }}
+                {%- endif -%}
+              </p>
+            {% endif %}
+
+            {% if cat.highlightLines|length > 0 %}
+              <p class="vv-shop-card__meta">
+                <i class="fa fa-list"></i>
+                {{ cat.highlightLines|length }} produit{{ cat.highlightLines|length > 1 ? 's' : '' }} listé{{ cat.highlightLines|length > 1 ? 's' : '' }}
+              </p>
+            {% endif %}
+          </div>
+
+          <div class="vv-shop-card__order">
+            {% if move_up_url %}
+              <a href="{{ move_up_url }}" class="vv-shop-card__orderBtn" title="Monter">
+                <i class="fa fa-arrow-up"></i>
+              </a>
+            {% else %}
+              <span class="vv-shop-card__orderBtn is-disabled"><i class="fa fa-arrow-up"></i></span>
+            {% endif %}
+            {% if move_down_url %}
+              <a href="{{ move_down_url }}" class="vv-shop-card__orderBtn" title="Descendre">
+                <i class="fa fa-arrow-down"></i>
+              </a>
+            {% else %}
+              <span class="vv-shop-card__orderBtn is-disabled"><i class="fa fa-arrow-down"></i></span>
+            {% endif %}
+          </div>
+
+          <div class="vv-shop-card__actions">
+            {% if preview_url %}
+              <a href="{{ preview_url }}" class="btn btn-secondary" target="_blank" rel="noopener">
+                <i class="fa fa-eye"></i> Aperçu
+              </a>
+            {% endif %}
+            <a href="{{ edit_url }}" class="btn btn-primary">
+              <i class="fa fa-pen"></i> Modifier
+            </a>
+            {% if delete_url %}
+              <a href="{{ delete_url }}" class="btn btn-link text-danger" data-bs-toggle="modal" data-bs-target="#modal-delete">
+                <i class="fa fa-trash"></i>
+              </a>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if paginator.hasPreviousPage or paginator.hasNextPage %}
+      <div class="datagrid-pagination-wrapper mt-4">
+        {{ include('@EasyAdmin/crud/paginator.html.twig') }}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% block delete_form %}
+    {{ include('@EasyAdmin/crud/includes/_delete_form.html.twig') }}
+  {% endblock delete_form %}
+{% endblock main %}

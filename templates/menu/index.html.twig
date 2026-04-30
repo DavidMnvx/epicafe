@@ -1,6 +1,13 @@
 {% extends 'base_front.html.twig' %}
 {% set bodyClass = 'vv-hero-dark vv-hero-img' %}
-{% block title %}Menu | L'épi-Café{% endblock %}
+{% block title %}Menu | L'Épi-Café{% endblock %}
+
+{# Mapping icône par section (utilisé dans le sommaire et les titres) #}
+{% set sectionIcons = {
+  'SNACK':    '🍔',
+  'BOISSONS': '🥤',
+  'ALCOOL':   '🍷',
+} %}
 
 {% macro render_item(i) %}
   {% if i.isPublished %}
@@ -56,20 +63,70 @@
 {% include 'components/page_banner.html.twig' with {
   title: 'Menu',
   subtitle: 'Boissons, produits du terroir et plaisirs simples à déguster au cœur du village.',
-  background: asset('images/banners-menu.png'),
+  background: site_image('banner_menu', 'images/banners-menu.png'),
   bgClass: 'vv-miniHero--menu'
 } %}
 
 <section class="vv-section vv-section--light">
   <div class="vv-container">
 
-    <div class="vv-menuPageHead">
-      <h1 class="vv-title">La carte</h1>
-      <p class="vv-lead">Une présentation plus claire, pensée comme une vraie carte de bistrot : snack, boissons et alcool.</p>
+    <div class="vv-section__head vv-scroll-reveal">
+      <p class="vv-kicker">À déguster</p>
+      <h2 class="vv-h2">La carte</h2>
+      <p class="vv-lead">Une présentation pensée comme une vraie carte de bistrot : snack, boissons et alcool.</p>
     </div>
 
+    {# ============================================================
+       SOMMAIRE STICKY — chips de navigation entre sections
+       ============================================================ #}
     {% set sectionOrder = ['SNACK', 'BOISSONS', 'ALCOOL'] %}
 
+    <nav class="vv-menuSommaire vv-scroll-reveal" aria-label="Sommaire de la carte" data-menu-sommaire>
+      <span class="vv-menuSommaire__label">Aller à&nbsp;:</span>
+      <ul class="vv-menuSommaire__list">
+        {% for sectionName in sectionOrder %}
+          {% set sectionCategory = null %}
+          {% for cat in rootCategories %}
+            {% if cat.isPublished and cat.name|upper == sectionName %}
+              {% set sectionCategory = cat %}
+            {% endif %}
+          {% endfor %}
+
+          {% if sectionCategory %}
+            {% set anchor = 'menu-' ~ sectionName|lower %}
+
+            {# Calcul inline du nombre d'items publiés (items directs + sous-catégories) #}
+            {% set count = 0 %}
+            {% for i in sectionCategory.items %}
+              {% if i.isPublished %}{% set count = count + 1 %}{% endif %}
+            {% endfor %}
+            {% for sub in sectionCategory.children %}
+              {% if sub.isPublished %}
+                {% for i in sub.items %}
+                  {% if i.isPublished %}{% set count = count + 1 %}{% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+
+            <li>
+              <a href="#{{ anchor }}"
+                 class="vv-menuSommaire__chip"
+                 data-section-link="{{ anchor }}">
+                <span class="vv-menuSommaire__icon" aria-hidden="true">{{ sectionIcons[sectionName] ?? '·' }}</span>
+                <span class="vv-menuSommaire__name">{{ sectionCategory.name }}</span>
+                {% if count > 0 %}
+                  <span class="vv-menuSommaire__count">{{ count }}</span>
+                {% endif %}
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {# ============================================================
+       SECTIONS DE LA CARTE
+       ============================================================ #}
     {% for sectionName in sectionOrder %}
       {% set sectionCategory = null %}
 
@@ -80,8 +137,12 @@
       {% endfor %}
 
       {% if sectionCategory %}
-        <section class="vv-menuSection">
+        {% set anchor = 'menu-' ~ sectionName|lower %}
+        <section id="{{ anchor }}"
+                 class="vv-menuSection vv-scroll-reveal"
+                 data-section="{{ anchor }}">
           <div class="vv-menuSection__head">
+            <span class="vv-menuSection__icon" aria-hidden="true">{{ sectionIcons[sectionName] ?? '' }}</span>
             <h2 class="vv-menuSection__title">{{ sectionCategory.name }}</h2>
           </div>
 
@@ -118,40 +179,142 @@
               </div>
             {% endfor %}
           </div>
+
+          {# Loi Évin : mention obligatoire sous toute publicité de boissons alcoolisées #}
+          {% if sectionName == 'ALCOOL' %}
+            <p class="vv-menuLegal vv-menuLegal--evin" role="note">
+              <span aria-hidden="true">⚠</span>
+              <em>L'abus d'alcool est dangereux pour la santé. À consommer avec modération.</em>
+            </p>
+          {% endif %}
         </section>
       {% endif %}
     {% endfor %}
 
-    <section class="vv-menuCta">
+    {# ============================================================
+       MENTIONS LÉGALES DE LA CARTE — allergènes, origine, fait maison
+       ============================================================ #}
+    <aside class="vv-menuFootnotes vv-scroll-reveal" aria-label="Informations légales sur la carte">
+      <h3 class="vv-menuFootnotes__title">Bon à savoir</h3>
+
+      <div class="vv-menuFootnotes__grid">
+
+        <div class="vv-menuFootnote">
+          <span class="vv-menuFootnote__icon" aria-hidden="true">🌾</span>
+          <div>
+            <strong>Allergènes</strong>
+            <p>La liste des allergènes présents dans nos préparations est disponible sur simple demande au comptoir.</p>
+          </div>
+        </div>
+
+        <div class="vv-menuFootnote">
+          <span class="vv-menuFootnote__icon" aria-hidden="true">👨‍🍳</span>
+          <div>
+            <strong>Fait maison</strong>
+            <p>Une grande partie de notre carte est préparée sur place à partir de produits bruts. N'hésitez pas à nous demander.</p>
+          </div>
+        </div>
+
+        <div class="vv-menuFootnote">
+          <span class="vv-menuFootnote__icon" aria-hidden="true">📍</span>
+          <div>
+            <strong>Origine & saison</strong>
+            <p>Nos viandes, fromages et légumes sont sélectionnés en priorité auprès de producteurs locaux. La carte évolue selon les saisons et arrivages.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="vv-menuFootnotes__note">
+        Prix nets en euros (TTC), service compris.
+      </p>
+    </aside>
+
+  </div>
+</section>
+
+{# ============================================================
+   CTA — réservation, événements
+   ============================================================ #}
+<section class="vv-section vv-section--cream">
   <div class="vv-container">
+    <div class="vv-menuCta">
+      <div class="vv-menuCta__inner">
 
-    <div class="vv-menuCta__inner">
+        <div class="vv-menuCta__text">
+          <h2>Envie de passer un bon moment ?</h2>
+          <p>Réservez votre table ou découvrez les prochains événements de l'Épi-Café.</p>
+        </div>
 
-      <div class="vv-menuCta__text">
-        <h2>Envie de passer un bon moment ?</h2>
-        <p>Réservez votre table ou découvrez les prochains événements de l'Épi-Café.</p>
+        <div class="vv-menuCta__actions">
+          <a href="{{ path('contact_index') }}" class="vv-btn vv-btn--primary">
+            📅 Réserver
+          </a>
+
+          <a href="{{ path('event_index') }}" class="vv-btn vv-btn--ghost">
+            🎶 Voir les événements
+          </a>
+
+          <a href="{{ path('contact_index') }}#contact" class="vv-btn vv-btn--ghost">
+            📞 Nous contacter
+          </a>
+        </div>
+
       </div>
-
-      <div class="vv-menuCta__actions">
-        <a href="tel:+33600000000" class="vv-btn vv-btn-primary">
-          📞 Appeler
-        </a>
-
-        <a href="{{ path('contact_index') }}" class="vv-btn vv-btn-outline">
-          📅 Réserver
-        </a>
-
-        <a href="{{ path('event_index') }}" class="vv-btn vv-btn-ghost">
-          🎶 Événements
-        </a>
-      </div>
-
     </div>
-
   </div>
 </section>
 
-  </div>
-</section>
+{# ============================================================
+   BOUTON "Retour en haut" flottant — visible après scroll
+   ============================================================ #}
+<button type="button"
+        class="vv-backToTop"
+        aria-label="Retour en haut de la page"
+        data-back-to-top>
+  <span aria-hidden="true">↑</span>
+</button>
+
+{# ============================================================
+   JS : highlight section active + back-to-top
+   ============================================================ #}
+<script>
+  (function() {
+    // 1) Highlight section active dans le sommaire au scroll
+    const links = document.querySelectorAll('[data-section-link]');
+    const sections = document.querySelectorAll('[data-section]');
+
+    if (sections.length && 'IntersectionObserver' in window) {
+      const linkByAnchor = {};
+      links.forEach(l => { linkByAnchor[l.dataset.sectionLink] = l; });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const link = linkByAnchor[entry.target.dataset.section];
+          if (!link) return;
+          if (entry.isIntersecting) {
+            links.forEach(l => l.classList.remove('is-active'));
+            link.classList.add('is-active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -55% 0px', threshold: 0 });
+
+      sections.forEach(s => observer.observe(s));
+    }
+
+    // 2) Bouton "retour en haut" — apparaît après 300px de scroll
+    const backBtn = document.querySelector('[data-back-to-top]');
+    if (backBtn) {
+      const toggle = () => {
+        backBtn.classList.toggle('is-visible', window.scrollY > 300);
+      };
+      window.addEventListener('scroll', toggle, { passive: true });
+      toggle();
+      backBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  })();
+</script>
 
 {% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base_front.html.twig' %}
+{% set bodyClass = 'vv-hero-dark vv-page' %}
+{% block title %}Page introuvable | L'Épi-Café{% endblock %}
+
+{% block body %}
+  <section class="vv-section vv-section--light vv-errorPage">
+    <div class="vv-container vv-errorPage__inner">
+
+      <div class="vv-errorPage__code" aria-hidden="true">404</div>
+
+      <h1 class="vv-errorPage__title">
+        Cette page n'existe pas
+      </h1>
+
+      <p class="vv-errorPage__text">
+        La page que vous cherchez a été déplacée, supprimée, ou n'a peut-être jamais existé.
+        Pas de panique — vous trouverez sûrement votre bonheur ailleurs.
+      </p>
+
+      <div class="vv-errorPage__actions">
+        <a href="{{ path('app_home') }}" class="vv-btn vv-btn--primary">
+          ← Retour à l'accueil
+        </a>
+        <a href="{{ path('event_index') }}" class="vv-btn vv-btn--ghost">
+          Voir les événements
+        </a>
+        <a href="{{ path('menu') }}" class="vv-btn vv-btn--ghost">
+          Voir la carte
+        </a>
+      </div>
+
+      <p class="vv-errorPage__hint">
+        Vous pensez qu'il s'agit d'une erreur ?
+        <a href="{{ path('contact_index') }}#contact">Signalez-nous le lien cassé</a>.
+      </p>
+
+    </div>
+  </section>
+{% endblock %}
