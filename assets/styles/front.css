@@ -66,7 +66,6 @@
     );
     color: hsl(var(--foreground));
     -webkit-font-smoothing: antialiased;
-
     -moz-osx-font-smoothing: grayscale;
   }
 
@@ -256,17 +255,15 @@
 .vv-miniHero--menu .vv-miniHero__bgImg{ object-position:center 27%; }
 .vv-miniHero--partners .vv-miniHero__bgImg{ object-position:center 57%; }
 .vv-miniHero--contact .vv-miniHero__bgImg{ object-position:center 47%; }
-.vv-miniHero--shop .vv-miniHero__bgImg{ object-position:center 0%; }
+.vv-miniHero--shop .vv-miniHero__bgImg{ object-position:center 25%; }
 
 /* Contenu */
 .vv-miniHero__content{
   position: relative;
   z-index: 1;
-
   /* IMPORTANT : pousse le contenu sous la navbar fixed */
   padding-top: var(--vv-header-h);
   padding-bottom: 2.2rem;
-
   color: hsl(var(--card));
 }
 
@@ -369,7 +366,7 @@ padding: .35rem 0;
 .vv-header.is-scrolled .vv-brand__logo{
 height: 72px;
 padding: .35rem;
-transform: translateY(-15px) scale(1.08);
+transform: translateY(0) scale(1.05);
 background: transparent;
 box-shadow: none;
 backdrop-filter: none;
@@ -533,6 +530,13 @@ height: 62px;
 margin-top: 0;
 margin-right: 0;
 padding: 0;
+}
+
+/* Override l'effet "soleil" du logo home sur mobile : on garde une taille raisonnable
+   et on supprime le margin-top qui décalait logo + burger vers le bas. */
+body.vv-home .vv-brand__logo{
+  height: 62px;
+  margin-top: 0;
 }
 
 
