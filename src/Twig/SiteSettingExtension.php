@@ -7,6 +7,7 @@ namespace App\Twig;
 use App\Entity\GoogleReview;
 use App\Repository\GoogleReviewRepository;
 use App\Repository\SiteSettingRepository;
+use Symfony\Contracts\Service\ResetInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -17,8 +18,12 @@ use Twig\TwigFunction;
  *   {{ setting('contact_phone') }}
  *   {{ setting('contact_phone', '04 90 00 00 00') }}  (avec valeur par défaut)
  *   {% if setting_bool('closure_active') %} ... {% endif %}
+ *
+ * Implémente ResetInterface pour vider le cache mémoire entre chaque requête
+ * en mode worker (FrankenPHP). Sans cela les modifications côté admin
+ * ne seraient visibles qu'après recyclage du worker.
  */
-final class SiteSettingExtension extends AbstractExtension
+final class SiteSettingExtension extends AbstractExtension implements ResetInterface
 {
     /** @var array<string, string|null>|null Cache mémoire — chargé 1 seule fois par requête */
     private ?array $cache = null;
@@ -116,5 +121,17 @@ final class SiteSettingExtension extends AbstractExtension
         }
 
         return $this->cache;
+    }
+
+    /**
+     * Appelé automatiquement par Symfony entre chaque requête en mode worker.
+     * Vide les caches en mémoire pour que les modifications côté admin
+     * soient immédiatement visibles côté front.
+     */
+    public function reset(): void
+    {
+        $this->cache = null;
+        $this->reviewsCache = null;
+        $this->reviewsStatsCache = null;
     }
 }
