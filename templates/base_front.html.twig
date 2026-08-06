@@ -85,6 +85,10 @@
   </aside>
 {% endif %}
 
+{# Téléphone au format E.164 pour le SEO (Google/schema.org) : "06 99 96 65 25" → "+33699966525" #}
+{% set _phoneRaw = setting('contact_phone', '06 99 96 65 25')|replace({' ': '', '.': '', '-': ''}) %}
+{% set _phoneE164 = (_phoneRaw starts with '0') ? '+33' ~ _phoneRaw|slice(1) : _phoneRaw %}
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -107,7 +111,7 @@
     "latitude": 44.1415,
     "longitude": 5.1980
   },
-  "telephone": "+33699966525",
+  "telephone": "{{ _phoneE164 }}",
   "priceRange": "€€",
   "servesCuisine": ["Café", "Produits locaux", "Vins du Ventoux"],
   "openingHoursSpecification": [

@@ -105,9 +105,11 @@
           <h3 class="vv-h3">Informations</h3>
 
           <div class="vv-infoList">
-            <a href="tel:+33699966525">📞 06 99 96 65 25</a>
-            <a href="mailto:contact@epicafe.fr">✉️ contact@epicafe.fr</a>
-            <div>📍 56 Chemin Neuf — 84330 Le Barroux</div>
+            {% set phone = setting('contact_phone', '06 99 96 65 25') %}
+            <a href="tel:{{ phone|replace({' ': '', '.': '', '-': ''}) }}">📞 {{ phone }}</a>
+            {% set mail = setting('contact_email', 'contact@epicafebarroux.fr') %}
+            <a href="mailto:{{ mail }}">✉️ {{ mail }}</a>
+            <div>📍 {{ setting('contact_address', '56 Chemin Neuf — 84330 Le Barroux')|replace({"\n": ' — '}) }}</div>
           </div>
         </div>
       </div>

@@ -419,9 +419,11 @@
         <div class="vv-panel">
           <h3 class="vv-h3">Informations</h3>
           <div class="vv-info">
-            <a href="tel:+33699966525">📞 06 99 96 65 25</a>
-            <a href="mailto:epicafebarroux@gmail.com">✉️ contact@epicerie-barroux.fr</a>
-            <div>📍 56 Chemin Neuf — 84330 Le Barroux</div>
+            {% set phone = setting('contact_phone', '06 99 96 65 25') %}
+            <a href="tel:{{ phone|replace({' ': '', '.': '', '-': ''}) }}">📞 {{ phone }}</a>
+            {% set mail = setting('contact_email', 'epicafebarroux@gmail.com') %}
+            <a href="mailto:{{ mail }}">✉️ {{ mail }}</a>
+            <div>📍 {{ setting('contact_address', '56 Chemin Neuf — 84330 Le Barroux')|replace({"\n": ' — '}) }}</div>
           </div>
         </div>
       </div>
