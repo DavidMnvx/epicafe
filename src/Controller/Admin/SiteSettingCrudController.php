@@ -192,7 +192,7 @@ final class SiteSettingCrudController extends AbstractCrudController
                 ->setHelp('Adresse email valide (ex : contact@epicafe.fr).'),
 
             SiteSetting::TYPE_TEL => TelephoneField::new('value', 'Téléphone')
-                ->setHelp('Format libre : "04 90 12 34 56" ou "+33 4 90 12 34 56".'),
+                ->setHelp('Format libre : "06 99 96 65 25" ou "+33 6 99 96 65 25".'),
 
             SiteSetting::TYPE_TEXTAREA => TextareaField::new('value', 'Valeur')
                 ->setNumOfRows(5)

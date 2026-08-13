@@ -16,7 +16,7 @@ use Twig\TwigFunction;
  *
  * Usage :
  *   {{ setting('contact_phone') }}
- *   {{ setting('contact_phone', '04 90 00 00 00') }}  (avec valeur par défaut)
+ *   {{ setting('contact_phone', '06 99 96 65 25') }}  (avec valeur par défaut)
  *   {% if setting_bool('closure_active') %} ... {% endif %}
  *
  * Implémente ResetInterface pour vider le cache mémoire entre chaque requête
