@@ -97,22 +97,18 @@
                   : asset('images/partner-hero-placeholder.jpg')
               %}
 
-              {% set img2 =
-                p.image2FileName
-                  ? asset('uploads/partners/' ~ p.image2FileName)
-                  : asset('images/partner-2-placeholder.jpg')
-              %}
-
-              {% set img3 =
-                p.image3FileName
-                  ? asset('uploads/partners/' ~ p.image3FileName)
-                  : asset('images/partner-3-placeholder.jpg')
-              %}
+              {# Images secondaires : optionnelles — on ne rend rien si le partenaire n'a pas uploadé #}
+              {% set img2 = p.image2FileName ? asset('uploads/partners/' ~ p.image2FileName) : null %}
+              {% set img3 = p.image3FileName ? asset('uploads/partners/' ~ p.image3FileName) : null %}
 
               <div class="vv-partnerCollage">
                 <img class="vv-partnerCollage__main" src="{{ hero }}" alt="{{ p.name|e }}">
-                <img class="vv-partnerCollage__small vv-partnerCollage__small--top" src="{{ img2 }}" alt="">
-                <img class="vv-partnerCollage__small vv-partnerCollage__small--bottom" src="{{ img3 }}" alt="">
+                {% if img2 %}
+                  <img class="vv-partnerCollage__small vv-partnerCollage__small--top" src="{{ img2 }}" alt="">
+                {% endif %}
+                {% if img3 %}
+                  <img class="vv-partnerCollage__small vv-partnerCollage__small--bottom" src="{{ img3 }}" alt="">
+                {% endif %}
 
                 {% set logo =
                   p.logoFileName ? asset('uploads/partners/' ~ p.logoFileName)
