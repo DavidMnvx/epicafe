@@ -79,32 +79,45 @@ class DashboardController extends AbstractDashboardController
             ->setFaviconPath('/favicon.ico');
     }
 
+    /**
+     * Menu organisé par tâche plutôt que par entité : une entrée = une chose que
+     * la gérante veut faire. Les écrans secondaires (catégories de la carte,
+     * édition photo par photo) vivent en sous-menu de l'écran principal auquel
+     * ils se rattachent, au lieu d'occuper une ligne de premier niveau.
+     */
     public function configureMenuItems(): iterable
     {
         yield EaMenuItem::linkToDashboard('Tableau de bord', 'fa fa-gauge');
 
-        yield EaMenuItem::section('Événements');
-        yield EaMenuItem::linkToCrud('Événements', 'fa fa-calendar', Event::class);
+        yield EaMenuItem::section('Le site');
 
-        yield EaMenuItem::section('Galerie photos');
-        yield EaMenuItem::linkToCrud('Galerie', 'fa fa-image', GalleryPhoto::class);
-        yield EaMenuItem::linkToRoute('Upload photos', 'fa fa-upload', 'admin_gallery_upload');
+        // Le Menu Builder couvre la création/modification/suppression des lignes
+        // et de leurs variantes ; le CRUD Catégories reste nécessaire pour les
+        // renommer, les réordonner ou les dépublier.
+        yield EaMenuItem::subMenu('La carte', 'fa fa-utensils')->setSubItems([
+            EaMenuItem::linkToRoute('Composer la carte', 'fa fa-pen-to-square', 'admin_menu_builder'),
+            EaMenuItem::linkToCrud('Catégories de la carte', 'fa fa-list', MenuCategory::class),
+        ]);
 
-        yield EaMenuItem::section('Partenaires');
-        yield EaMenuItem::linkToCrud('Partenaires', 'fa fa-handshake', Partner::class);
+        yield EaMenuItem::linkToCrud('La boutique', 'fa fa-basket-shopping', ShopCategory::class);
 
-        yield EaMenuItem::section('Menu');
-        yield EaMenuItem::linkToCrud('Catégories menu', 'fa fa-list', MenuCategory::class);
-        yield EaMenuItem::linkToCrud('Lignes menu', 'fa fa-utensils', MenuItem::class);
-        yield EaMenuItem::linkToRoute('Menu Builder', 'fa fa-sliders', 'admin_menu_builder');
+        yield EaMenuItem::linkToCrud('Les événements', 'fa fa-calendar', Event::class);
 
-        yield EaMenuItem::section('Boutique');
-        yield EaMenuItem::linkToCrud('Catégories boutique', 'fa fa-basket-shopping', ShopCategory::class);
+        yield EaMenuItem::subMenu('Les photos', 'fa fa-image')->setSubItems([
+            EaMenuItem::linkToRoute('Ajouter des photos', 'fa fa-upload', 'admin_gallery_upload'),
+            EaMenuItem::linkToCrud('Toutes les photos', 'fa fa-images', GalleryPhoto::class),
+        ]);
 
-        yield EaMenuItem::section('Contenu du site');
+        yield EaMenuItem::linkToCrud('Les partenaires', 'fa fa-handshake', Partner::class);
+
+        yield EaMenuItem::section('Réglages');
+        yield EaMenuItem::linkToCrud('Coordonnées & options', 'fa fa-sliders', SiteSetting::class);
         yield EaMenuItem::linkToCrud('Images du site', 'fa fa-panorama', SiteImage::class);
-        yield EaMenuItem::linkToCrud('Paramètres du site', 'fa fa-sliders', SiteSetting::class);
-        yield EaMenuItem::linkToCrud('Avis clients (Google)', 'fa fa-star', GoogleReview::class);
+        yield EaMenuItem::linkToCrud('Avis Google', 'fa fa-star', GoogleReview::class);
+
+        yield EaMenuItem::section();
+        yield EaMenuItem::linkToUrl('Voir le site', 'fa fa-arrow-up-right-from-square', '/')
+            ->setLinkTarget('_blank');
     }
 
     /**
