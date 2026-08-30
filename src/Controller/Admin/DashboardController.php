@@ -115,7 +115,9 @@ class DashboardController extends AbstractDashboardController
         yield EaMenuItem::linkToCrud('Les partenaires', 'fa fa-handshake', Partner::class);
 
         yield EaMenuItem::section('Réglages');
-        yield EaMenuItem::linkToCrud('Coordonnées & options', 'fa fa-sliders', SiteSetting::class);
+        // Page unique regroupant les 23 paramètres ; le CRUD reste joignable
+        // par son URL pour les cas techniques, mais sort de la navigation.
+        yield EaMenuItem::linkToRoute('Coordonnées & options', 'fa fa-sliders', 'admin_site_settings');
         yield EaMenuItem::linkToCrud('Images du site', 'fa fa-panorama', SiteImage::class);
         yield EaMenuItem::linkToCrud('Avis Google', 'fa fa-star', GoogleReview::class);
 

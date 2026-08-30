@@ -1,0 +1,91 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Coordonnées & options{% endblock %}
+
+{% block page_content %}
+
+{# Sans thème explicite, les champs sortiraient nus : cette page n'est pas un
+   CRUD EasyAdmin, elle n'hérite donc pas automatiquement de son thème. #}
+{% form_theme form '@EasyAdmin/crud/form_theme.html.twig' %}
+
+{{ form_start(form, {attr: {class: 'vv-settings'}}) }}
+
+  <p class="vv-settings__intro">
+    Tout ce qui s'affiche sur le site est réglable ici. Modifie ce que tu veux,
+    puis clique sur <strong>Enregistrer</strong> en bas de page.
+  </p>
+
+  {% for group in groups %}
+    <section class="vv-settings__group">
+      <div class="vv-settings__groupHead">
+        <h2 class="vv-settings__groupTitle">{{ group.label }}</h2>
+        {% if group.help %}
+          <p class="vv-settings__groupHelp">{{ group.help }}</p>
+        {% endif %}
+      </div>
+
+      <div class="vv-settings__fields">
+        {% for setting in group.settings %}
+          {% set field = form['s' ~ setting.id] %}
+          <div class="vv-settings__field vv-settings__field--{{ setting.type }}">
+            {{ form_row(field) }}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
+
+  <div class="vv-settings__actions">
+    <button type="submit" class="btn btn-primary btn-lg">Enregistrer</button>
+    <a class="btn btn-link" href="/" target="_blank" rel="noopener">Voir le site ↗</a>
+  </div>
+
+{{ form_end(form) }}
+
+<style>
+  /* S'appuie sur les composants Bootstrap d'EasyAdmin, n'introduit pas de
+     second système de style. */
+  .vv-settings { max-width: 880px; }
+  .vv-settings__intro { color: #55606d; margin-bottom: 1.5rem; }
+
+  .vv-settings__group {
+    background: #fff;
+    border: 1px solid #c3cfcc;
+    border-radius: .5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(20, 45, 40, .08);
+  }
+  .vv-settings__groupHead {
+    background: #2d685f;
+    padding: .65rem 1.25rem;
+    border-radius: .45rem .45rem 0 0;
+  }
+  .vv-settings__groupTitle { font-size: 1.1rem; font-weight: 700; color: #fff; margin: 0; }
+  .vv-settings__groupHelp { font-size: .85rem; color: rgba(255, 255, 255, .85); margin: .2rem 0 0; }
+
+  .vv-settings__fields { padding: 1.25rem; }
+  .vv-settings__field + .vv-settings__field { margin-top: 1.1rem; }
+
+  /* Les cases à cocher (visibilité des pages) se lisent mieux en colonnes. */
+  .vv-settings__fields:has(.vv-settings__field--boolean) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: .5rem 1.5rem;
+  }
+  .vv-settings__fields:has(.vv-settings__field--boolean) .vv-settings__field + .vv-settings__field {
+    margin-top: 0;
+  }
+
+  .vv-settings__actions {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #c3cfcc;
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+</style>
+
+{% endblock %}
