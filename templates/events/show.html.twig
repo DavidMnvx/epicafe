@@ -136,62 +136,16 @@
             {% endif %}
           </article>
 
-          {# Menu classique (entrée / plat / dessert) #}
-          {% set hasMenu = event.menuStarter or event.menuMain or event.menuDessert or event.menuDessert2 or event.menu %}
-          {% if hasMenu %}
-            <section class="vv-menuCard vv-eventShow__block">
-              <header class="vv-menuCard__head">
-                <h2 class="vv-eventShow__sectionTitle">Au menu</h2>
-                {% if event.menuPrice %}
-                  {% set price = event.menuPrice|replace({',':'.'}) %}
-                  <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
-                {% endif %}
-              </header>
-
-              <div class="vv-menuCard__body">
-                {% if event.menuStarter %}
-                  <div class="vv-menuLine">
-                    <span class="vv-menuLine__label">Entrée</span>
-                    <span class="vv-menuLine__dots"></span>
-                    <span class="vv-menuLine__value">{{ event.menuStarter }}</span>
-                  </div>
-                {% endif %}
-
-                {% if event.menuMain %}
-                  <div class="vv-menuLine">
-                    <span class="vv-menuLine__label">Plat</span>
-                    <span class="vv-menuLine__dots"></span>
-                    <span class="vv-menuLine__value">{{ event.menuMain }}</span>
-                  </div>
-                {% endif %}
-
-                {% if event.menuDessert or event.menuDessert2 %}
-                  <div class="vv-menuLine">
-                    <span class="vv-menuLine__label">Dessert</span>
-                    <span class="vv-menuLine__dots"></span>
-                    <span class="vv-menuLine__value">
-                      {{ event.menuDessert }}
-                      {% if event.menuDessert and event.menuDessert2 %}
-                        <span class="vv-menuOr">ou</span>
-                      {% endif %}
-                      {{ event.menuDessert2 }}
-                    </span>
-                  </div>
-                {% endif %}
-
-                {% if event.menu %}
-                  <div class="vv-menuNote">{{ event.menu }}</div>
-                {% endif %}
-              </div>
-            </section>
-          {% endif %}
-
-          {# Produits (burgers, plats à la carte, etc.) #}
+          {# Ce qu'on sert : produits, burgers, plats à la carte… #}
           {% set hasProducts = event.product1Name or event.product2Name or event.product3Name %}
           {% if hasProducts %}
             <section class="vv-eventShow__block">
               <header class="vv-eventShow__blockHead">
                 <h2 class="vv-eventShow__sectionTitle">Produits proposés</h2>
+                {% if event.menuPrice %}
+                  {% set price = event.menuPrice|replace({',':'.'}) %}
+                  <div class="vv-menuCard__price">{{ price|number_format(2, ',', ' ') }} €</div>
+                {% endif %}
               </header>
 
               <div class="vv-eventProducts">

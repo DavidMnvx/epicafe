@@ -183,74 +183,99 @@ final class EventCrudController extends AbstractCrudController
         yield DateTimeField::new('startAt', 'Début')->onlyOnIndex();
         yield BooleanField::new('isPublished', 'Publié')->onlyOnIndex();
 
-        // ===== Onglet Informations =====
-        yield FormField::addTab('Informations')
+        // ===== Onglet 1 : tout ce qu'il faut pour publier =====
+        // Un événement courant (titre, date, photo) se saisit sans jamais
+        // quitter cet onglet ; les deux autres sont facultatifs.
+        yield FormField::addTab('L’essentiel')
             ->setIcon('fa fa-circle-info')
-            ->setHelp('Titre, description et visibilité de l’événement. C’est ce qui apparaît sur le site public.');
+            ->setHelp('De quoi publier un événement : un titre, une date, une photo. Le reste est facultatif.');
 
         yield TextField::new('title', 'Titre')
             ->setColumns('col-md-8')
             ->setRequired(true)
-            ->setHelp('Le nom de l’événement tel qu’il sera affiché. Ex : "Soirée aïoli", "Concert acoustique".')
+            ->setHelp('Ex : "Soirée aïoli", "Concert acoustique".')
             ->onlyOnForms();
 
-        yield SlugField::new('slug', 'Slug (URL)')
-            ->setTargetFieldName('title')
+        yield BooleanField::new('isPublished', 'Visible sur le site')
+            ->renderAsSwitch(false)
             ->setColumns('col-md-4')
-            ->setRequired(false)
-            ->setHelp('Généré automatiquement à partir du titre. Laisse vide sauf cas particulier.')
+            ->setHelp('Décoche pour préparer l’événement sans l’afficher.')
             ->onlyOnForms();
 
         yield TextareaField::new('description', 'Description')
             ->setColumns('col-md-12')
-            ->setHelp('Texte descriptif affiché sur la page de l’événement. Reste court et parlant.')
+            ->setHelp('Court et parlant : c’est le texte affiché sur la page de l’événement.')
             ->onlyOnForms();
 
-        yield BooleanField::new('isPublished', 'Publié')
-            ->renderAsSwitch(false)
+        yield DateTimeField::new('startAt', 'Date & heure')
+            ->setColumns('col-md-6')
+            ->setFormTypeOption('required', false)
+            ->setHelp('À laisser vide seulement pour un rendez-vous hebdomadaire (onglet Options).')
+            ->onlyOnForms();
+
+        yield DateTimeField::new('endAt', 'Fin (facultatif)')
+            ->setColumns('col-md-6')
+            ->setFormTypeOption('required', false)
+            ->setHelp('Si vide, l’événement passe en "terminé" une fois la date de début dépassée.')
+            ->onlyOnForms();
+
+        yield ImageField::new('imageFileName', 'Photo')
+            ->setUploadDir('public/uploads/events')
+            ->setBasePath('uploads/events')
+            ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
+            ->setColumns('col-md-6')
+            ->setRequired(false)
+            ->setHelp('JPG, PNG ou WebP. Idéalement 1600×900 px, moins de 500 Ko.')
+            ->onlyOnForms();
+
+        yield TextField::new('imageUrl', '…ou lien vers une image')
+            ->setColumns('col-md-6')
+            ->setRequired(false)
+            ->setHelp('Utilisé seulement si aucune photo n’est envoyée ci-contre.')
+            ->onlyOnForms();
+
+        // ===== Onglet 2 : l'offre, uniquement si l'événement en a une =====
+        yield FormField::addTab('Ce qu’on sert')
+            ->setIcon('fa fa-utensils')
+            ->setHelp('À remplir seulement si l’événement propose à manger. Sinon, passe ton chemin.');
+
+        yield MoneyField::new('menuPrice', 'Prix')
+            ->setCurrency('EUR')
+            ->setStoredAsCents(false)
             ->setColumns('col-md-3')
-            ->setHelp('Décoche pour cacher l’événement du site sans le supprimer.')
+            ->setHelp('Prix global, si c’est une formule à prix fixe. Accepte 19,00 ou 19.00.')
             ->onlyOnForms();
 
-        yield ChoiceField::new('displayMode', 'Mode d’affichage')
-            ->setChoices(self::DISPLAY_MODES)
-            ->setColumns('col-md-4')
-            ->setHelp('"Classique" = carte avec texte. "Affiche" = grand visuel type flyer (idéal si tu as une belle image).')
-            ->onlyOnForms();
+        yield from $this->buildProductFields(1);
+        yield from $this->buildProductFields(2);
+        yield from $this->buildProductFields(3);
 
-        // ===== Onglet Dates =====
-        yield FormField::addTab('Dates')
-            ->setIcon('fa fa-calendar')
-            ->setHelp('Pour un événement à une date précise. Pour un événement qui revient chaque semaine, utilise plutôt l’onglet "Permanent".');
-
-        yield DateTimeField::new('startAt', 'Date & heure de début')
+        yield TextareaField::new('sideDish', 'Accompagnement')
             ->setColumns('col-md-6')
-            ->setFormTypeOption('required', false)
-            ->setHelp('⚠ Laisse vide si l’événement est permanent (onglet Permanent).')
+            ->setHelp('Ex : "Pommes de terre grenailles, sauce fromagère".')
             ->onlyOnForms();
 
-        yield DateTimeField::new('endAt', 'Date & heure de fin')
+        yield TextareaField::new('offerNote', 'Note')
             ->setColumns('col-md-6')
-            ->setFormTypeOption('required', false)
-            ->setHelp('Optionnel. Si vide, l’événement bascule en "passé" dès que la date de début est dépassée.')
+            ->setHelp('Ex : "Réservation conseillée", "Quantité limitée".')
             ->onlyOnForms();
 
-        // ===== Onglet Permanent =====
-        yield FormField::addTab('Permanent')
-            ->setIcon('fa fa-rotate')
-            ->setHelp('Pour un événement qui revient chaque semaine au même jour/heure (ex : marché du mardi, jam-session du jeudi soir). La prochaine occurrence est calculée automatiquement.');
+        // ===== Onglet 3 : réglages rarement touchés =====
+        yield FormField::addTab('Options')
+            ->setIcon('fa fa-sliders')
+            ->setHelp('Rendez-vous hebdomadaire, présentation et adresse de la page. Réglages rarement nécessaires.');
 
-        yield BooleanField::new('isRecurring', 'Événement permanent')
+        yield BooleanField::new('isRecurring', 'Rendez-vous hebdomadaire')
             ->renderAsSwitch(false)
             ->setColumns('col-md-4')
-            ->setHelp('Active pour transformer cet événement en rendez-vous hebdomadaire.')
+            ->setHelp('Pour un événement qui revient chaque semaine (marché du mardi, jam du jeudi).')
             ->onlyOnForms();
 
         yield ChoiceField::new('recurringDayOfWeek', 'Jour de la semaine')
             ->setChoices(self::DAYS_OF_WEEK)
             ->setColumns('col-md-4')
             ->setRequired(false)
-            ->setHelp('Requis si "Événement permanent" est activé.')
+            ->setHelp('Requis si le rendez-vous est hebdomadaire.')
             ->onlyOnForms();
 
         yield TimeField::new('recurringTime', 'Heure')
@@ -259,87 +284,20 @@ final class EventCrudController extends AbstractCrudController
             ->setFormTypeOption('input', 'datetime_immutable')
             ->setFormTypeOption('widget', 'single_text')
             ->setFormTypeOption('with_seconds', false)
-            ->setHelp('Format 24h (ex : 19:00). Requis si permanent.')
+            ->setHelp('Format 24h, ex : 19:00.')
             ->onlyOnForms();
 
-        // ===== Onglet Menu =====
-        yield FormField::addTab('Menu')
-            ->setIcon('fa fa-utensils')
-            ->setHelp('Décris le menu/offre associée à l’événement. Tout est optionnel : remplis uniquement ce qui est pertinent. Tu peux mélanger menu classique (entrée/plat/dessert) ET produits individuels (ex : burgers).');
-
-        yield FormField::addFieldset('Composition du menu')
-            ->setHelp('Pour un menu type entrée/plat/dessert à prix fixe. Laisse vide si tu fais uniquement des produits individuels ci-dessous.')
+        yield ChoiceField::new('displayMode', 'Présentation')
+            ->setChoices(self::DISPLAY_MODES)
+            ->setColumns('col-md-4')
+            ->setHelp('"Classique" = carte avec texte. "Affiche" = grand visuel, si tu as une belle image.')
             ->onlyOnForms();
 
-        yield TextField::new('menuStarter', 'Entrée')
-            ->setColumns('col-md-3')
-            ->setHelp('Ex : "Salade de tomates"')
-            ->onlyOnForms();
-        yield TextField::new('menuMain', 'Plat')
-            ->setColumns('col-md-3')
-            ->setHelp('Ex : "Aïoli provençal"')
-            ->onlyOnForms();
-        yield TextField::new('menuDessert', 'Dessert')
-            ->setColumns('col-md-3')
-            ->setHelp('Ex : "Tarte aux fruits"')
-            ->onlyOnForms();
-        yield TextField::new('menuDessert2', 'Dessert (2) — option')
-            ->setColumns('col-md-3')
-            ->setHelp('Second dessert au choix, si applicable.')
-            ->onlyOnForms();
-
-        yield TextareaField::new('menu', 'Texte libre')
-            ->setColumns('col-md-12')
-            ->setHelp('Utile si le format entrée/plat/dessert ne colle pas. Ex : "Ce vendredi : aïoli maison servi avec dessert au choix".')
-            ->onlyOnForms();
-
-        yield MoneyField::new('menuPrice', 'Prix du menu')
-            ->setCurrency('EUR')
-            ->setStoredAsCents(false)
-            ->setColumns('col-md-3')
-            ->setHelp('Prix du menu complet. Accepte 19,00 ou 19.00.')
-            ->onlyOnForms();
-
-        yield FormField::addFieldset('Produits / Burgers')
-            ->setHelp('Pour proposer jusqu’à 3 produits individuels (ex : 3 burgers différents). Chaque produit a son propre nom, prix et liste d’ingrédients.')
-            ->onlyOnForms();
-
-        yield from $this->buildProductFields(1);
-        yield from $this->buildProductFields(2);
-        yield from $this->buildProductFields(3);
-
-        yield FormField::addFieldset('Accompagnement & note')
-            ->setHelp('Informations complémentaires affichées sous le menu.')
-            ->onlyOnForms();
-
-        yield TextareaField::new('sideDish', 'Accompagnement')
-            ->setColumns('col-md-6')
-            ->setHelp('Servi avec les produits. Ex : "Pommes de terre grenailles, sauce fromagère".')
-            ->onlyOnForms();
-
-        yield TextareaField::new('offerNote', 'Note / texte libre')
-            ->setColumns('col-md-6')
-            ->setHelp('Ex : "Réservation conseillée", "Quantité limitée", "Végétarien possible sur demande".')
-            ->onlyOnForms();
-
-        // ===== Onglet Visuels =====
-        yield FormField::addTab('Visuels')
-            ->setIcon('fa fa-image')
-            ->setHelp('Image de présentation de l’événement. Formats : JPG, PNG ou WebP. Taille recommandée : 1600×900 px (format paysage 16:9), poids < 500 Ko. Pour le mode "Affiche", privilégie le portrait 1200×1500 px.');
-
-        yield ImageField::new('imageFileName', 'Image uploadée')
-            ->setUploadDir('public/uploads/events')
-            ->setBasePath('uploads/events')
-            ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-            ->setColumns('col-md-6')
+        yield SlugField::new('slug', 'Adresse de la page')
+            ->setTargetFieldName('title')
+            ->setColumns('col-md-8')
             ->setRequired(false)
-            ->setHelp('Glisse ou sélectionne un fichier depuis ton ordinateur. 1600×900 px (paysage) ou 1200×1500 px (affiche/portrait). Max 2 Mo.')
-            ->onlyOnForms();
-
-        yield TextField::new('imageUrl', 'Image URL (fallback)')
-            ->setColumns('col-md-6')
-            ->setRequired(false)
-            ->setHelp('Alternative : lien direct vers une image en ligne. Utilisé uniquement si aucune image n’est uploadée ci-dessus.')
+            ->setHelp('Générée automatiquement depuis le titre. À ne modifier qu’en cas de besoin précis.')
             ->onlyOnForms();
     }
 
@@ -348,24 +306,27 @@ final class EventCrudController extends AbstractCrudController
      */
     private function buildProductFields(int $n): iterable
     {
-        yield TextField::new("product{$n}Name", "Produit {$n} — nom")
-            ->setColumns('col-md-4')
-            ->setRequired(false)
-            ->setHelp($n === 1 ? 'Ex : "Burger Ventoux"' : 'Laisse vide si tu n’as pas de produit ' . $n . '.')
+        yield FormField::addFieldset($n === 1 ? 'Plat 1' : 'Plat ' . $n . ' (facultatif)')
             ->onlyOnForms();
 
-        yield MoneyField::new("product{$n}Price", "Produit {$n} — prix")
+        yield TextField::new("product{$n}Name", 'Nom')
+            ->setColumns('col-md-4')
+            ->setRequired(false)
+            ->setHelp($n === 1 ? 'Ex : "Burger Ventoux"' : 'Laisse vide s’il n’y a pas de plat ' . $n . '.')
+            ->onlyOnForms();
+
+        yield MoneyField::new("product{$n}Price", 'Prix')
             ->setCurrency('EUR')
             ->setStoredAsCents(false)
             ->setColumns('col-md-2')
             ->setRequired(false)
-            ->setHelp('Prix unitaire (accepte 12,50 ou 12.50).')
+            ->setHelp('Accepte 12,50 ou 12.50.')
             ->onlyOnForms();
 
-        yield TextareaField::new("product{$n}Ingredients", "Produit {$n} — ingrédients")
+        yield TextareaField::new("product{$n}Ingredients", 'Composition')
             ->setColumns('col-md-6')
             ->setRequired(false)
-            ->setHelp('Liste des ingrédients, séparés par des virgules. Ex : "Pain maison, steak haché 150g, tomme du Ventoux, oignons confits".')
+            ->setHelp('Ex : "Pain maison, steak haché 150 g, tomme du Ventoux, oignons confits".')
             ->onlyOnForms();
     }
 }

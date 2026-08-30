@@ -106,16 +106,13 @@
             </span>
           </div>
 
-          {% if featured.menuStarter or featured.menuMain or featured.menuDessert or featured.product1Name %}
+          {% if featured.product1Name or featured.product2Name or featured.product3Name %}
             <div class="vv-eventFeatured__menu">
               <p class="vv-kicker" style="margin-bottom:.4rem;">Au menu</p>
               <ul class="vv-eventFeatured__menuList">
-                {% if featured.menuStarter %}<li><span>🥗</span>{{ featured.menuStarter }}</li>{% endif %}
-                {% if featured.menuMain    %}<li><span>🍽️</span>{{ featured.menuMain }}</li>{% endif %}
-                {% if featured.menuDessert %}<li><span>🍰</span>{{ featured.menuDessert }}</li>{% endif %}
-                {% if featured.product1Name %}<li><span>🍔</span>{{ featured.product1Name }}</li>{% endif %}
-                {% if featured.product2Name %}<li><span>🍔</span>{{ featured.product2Name }}</li>{% endif %}
-                {% if featured.product3Name %}<li><span>🍔</span>{{ featured.product3Name }}</li>{% endif %}
+                {% if featured.product1Name %}<li><span>🍽️</span>{{ featured.product1Name }}</li>{% endif %}
+                {% if featured.product2Name %}<li><span>🍽️</span>{{ featured.product2Name }}</li>{% endif %}
+                {% if featured.product3Name %}<li><span>🍽️</span>{{ featured.product3Name }}</li>{% endif %}
               </ul>
               {% if featured.menuPrice %}
                 <p class="vv-eventFeatured__price">

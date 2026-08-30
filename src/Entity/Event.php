@@ -71,30 +71,12 @@ class Event
     #[ORM\Column(type: Types::TIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $recurringTime = null; // heure (ex 19:00)
 
-    // ===== Menu (optionnel) =====
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $menu = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $menuStarter = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $menuMain = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $menuDessert = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $menuDessert2 = null;
-
+    // ===== Ce qu'on sert (optionnel) =====
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2, nullable: true)]
     private ?string $menuPrice = null; // Doctrine map decimal => string
 
     #[ORM\Column(length: 20, options: ['default' => 'classic'])]
     private ?string $displayMode = 'classic';
-
-    #[ORM\Column(length: 20, options: ['default' => 'menu'])]
-    private ?string $offerType = 'menu';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $product1Name = null;
@@ -128,16 +110,6 @@ class Event
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $offerNote = null;
-    public function getOfferType(): ?string
-    {
-        return $this->offerType;
-    }
-
-    public function setOfferType(string $offerType): static
-    {
-        $this->offerType = $offerType;
-        return $this;
-    }
 
     public function getProduct1Name(): ?string
     {
@@ -454,25 +426,6 @@ class Event
 
     public function getRecurringTime(): ?\DateTimeImmutable { return $this->recurringTime; }
     public function setRecurringTime(?\DateTimeImmutable $time): self { $this->recurringTime = $time; return $this; }
-
-    public function getMenu(): ?string { return $this->menu; }
-    public function setMenu(?string $menu): self { $this->menu = $menu; return $this; }
-
-    public function getMenuStarter(): ?string { return $this->menuStarter; }
-    public function setMenuStarter(?string $menuStarter): self { $this->menuStarter = $menuStarter; return $this; }
-
-    public function getMenuMain(): ?string { return $this->menuMain; }
-    public function setMenuMain(?string $menuMain): self { $this->menuMain = $menuMain; return $this; }
-
-    public function getMenuDessert(): ?string { return $this->menuDessert; }
-    public function setMenuDessert(?string $menuDessert): self { $this->menuDessert = $menuDessert; return $this; }
-
-    public function getMenuDessert2(): ?string { return $this->menuDessert2; }
-    public function setMenuDessert2(?string $menuDessert2): self
-    {
-        $this->menuDessert2 = $menuDessert2;
-        return $this;
-    }
 
     public function getMenuPrice(): ?string { return $this->menuPrice; }
     public function setMenuPrice(?string $menuPrice): self { $this->menuPrice = $menuPrice; return $this; }
