@@ -76,16 +76,24 @@
     margin-top: 0;
   }
 
+  /* Barre d'action collante : même cadre que les sections, pour qu'elle se
+     lise comme une pièce de la page et non comme un débord. */
   .vv-settings__actions {
     position: sticky;
-    bottom: 0;
+    bottom: 1rem;
+    z-index: 5;
     background: #fff;
-    border-top: 1px solid #c3cfcc;
-    padding: 1rem 0;
+    border: 1px solid #c3cfcc;
+    border-radius: .5rem;
+    padding: .9rem 1.25rem;
+    margin-bottom: 1rem;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.25rem;
+    box-shadow: 0 2px 12px rgba(20, 45, 40, .14);
   }
+  .vv-settings__actions .btn-link { color: #2d685f; font-weight: 600; text-decoration: none; }
+  .vv-settings__actions .btn-link:hover { text-decoration: underline; }
 </style>
 
 {% endblock %}
