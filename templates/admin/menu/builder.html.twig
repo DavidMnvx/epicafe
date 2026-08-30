@@ -162,11 +162,34 @@
     list-style: none; margin: 0; padding: 0;
   }
 
-  .vv-builder__root { background: #fff; border: 1px solid #dee2e6; border-radius: .5rem; padding: 1rem; margin-bottom: 1rem; }
-  .vv-builder__rootHead, .vv-builder__childHead { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
-  .vv-builder__rootName { font-size: 1.05rem; font-weight: 600; margin: 0; }
-  .vv-builder__childName { font-size: .95rem; font-weight: 600; margin: 0; }
-  .vv-builder__child { border-left: 3px solid #e9ecef; padding: .5rem 0 .5rem .75rem; margin: .75rem 0 0 .5rem; }
+  /* Catégorie principale : bandeau plein, pour qu'elle se distingue nettement
+     de ses sous-catégories et de ses lignes. */
+  .vv-builder__root {
+    background: #fff;
+    border: 1px solid #c3cfcc;
+    border-radius: .5rem;
+    padding: 0 1rem 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(20, 45, 40, .08);
+  }
+  .vv-builder__rootHead {
+    display: flex; align-items: center; gap: .5rem;
+    background: #2d685f;
+    margin: 0 -1rem 1rem;
+    padding: .65rem 1rem;
+    border-radius: .45rem .45rem 0 0;
+  }
+  .vv-builder__rootName { font-size: 1.15rem; font-weight: 700; margin: 0; color: #fff; letter-spacing: .01em; }
+  .vv-builder__rootHead .vv-builder__handle { color: rgba(255, 255, 255, .75); }
+  /* Le statut hérite des classes Bootstrap (text-success, text-muted…) qui
+     seraient illisibles sur le bandeau : on force le blanc. */
+  .vv-builder__rootHead .vv-builder__status,
+  .vv-builder__rootHead .vv-builder__status * { color: #fff !important; }
+
+  /* Sous-catégorie : même couleur, en retrait. */
+  .vv-builder__childHead { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+  .vv-builder__childName { font-size: 1rem; font-weight: 700; margin: 0; color: #2d685f; }
+  .vv-builder__child { border-left: 3px solid #9dbdb6; padding: .5rem 0 .5rem .75rem; margin: 1rem 0 0 .5rem; }
 
   .vv-builder__item { padding: .2rem 0; }
   .vv-builder__itemMain { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
@@ -179,7 +202,7 @@
   .vv-builder__variant input { max-width: 200px; }
   .vv-builder__variantMark { color: #adb5bd; }
 
-  .vv-builder__handle { cursor: grab; color: #adb5bd; user-select: none; padding: 0 .15rem; }
+  .vv-builder__handle { cursor: grab; color: #7d8a87; user-select: none; padding: 0 .15rem; }
   .vv-builder__handle:active { cursor: grabbing; }
 
   .vv-builder__empty { color: #6c757d; font-size: .875rem; font-style: italic; margin: .25rem 0 .5rem 1.6rem; }
