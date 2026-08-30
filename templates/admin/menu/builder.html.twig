@@ -1,448 +1,193 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block content_title %}Menu — Builder{% endblock %}
+{% block content_title %}La carte{% endblock %}
+
+{#
+   Une ligne de carte se déplace à la souris (ou au doigt) : l'ordre n'est plus
+   un numéro à saisir. Glisser une ligne dans une autre catégorie la déplace.
+   Les modifications s'enregistrent seules quand on quitte un champ.
+#}
+
+{% macro item_row(item) %}
+  <li class="vv-builder__item" data-row data-id="{{ item.id }}">
+    <div class="vv-builder__itemMain">
+      <span class="vv-builder__handle" data-handle title="Glisser pour déplacer" aria-label="Déplacer">⠿</span>
+
+      <input class="form-control form-control-sm vv-builder__name"
+             data-field data-name
+             value="{{ item.name }}"
+             placeholder="Nom">
+
+      <input class="form-control form-control-sm vv-builder__unit"
+             data-field data-unit
+             value="{{ item.unit ?? '' }}"
+             placeholder="Unité">
+
+      <input class="form-control form-control-sm vv-builder__price"
+             data-field data-price
+             value="{{ item.price ?? '' }}"
+             placeholder="Prix">
+
+      <input class="form-control form-control-sm vv-builder__note"
+             data-field data-note
+             value="{{ item.note ?? '' }}"
+             placeholder="Note">
+
+      <label class="vv-builder__publish" title="Visible sur le site">
+        <input class="form-check-input" type="checkbox" data-field data-published {{ item.isPublished ? 'checked' : '' }}>
+        <span class="visually-hidden">Visible sur le site</span>
+      </label>
+
+      <button class="btn btn-sm btn-link text-muted" type="button" data-add-variant title="Ajouter une déclinaison">+ décl.</button>
+      <button class="btn btn-sm btn-link text-danger" type="button" data-delete title="Supprimer">✕</button>
+
+      {# Doit rester avant les déclinaisons : le statut d'une ligne est le premier trouvé. #}
+      <span class="vv-builder__status" data-status></span>
+    </div>
+
+    <ul class="vv-builder__variants" data-variants>
+      {% for variant in item.variants %}
+        <li class="vv-builder__variant" data-variant-row data-id="{{ variant.id }}" data-item-id="{{ item.id }}">
+          <span class="vv-builder__variantMark" aria-hidden="true">↳</span>
+          <input class="form-control form-control-sm" data-field data-variant-label
+                 value="{{ variant.label }}" placeholder="Déclinaison">
+          <input class="form-control form-control-sm" data-field data-variant-price
+                 value="{{ variant.price ?? '' }}" placeholder="Prix">
+          <button class="btn btn-sm btn-link text-danger" type="button" data-variant-delete title="Supprimer">✕</button>
+          <span class="vv-builder__status" data-status></span>
+        </li>
+      {% endfor %}
+    </ul>
+  </li>
+{% endmacro %}
+
+{% macro category_items(category, itemsByCategory) %}
+  {% import _self as builder %}
+  {% set items = itemsByCategory[category.id] ?? [] %}
+
+  <ul class="vv-builder__items" data-items data-category-id="{{ category.id }}">
+    {% for item in items %}
+      {{ builder.item_row(item) }}
+    {% endfor %}
+  </ul>
+
+  <p class="vv-builder__empty" data-empty {{ items|length ? 'hidden' : '' }}>
+    Aucune ligne — glisses-en une ici, ou ajoute-la ci-dessous.
+  </p>
+
+  <form class="vv-builder__add" data-item-create data-category-id="{{ category.id }}">
+    <input class="form-control form-control-sm" name="name" placeholder="Nouvelle ligne (ex : Café expresso)" required>
+    <input class="form-control form-control-sm" name="unit" placeholder="Unité">
+    <input class="form-control form-control-sm" name="price" placeholder="Prix">
+    <button class="btn btn-sm btn-outline-primary" type="submit">+ Ajouter</button>
+    <span class="vv-builder__status" data-status></span>
+  </form>
+{% endmacro %}
 
 {% block page_content %}
+{% import _self as builder %}
 
-<div class="container-fluid menu-builder">
-  <div class="row g-3">
+<div class="vv-builder"
+     data-menu-builder
+     data-token="{{ csrf_token('menu_builder') }}"
+     data-routes="{{ {
+         itemCreate:      path('admin_menu_item_create'),
+         itemUpdate:      path('admin_menu_item_update'),
+         itemDelete:      path('admin_menu_item_delete'),
+         itemReorder:     path('admin_menu_item_reorder'),
+         categoryCreate:  path('admin_menu_category_create'),
+         categoryReorder: path('admin_menu_category_reorder'),
+         variantCreate:   path('admin_menu_variant_create'),
+         variantUpdate:   path('admin_menu_variant_update'),
+         variantDelete:   path('admin_menu_variant_delete')
+     }|json_encode }}">
 
-    {# COL GAUCHE : Arbre catégories #}
-    <div class="d-flex flex-column gap-3">
-
-  {# STRUCTURE EN HAUT #}
-  <div class="card">
-    <div class="card-body">
-      <div class="d-flex align-items-end justify-content-between gap-3 flex-wrap">
-        <div>
-          <h3 class="h5 mb-1">Structure</h3>
-          <div class="small text-muted">Catégories & sous-catégories</div>
-        </div>
-
-        <form class="d-flex gap-2" data-cat-create>
-          <input class="form-control" name="name" placeholder="Nouvelle catégorie">
-          <button class="btn btn-primary" type="submit">+ Ajouter</button>
-        </form>
-      </div>
-
-      <div class="small text-muted mt-2">Pour une sous-catégorie : sélectionne un parent puis ajoute.</div>
-
-      <div class="d-flex gap-2 mt-2 flex-wrap">
-        <select class="form-select" style="max-width:420px" data-parent-select>
-          <option value="">(Aucun parent) → catégorie</option>
-          {% for c in rootCategories %}
-            <option value="{{ c.id }}">{{ c.name }}</option>
-            {% for ch in c.children %}
-              <option value="{{ ch.id }}">↳ {{ c.name }} / {{ ch.name }}</option>
-            {% endfor %}
-          {% endfor %}
-        </select>
-      </div>
-      <hr class="my-3">
-      <div class="vv-tree">
-        {% for c in rootCategories %}
-          <div class="mb-2">
-            <div class="fw-bold">• {{ c.name }}</div>
-            {% if c.children|length %}
-              <div class="ps-3 mt-1">
-                {% for ch in c.children %}
-                  <div class="text-muted">↳ {{ ch.name }}</div>
-                {% endfor %}
-              </div>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
-    </div>
+  <div class="vv-builder__intro">
+    <p class="mb-1">
+      Glisse les lignes avec la poignée <span class="vv-builder__handle">⠿</span> pour changer leur ordre,
+      ou fais-les passer d'une catégorie à l'autre. Tout s'enregistre automatiquement.
+    </p>
+    <span class="vv-builder__status" data-global-status></span>
   </div>
 
-    {# COL DROITE : Table items #}
-    
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-end justify-content-between gap-2 flex-wrap mb-3">
-            <div>
-              <h3 class="h5 mb-1">Items</h3>
-              <div class="text-muted small">Modifie une ligne → clique “Enregistrer”.</div>
-            </div>
-
-            <form class="d-flex gap-2" data-item-create>
-              <select class="form-select" name="categoryId" required>
-                <option value="">Catégorie…</option>
-                {% for c in rootCategories %}
-                  <option value="{{ c.id }}">{{ c.name }}</option>
-                  {% for ch in c.children %}
-                    <option value="{{ ch.id }}">↳ {{ c.name }} / {{ ch.name }}</option>
-                  {% endfor %}
-                {% endfor %}
-              </select>
-
-              <input class="form-control" name="name" placeholder="Nom (ex: Café expresso)" required>
-              <input class="form-control" name="unit" placeholder="Unité (ex: 25 cl)">
-              <input class="form-control" name="price" placeholder="Prix (ex: 2.50)">
-              <button class="btn btn-primary" type="submit">+ Ajouter</button>
-            </form>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table align-middle">
-              <thead>
-                <tr>
-                  <th style="width:32%">Catégorie</th>
-                  <th style="width:28%">Nom</th>
-                  <th style="width:14%">Unité</th>
-                  <th style="width:12%">Prix</th>
-                  <th style="width:18%">Note</th>
-                  <th style="width:10%">Ordre</th>
-                  <th style="width:8%">Pub</th>
-                  <th style="width:20%"></th>
-                </tr>
-              </thead>
-
-            <tbody>
-  {% for i in items %}
-    <tr data-row data-id="{{ i.id }}">
-      <td>
-        <select class="form-select form-select-sm" data-category>
-          {% for c in rootCategories %}
-            <option value="{{ c.id }}" {{ i.category and i.category.id == c.id ? 'selected' : '' }}>
-              {{ c.name }}
-            </option>
-            {% for ch in c.children %}
-              <option value="{{ ch.id }}" {{ i.category and i.category.id == ch.id ? 'selected' : '' }}>
-                ↳ {{ c.name }} / {{ ch.name }}
-              </option>
-            {% endfor %}
-          {% endfor %}
-        </select>
-      </td>
-
-      <td>
-        <div class="d-flex align-items-center gap-2">
-          <input class="form-control form-control-sm" data-name value="{{ i.name }}">
-          <button class="btn btn-sm btn-outline-secondary" type="button" data-add-variant title="Ajouter une variante">+ Variante</button>
-        </div>
-      </td>
-
-      <td>
-        <input class="form-control form-control-sm" data-unit value="{{ i.unit ?? '' }}" placeholder="ex: 25 cl">
-      </td>
-
-      <td>
-        <input class="form-control form-control-sm" data-price value="{{ i.price ?? '' }}" placeholder="2.50">
-      </td>
-
-      <td>
-        <input class="form-control form-control-sm" data-note value="{{ i.note ?? '' }}" placeholder="ex: (coca, oasis...)">
-      </td>
-
-      <td>
-        <input class="form-control form-control-sm" data-position value="{{ i.position }}">
-      </td>
-
-      <td class="text-center">
-        <input class="form-check-input" type="checkbox" data-published {{ i.isPublished ? 'checked' : '' }}>
-      </td>
-
-      <td class="text-end">
-        <button class="btn btn-sm btn-success" type="button" data-save>Enregistrer</button>
-        <button class="btn btn-sm btn-outline-danger" type="button" data-delete>Supprimer</button>
-        <span class="ms-2 small text-muted" data-status></span>
-      </td>
-    </tr>
-
-    {# Variantes de l'item #}
-    {% if i.variants|length %}
-      {% for v in i.variants %}
-        <tr class="table-light" data-variant-row data-id="{{ v.id }}" data-item-id="{{ i.id }}">
-          <td></td>
-          <td colspan="2">
-            <input class="form-control form-control-sm" data-variant-label value="{{ v.label }}" placeholder="Nom variante (ex: 25 cl)">
-          </td>
-          <td>
-          <input class="form-control form-control-sm" data-variant-price value="{{ v.price is not empty ? v.price : (i.price ?? '') }}" placeholder="Prix">          </td>
-          <td colspan="2"></td>
-          <td class="text-end">
-            <button class="btn btn-sm btn-success" type="button" data-variant-save>Enregistrer</button>
-            <button class="btn btn-sm btn-outline-danger" type="button" data-variant-delete>Supprimer</button>
-            <span class="ms-2 small text-muted" data-variant-status></span>
-          </td>
-        </tr>
+  <form class="vv-builder__addCategory" data-cat-create>
+    <input class="form-control" name="name" placeholder="Nouvelle catégorie" required>
+    <select class="form-select" name="parentId">
+      <option value="">Catégorie principale</option>
+      {% for category in rootCategories %}
+        <option value="{{ category.id }}">Dans « {{ category.name }} »</option>
       {% endfor %}
-    {% endif %}
-  {% endfor %}
-</tbody>  
-            </table>
-          </div>
-          <input type="hidden" id="menu_builder_token" value="{{ csrf_token('menu_builder') }}">
+    </select>
+    <button class="btn btn-primary" type="submit">+ Ajouter</button>
+  </form>
+
+  <ul class="vv-builder__roots" data-categories data-level="root" data-parent-id="">
+    {% for category in rootCategories %}
+      <li class="vv-builder__root" data-category data-id="{{ category.id }}">
+        <div class="vv-builder__rootHead">
+          <span class="vv-builder__handle" data-category-handle title="Glisser pour réordonner">⠿</span>
+          <h3 class="vv-builder__rootName">{{ category.name }}</h3>
+          {% if not category.isPublished %}<span class="badge bg-secondary">masquée</span>{% endif %}
+          <span class="vv-builder__status" data-status></span>
         </div>
-      </div>
-    </div>
-  </div>
+
+        {{ builder.category_items(category, itemsByCategory) }}
+
+        <ul class="vv-builder__children" data-categories data-level="child" data-parent-id="{{ category.id }}">
+          {% for child in category.children %}
+            <li class="vv-builder__child" data-category data-id="{{ child.id }}">
+              <div class="vv-builder__childHead">
+                <span class="vv-builder__handle" data-category-handle title="Glisser pour réordonner">⠿</span>
+                <h4 class="vv-builder__childName">{{ child.name }}</h4>
+                {% if not child.isPublished %}<span class="badge bg-secondary">masquée</span>{% endif %}
+                <span class="vv-builder__status" data-status></span>
+              </div>
+
+              {{ builder.category_items(child, itemsByCategory) }}
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
 </div>
 
+<style>
+  /* Mise en page du builder — s'appuie sur les composants Bootstrap d'EasyAdmin,
+     n'introduit pas de nouveau système de style. */
+  .vv-builder__intro { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .vv-builder__addCategory { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; max-width: 640px; }
 
-
-
-
-
-
-<script>
-window.ROUTES = {
-  admin_menu_category_create: "{{ path('admin_menu_category_create') }}",
-  admin_menu_item_create: "{{ path('admin_menu_item_create') }}",
-  admin_menu_item_update: "{{ path('admin_menu_item_update') }}",
-  admin_menu_item_delete: "{{ path('admin_menu_item_delete') }}",
-  admin_menu_variant_create: "{{ path('admin_menu_variant_create') }}",
-  admin_menu_variant_update: "{{ path('admin_menu_variant_update') }}",
-  admin_menu_variant_delete: "{{ path('admin_menu_variant_delete') }}"
-};
-</script>
-
-<script>
-// ===== Helpers =====
-const escapeHtml = (str) =>
-  (str ?? "").toString()
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
-const token = document.getElementById("menu_builder_token")?.value || "";
-
-const post = async (url, data) => {
-  const body = new URLSearchParams({ ...data, _token: token });
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-    body,
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok || json.ok === false) throw new Error(json.message || "Erreur");
-  return json;
-};
-
-// ===== Create category =====
-document.querySelector("[data-cat-create]")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const form = e.currentTarget;
-  const name = form.querySelector('[name="name"]')?.value.trim();
-  const parentId = document.querySelector("[data-parent-select]")?.value || "";
-
-  if (!name) {
-    alert("Nom de catégorie requis");
-    return;
+  .vv-builder__roots, .vv-builder__children, .vv-builder__items, .vv-builder__variants {
+    list-style: none; margin: 0; padding: 0;
   }
 
-  try {
-    await post(window.ROUTES.admin_menu_category_create, { name, parentId });
-    window.location.reload();
-  } catch (err) {
-    alert(err.message);
-  }
-});
+  .vv-builder__root { background: #fff; border: 1px solid #dee2e6; border-radius: .5rem; padding: 1rem; margin-bottom: 1rem; }
+  .vv-builder__rootHead, .vv-builder__childHead { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+  .vv-builder__rootName { font-size: 1.05rem; font-weight: 600; margin: 0; }
+  .vv-builder__childName { font-size: .95rem; font-weight: 600; margin: 0; }
+  .vv-builder__child { border-left: 3px solid #e9ecef; padding: .5rem 0 .5rem .75rem; margin: .75rem 0 0 .5rem; }
 
-// ===== Create item =====
-document.querySelector("[data-item-create]")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const form = e.currentTarget;
+  .vv-builder__item { padding: .2rem 0; }
+  .vv-builder__itemMain { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+  .vv-builder__name { flex: 2 1 200px; }
+  .vv-builder__unit, .vv-builder__price { flex: 0 1 90px; }
+  .vv-builder__note { flex: 1 1 140px; }
+  .vv-builder__publish { display: inline-flex; align-items: center; margin: 0; }
 
-  const categoryId = form.querySelector('[name="categoryId"]')?.value || "";
-  const name = form.querySelector('[name="name"]')?.value.trim();
-  const unit = form.querySelector('[name="unit"]')?.value.trim();
-  const price = form.querySelector('[name="price"]')?.value.trim();
+  .vv-builder__variant { display: flex; align-items: center; gap: .4rem; padding: .2rem 0 .2rem 2rem; }
+  .vv-builder__variant input { max-width: 200px; }
+  .vv-builder__variantMark { color: #adb5bd; }
 
-  if (!categoryId || !name) {
-    alert("Catégorie et nom requis");
-    return;
-  }
+  .vv-builder__handle { cursor: grab; color: #adb5bd; user-select: none; padding: 0 .15rem; }
+  .vv-builder__handle:active { cursor: grabbing; }
 
-  try {
-    await post(window.ROUTES.admin_menu_item_create, {
-      categoryId,
-      name,
-      unit,
-      price,
-    });
-    window.location.reload();
-  } catch (err) {
-    alert(err.message);
-  }
-});
+  .vv-builder__empty { color: #6c757d; font-size: .875rem; font-style: italic; margin: .25rem 0 .5rem 1.6rem; }
+  .vv-builder__add { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; margin: .5rem 0 0 1.6rem; }
+  .vv-builder__add input { max-width: 200px; }
 
-// ===== Save item =====
-document.querySelectorAll("tr[data-row]").forEach((row) => {
-  const saveBtn = row.querySelector("[data-save]");
-  const deleteBtn = row.querySelector("[data-delete]");
-  const addVariantBtn = row.querySelector("[data-add-variant]");
-  const status = row.querySelector("[data-status]");
-  const itemId = row.getAttribute("data-id");
+  .vv-builder__status { font-size: .8rem; min-width: 6rem; }
 
-  saveBtn?.addEventListener("click", async () => {
-    const data = {
-      id: itemId,
-      categoryId: row.querySelector("[data-category]")?.value || "",
-      name: row.querySelector("[data-name]")?.value.trim() || "",
-      unit: row.querySelector("[data-unit]")?.value.trim() || "",
-      price: row.querySelector("[data-price]")?.value.trim() || "",
-      note: row.querySelector("[data-note]")?.value.trim() || "",
-      position: row.querySelector("[data-position]")?.value.trim() || "0",
-      isPublished: row.querySelector("[data-published]")?.checked ? "1" : "0",
-    };
-
-    status.textContent = "…";
-    try {
-      await post(window.ROUTES.admin_menu_item_update, data);
-      status.textContent = "✅";
-      setTimeout(() => { status.textContent = ""; }, 1500);
-    } catch (err) {
-      status.textContent = "❌";
-      alert(err.message);
-    }
-  });
-
-  deleteBtn?.addEventListener("click", async () => {
-    if (!confirm("Supprimer cet item ?")) return;
-
-    status.textContent = "…";
-    try {
-      await post(window.ROUTES.admin_menu_item_delete, { id: itemId });
-
-      let next = row.nextElementSibling;
-      while (next && next.matches('tr[data-variant-row][data-item-id="' + itemId + '"]')) {
-        const toRemove = next;
-        next = next.nextElementSibling;
-        toRemove.remove();
-      }
-
-      row.remove();
-    } catch (err) {
-      status.textContent = "❌";
-      alert(err.message);
-    }
-  });
-
-  // ===== Add variant row inline (NO prompt, NO reload) =====
-  addVariantBtn?.addEventListener("click", () => {
-    if (row.nextElementSibling?.matches('tr[data-variant-row][data-new="1"]')) return;
-
-    const tr = document.createElement("tr");
-    tr.className = "table-light";
-    tr.setAttribute("data-variant-row", "");
-    tr.setAttribute("data-new", "1");
-    tr.setAttribute("data-item-id", itemId);
-
-    tr.innerHTML = `
-      <td></td>
-      <td colspan="2">
-        <input class="form-control form-control-sm" data-variant-label value="" placeholder="Nom variante (ex: 25 cl)">
-      </td>
-      <td>
-        <input class="form-control form-control-sm" data-variant-price value="" placeholder="Prix">
-      </td>
-      <td colspan="3"></td>
-      <td class="text-end">
-        <button class="btn btn-sm btn-success" type="button" data-variant-create>Enregistrer</button>
-        <button class="btn btn-sm btn-outline-danger" type="button" data-variant-cancel>Annuler</button>
-        <span class="ms-2 small text-muted" data-variant-status></span>
-      </td>
-    `;
-
-    row.insertAdjacentElement("afterend", tr);
-
-    const variantStatus = tr.querySelector("[data-variant-status]");
-    tr.querySelector("[data-variant-cancel]")?.addEventListener("click", () => tr.remove());
-
-    tr.querySelector("[data-variant-create]")?.addEventListener("click", async () => {
-      const label = tr.querySelector("[data-variant-label]")?.value.trim();
-      const price = tr.querySelector("[data-variant-price]")?.value.trim();
-
-      if (!label) {
-        alert("Nom de variante requis (ex: 25 cl)");
-        return;
-      }
-
-      variantStatus.textContent = "…";
-      try {
-        const json = await post(window.ROUTES.admin_menu_variant_create, {
-          itemId,
-          label,
-          price,
-        });
-
-        tr.removeAttribute("data-new");
-        tr.setAttribute("data-id", json.id);
-        tr.querySelector("[data-variant-create]")?.remove();
-        tr.querySelector("[data-variant-cancel]")?.remove();
-        variantStatus.textContent = "✅";
-        tr.querySelector("[data-variant-label]").value = json.label ?? "";
-        tr.querySelector("[data-variant-price]").value = json.price ?? "";
-
-        const actionsCell = tr.querySelector("td.text-end");
-        if (actionsCell) {
-          actionsCell.insertAdjacentHTML(
-            "afterbegin",
-            '<button class="btn btn-sm btn-success" type="button" data-variant-save>Enregistrer</button> <button class="btn btn-sm btn-outline-danger" type="button" data-variant-delete>Supprimer</button> '
-          );
-          bindVariantRow(tr);
-        }
-      } catch (err) {
-        variantStatus.textContent = "❌";
-        alert(err.message);
-      }
-    });
-  });
-});
-
-// ===== Existing variant rows =====
-function bindVariantRow(row) {
-  const id = row.getAttribute("data-id");
-  const itemId = row.getAttribute("data-item-id");
-  const status = row.querySelector("[data-variant-status]");
-  const saveBtn = row.querySelector("[data-variant-save]");
-  const deleteBtn = row.querySelector("[data-variant-delete]");
-
-  saveBtn?.addEventListener("click", async () => {
-    const label = row.querySelector("[data-variant-label]")?.value.trim() || "";
-    const price = row.querySelector("[data-variant-price]")?.value.trim() || "";
-
-    if (!label) {
-      alert("Nom de variante requis");
-      return;
-    }
-
-    status.textContent = "…";
-    try {
-      await post(window.ROUTES.admin_menu_variant_update, {
-        id,
-        itemId,
-        label,
-        price,
-      });
-      status.textContent = "✅";
-      setTimeout(() => { status.textContent = ""; }, 1500);
-    } catch (err) {
-      status.textContent = "❌";
-      alert(err.message);
-    }
-  });
-
-  deleteBtn?.addEventListener("click", async () => {
-    if (!confirm("Supprimer cette variante ?")) return;
-
-    status.textContent = "…";
-    try {
-      await post(window.ROUTES.admin_menu_variant_delete, { id });
-      row.remove();
-    } catch (err) {
-      status.textContent = "❌";
-      alert(err.message);
-    }
-  });
-}
-
-document.querySelectorAll("tr[data-variant-row]").forEach(bindVariantRow);
-</script>
-
+  .vv-sortable-ghost { opacity: .4; background: #e7f1ff; }
+</style>
 {% endblock %}

@@ -38,7 +38,11 @@ class DashboardController extends AbstractDashboardController
 
     public function configureAssets(): Assets
     {
-        return Assets::new()->addCssFile('/styles/admin.css');
+        return Assets::new()
+            ->addCssFile('/styles/admin.css')
+            // Le module ne s'active que sur la page du builder de carte : il
+            // cherche [data-menu-builder] et ne fait rien s'il ne le trouve pas.
+            ->addAssetMapperEntry('admin-menu-builder');
     }
 
     public function index(): Response

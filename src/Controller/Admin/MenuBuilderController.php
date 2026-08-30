@@ -44,9 +44,17 @@ final class MenuBuilderController extends AbstractController
             ->addOrderBy('v.id', 'ASC')
             ->getQuery()->getResult();
 
+        // Le template affiche les lignes sous leur catégorie : on les regroupe
+        // ici plutôt que de laisser Twig parcourir $category->getItems(), ce qui
+        // relancerait une requête par catégorie.
+        $itemsByCategory = [];
+        foreach ($items as $item) {
+            $itemsByCategory[$item->getCategory()?->getId() ?? 0][] = $item;
+        }
+
         return $this->render('admin/menu/builder.html.twig', [
             'rootCategories' => $roots,
-            'items' => $items,
+            'itemsByCategory' => $itemsByCategory,
         ]);
     }
 
@@ -281,6 +289,124 @@ final class MenuBuilderController extends AbstractController
         $em->flush();
 
         return $this->json(['ok' => true]);
+    }
+
+    // ===== Réordonnancement (glisser-déposer) =====
+
+    /**
+     * Réordonne les lignes d'une catégorie.
+     *
+     * Le navigateur envoie la liste COMPLÈTE des ids de la catégorie d'arrivée,
+     * dans leur nouvel ordre : on réécrit donc les positions de 0 à n. Si une
+     * ligne vient d'une autre catégorie, elle est rattachée au passage — c'est
+     * ce qui permet de déplacer une ligne d'une catégorie à l'autre à la souris.
+     */
+    #[Route('/admin/menu/item/reorder', name: 'admin_menu_item_reorder', methods: ['POST'])]
+    public function reorderItems(
+        Request $request,
+        EntityManagerInterface $em,
+        MenuItemRepository $itemRepo,
+        MenuCategoryRepository $catRepo,
+    ): JsonResponse {
+        if ($csrfError = $this->validateCsrfJson($request)) {
+            return $csrfError;
+        }
+
+        $category = $catRepo->find((int) $request->request->get('categoryId', 0));
+        if (!$category) {
+            return $this->json(['ok' => false, 'message' => 'Catégorie introuvable'], 404);
+        }
+
+        $ids = array_map('intval', $request->request->all('ids'));
+        if ($ids === []) {
+            return $this->json(['ok' => true, 'updated' => 0]);
+        }
+
+        $byId = [];
+        foreach ($itemRepo->findBy(['id' => $ids]) as $item) {
+            $byId[$item->getId()] = $item;
+        }
+
+        $position = 0;
+        foreach ($ids as $id) {
+            $item = $byId[$id] ?? null;
+            if ($item === null) {
+                continue;
+            }
+
+            $item->setCategory($category);
+            $item->setPosition($position++);
+        }
+
+        $em->flush();
+
+        return $this->json(['ok' => true, 'updated' => $position]);
+    }
+
+    /**
+     * Réordonne des catégories au sein d'un même parent (ou entre elles à la
+     * racine quand parentId est vide). Même principe : la liste reçue fait foi.
+     */
+    #[Route('/admin/menu/category/reorder', name: 'admin_menu_category_reorder', methods: ['POST'])]
+    public function reorderCategories(
+        Request $request,
+        EntityManagerInterface $em,
+        MenuCategoryRepository $catRepo,
+    ): JsonResponse {
+        if ($csrfError = $this->validateCsrfJson($request)) {
+            return $csrfError;
+        }
+
+        $parentId = (int) $request->request->get('parentId', 0);
+        $parent = $parentId > 0 ? $catRepo->find($parentId) : null;
+        if ($parentId > 0 && $parent === null) {
+            return $this->json(['ok' => false, 'message' => 'Catégorie parente introuvable'], 404);
+        }
+
+        $ids = array_map('intval', $request->request->all('ids'));
+        if ($ids === []) {
+            return $this->json(['ok' => true, 'updated' => 0]);
+        }
+
+        $byId = [];
+        foreach ($catRepo->findBy(['id' => $ids]) as $category) {
+            $byId[$category->getId()] = $category;
+        }
+
+        $position = 0;
+        foreach ($ids as $id) {
+            $category = $byId[$id] ?? null;
+            if ($category === null) {
+                continue;
+            }
+
+            // Garde-fou : une catégorie ne peut pas devenir son propre parent,
+            // ni descendre sous une de ses propres sous-catégories.
+            if ($parent !== null && $this->isSameOrDescendant($parent, $category)) {
+                continue;
+            }
+
+            $category->setParent($parent);
+            $category->setPosition($position++);
+        }
+
+        $em->flush();
+
+        return $this->json(['ok' => true, 'updated' => $position]);
+    }
+
+    /**
+     * Vrai si $candidate est $category elle-même ou l'une de ses descendantes.
+     */
+    private function isSameOrDescendant(MenuCategory $candidate, MenuCategory $category): bool
+    {
+        for ($node = $candidate; $node !== null; $node = $node->getParent()) {
+            if ($node === $category) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // ===== Helpers =====

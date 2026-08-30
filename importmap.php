@@ -25,4 +25,11 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    'admin-menu-builder' => [
+        'path' => './assets/admin/menu-builder.js',
+        'entrypoint' => true,
+    ],
+    'sortablejs' => [
+        'version' => '1.15.7',
+    ],
 ];

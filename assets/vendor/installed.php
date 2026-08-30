@@ -19,4 +19,14 @@
     array (
     ),
   ),
+  'sortablejs' => 
+  array (
+    'version' => '1.15.7',
+    'dependencies' => 
+    array (
+    ),
+    'extraFiles' => 
+    array (
+    ),
+  ),
 );
