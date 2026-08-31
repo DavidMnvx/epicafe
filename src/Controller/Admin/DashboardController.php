@@ -101,7 +101,7 @@ class DashboardController extends AbstractDashboardController
         // et de leurs variantes ; le CRUD Catégories reste nécessaire pour les
         // renommer, les réordonner ou les dépublier.
         yield EaMenuItem::subMenu('La carte', 'fa fa-utensils')->setSubItems([
-            EaMenuItem::linkToRoute('Composer la carte', 'fa fa-pen-to-square', 'admin_menu_builder'),
+            EaMenuItem::linkToUrl('Composer la carte', 'fa fa-pen-to-square', $this->generateUrl('admin_menu_builder')),
             EaMenuItem::linkToCrud('Catégories de la carte', 'fa fa-list', MenuCategory::class),
         ]);
 
@@ -111,14 +111,14 @@ class DashboardController extends AbstractDashboardController
 
         // Une seule entrée : l'ajout se fait sur l'écran même où l'on consulte,
         // par dépôt de fichiers. Le CRUD reste joignable par son URL.
-        yield EaMenuItem::linkToRoute('Les photos', 'fa fa-image', 'admin_gallery');
+        yield EaMenuItem::linkToUrl('Les photos', 'fa fa-image', $this->generateUrl('admin_gallery'));
 
-        yield EaMenuItem::linkToRoute('Les partenaires', 'fa fa-handshake', 'admin_partners');
+        yield EaMenuItem::linkToUrl('Les partenaires', 'fa fa-handshake', $this->generateUrl('admin_partners'));
 
         yield EaMenuItem::section('Réglages');
         // Page unique regroupant les 23 paramètres ; le CRUD reste joignable
         // par son URL pour les cas techniques, mais sort de la navigation.
-        yield EaMenuItem::linkToRoute('Coordonnées & options', 'fa fa-sliders', 'admin_site_settings');
+        yield EaMenuItem::linkToUrl('Coordonnées & options', 'fa fa-sliders', $this->generateUrl('admin_site_settings'));
         yield EaMenuItem::linkToCrud('Images du site', 'fa fa-panorama', SiteImage::class);
         yield EaMenuItem::linkToCrud('Avis Google', 'fa fa-star', GoogleReview::class);
 
