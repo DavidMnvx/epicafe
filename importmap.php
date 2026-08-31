@@ -29,6 +29,10 @@ return [
         'path' => './assets/admin/menu-builder.js',
         'entrypoint' => true,
     ],
+    'admin-gallery' => [
+        'path' => './assets/admin/gallery.js',
+        'entrypoint' => true,
+    ],
     'sortablejs' => [
         'version' => '1.15.7',
     ],

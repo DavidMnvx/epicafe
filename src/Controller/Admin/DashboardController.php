@@ -40,9 +40,10 @@ class DashboardController extends AbstractDashboardController
     {
         return Assets::new()
             ->addCssFile('/styles/admin.css')
-            // Le module ne s'active que sur la page du builder de carte : il
-            // cherche [data-menu-builder] et ne fait rien s'il ne le trouve pas.
-            ->addAssetMapperEntry('admin-menu-builder');
+            // Chaque module cherche sa racine dans le DOM et ne fait rien s'il
+            // ne la trouve pas : les charger partout est sans effet ailleurs.
+            ->addAssetMapperEntry('admin-menu-builder')
+            ->addAssetMapperEntry('admin-gallery');
     }
 
     public function index(): Response
@@ -107,10 +108,9 @@ class DashboardController extends AbstractDashboardController
 
         yield EaMenuItem::linkToCrud('Les événements', 'fa fa-calendar', Event::class);
 
-        yield EaMenuItem::subMenu('Les photos', 'fa fa-image')->setSubItems([
-            EaMenuItem::linkToRoute('Ajouter des photos', 'fa fa-upload', 'admin_gallery_upload'),
-            EaMenuItem::linkToCrud('Toutes les photos', 'fa fa-images', GalleryPhoto::class),
-        ]);
+        // Une seule entrée : l'ajout se fait sur l'écran même où l'on consulte,
+        // par dépôt de fichiers. Le CRUD reste joignable par son URL.
+        yield EaMenuItem::linkToRoute('Les photos', 'fa fa-image', 'admin_gallery');
 
         yield EaMenuItem::linkToCrud('Les partenaires', 'fa fa-handshake', Partner::class);
 

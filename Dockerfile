@@ -37,7 +37,11 @@ RUN { \
     } > /usr/local/etc/php/conf.d/app.ini
 
 # Outils utiles pour l'entrypoint runtime (pg_isready + bash)
-RUN apk add --no-cache postgresql-client bash
+# poppler-utils fournit pdftoppm, qui convertit la 1re page d'un PDF en image :
+# les clients déposent régulièrement un PDF là où le site attend une photo.
+# Choisi plutôt qu'ImageMagick + Ghostscript, plus lourds et à la surface
+# d'attaque connue sur le traitement des PDF.
+RUN apk add --no-cache postgresql-client bash poppler-utils
 
 WORKDIR /app
 

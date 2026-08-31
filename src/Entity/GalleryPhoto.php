@@ -30,6 +30,10 @@ class GalleryPhoto
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $isPublished = true;
 
+    // Ordre d'affichage dans la galerie, réglé au glisser-déposer.
+    #[ORM\Column(name: '`position`', type: Types::INTEGER, options: ['default' => 0])]
+    private int $position = 0;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
@@ -90,6 +94,18 @@ class GalleryPhoto
     public function isPublished(): bool { return $this->isPublished; }
     public function setIsPublished(bool $isPublished): self { $this->isPublished = $isPublished; return $this; }
 
+    public function getPosition(): int { return $this->position; }
+    public function setPosition(int $position): self { $this->position = $position; return $this; }
+
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
     public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
+
+    /**
+     * Date de référence pour le classement par mois : la prise de vue si elle
+     * est renseignée, sinon la date d'ajout.
+     */
+    public function getSortDate(): \DateTimeImmutable
+    {
+        return $this->takenAt ?? $this->createdAt;
+    }
 }

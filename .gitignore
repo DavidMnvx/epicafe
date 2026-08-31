@@ -52,3 +52,5 @@ docker-compose.local.yml
 
 ### Misc ###
 coverage/
+### PHPUnit cache ###
+/.phpunit.cache/

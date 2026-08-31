@@ -1,0 +1,186 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Les photos{% endblock %}
+
+{% block page_content %}
+
+<div class="vv-gal"
+     data-gallery
+     data-token="{{ csrf_token('gallery') }}"
+     data-base-path="{{ asset('uploads/gallery') }}"
+     data-routes="{{ {
+         upload:  path('admin_gallery_upload_files'),
+         reorder: path('admin_gallery_reorder'),
+         update:  path('admin_gallery_update'),
+         delete:  path('admin_gallery_delete')
+     }|json_encode }}">
+
+  {# ---------- Dépôt de fichiers ---------- #}
+  <div class="vv-gal__drop" data-dropzone tabindex="0" role="button"
+       aria-label="Ajouter des photos">
+    <input type="file" multiple accept="image/*,application/pdf" hidden data-file-input>
+
+    <div class="vv-gal__dropInner">
+      <span class="vv-gal__dropIcon" aria-hidden="true">🖼️</span>
+      <p class="vv-gal__dropTitle">Glisse tes photos ici</p>
+      <p class="vv-gal__dropHint">
+        ou clique pour les choisir — JPG, PNG, WebP et PDF acceptés.<br>
+        Elles sont redimensionnées et allégées automatiquement.
+      </p>
+    </div>
+
+    <div class="vv-gal__dropDate">
+      <label for="vv-taken-at">Date de prise de vue (facultatif)</label>
+      <input type="date" id="vv-taken-at" class="form-control form-control-sm" data-taken-at>
+      <span class="vv-gal__hint">Sert à ranger les photos par mois.</span>
+    </div>
+  </div>
+
+  <div class="vv-gal__progress" data-progress hidden>
+    <div class="vv-gal__progressBar"><span data-progress-bar></span></div>
+    <p class="vv-gal__progressText" data-progress-text></p>
+  </div>
+
+  <div class="vv-gal__errors" data-errors hidden></div>
+
+  {# ---------- Photos par mois ---------- #}
+  <div class="vv-gal__count">
+    <strong data-total>{{ total }}</strong> photo{{ total > 1 ? 's' : '' }} dans la galerie
+    <span class="vv-gal__status" data-global-status></span>
+  </div>
+
+  <div data-months>
+    {% for key, month in months %}
+      <section class="vv-gal__month" data-month="{{ key }}">
+        <button class="vv-gal__monthHead" type="button" data-month-toggle aria-expanded="true">
+          <span class="vv-gal__chevron" aria-hidden="true">▾</span>
+          <span class="vv-gal__monthName">{{ month.label }}</span>
+          <span class="vv-gal__monthCount" data-month-count>{{ month.photos|length }}</span>
+        </button>
+
+        <ul class="vv-gal__grid" data-photos>
+          {% for photo in month.photos %}
+            <li class="vv-gal__tile{{ photo.isPublished ? '' : ' is-hidden' }}" data-photo data-id="{{ photo.id }}">
+              <div class="vv-gal__thumb">
+                <img src="{{ asset('uploads/gallery/' ~ photo.fileName) }}"
+                     alt="{{ photo.title|e }}"
+                     loading="lazy"
+                     decoding="async">
+
+                <span class="vv-gal__handle" data-handle title="Glisser pour réordonner" aria-hidden="true">⠿</span>
+
+                {% if not photo.isPublished %}
+                  <span class="vv-gal__badge" data-hidden-badge>Masquée</span>
+                {% endif %}
+              </div>
+
+              <input class="form-control form-control-sm vv-gal__title"
+                     data-title value="{{ photo.title }}" placeholder="Sans titre">
+
+              <div class="vv-gal__tileActions">
+                <button class="btn btn-sm btn-link" type="button" data-toggle-published>
+                  {{ photo.isPublished ? 'Masquer' : 'Afficher' }}
+                </button>
+                <button class="btn btn-sm btn-link text-danger" type="button" data-delete title="Supprimer">✕</button>
+                <span class="vv-gal__status" data-status></span>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% else %}
+      <p class="vv-gal__empty" data-empty-gallery>
+        Aucune photo pour l’instant — dépose tes premières images ci-dessus.
+      </p>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  /* S'appuie sur les composants Bootstrap d'EasyAdmin. */
+  .vv-gal { max-width: 1100px; }
+
+  .vv-gal__drop {
+    border: 2px dashed #9dbdb6;
+    border-radius: .6rem;
+    background: #f7faf9;
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .vv-gal__drop:hover, .vv-gal__drop:focus-visible { border-color: #2d685f; background: #eef5f3; }
+  .vv-gal__drop.is-dragover { border-color: #2d685f; background: #e3efec; border-style: solid; }
+
+  .vv-gal__dropIcon { font-size: 1.75rem; display: block; }
+  .vv-gal__dropTitle { font-weight: 700; color: #2d685f; margin: .4rem 0 .2rem; font-size: 1.05rem; }
+  .vv-gal__dropHint { color: #55606d; font-size: .85rem; margin: 0; }
+
+  .vv-gal__dropDate {
+    margin-top: 1rem; padding-top: .9rem; border-top: 1px solid #dfe8e6;
+    display: flex; align-items: center; justify-content: center; gap: .6rem; flex-wrap: wrap;
+  }
+  .vv-gal__dropDate label { font-size: .85rem; color: #55606d; margin: 0; }
+  .vv-gal__dropDate input { max-width: 170px; }
+  .vv-gal__hint { font-size: .78rem; color: #8a9199; }
+
+  .vv-gal__progress { margin-top: 1rem; }
+  .vv-gal__progressBar { height: 6px; background: #e3efec; border-radius: 3px; overflow: hidden; }
+  .vv-gal__progressBar span { display: block; height: 100%; width: 0; background: #2d685f; transition: width .2s ease; }
+  .vv-gal__progressText { font-size: .85rem; color: #55606d; margin: .4rem 0 0; }
+
+  .vv-gal__errors { margin-top: 1rem; }
+
+  .vv-gal__count { margin: 1.5rem 0 .75rem; color: #55606d; display: flex; align-items: center; gap: .75rem; }
+
+  .vv-gal__month { margin-bottom: 1.25rem; border: 1px solid #c3cfcc; border-radius: .5rem; overflow: hidden; }
+  .vv-gal__monthHead {
+    width: 100%; display: flex; align-items: center; gap: .6rem;
+    background: #2d685f; color: #fff; border: 0;
+    padding: .65rem 1rem; font-size: 1.05rem; font-weight: 700; text-align: left;
+  }
+  .vv-gal__monthCount {
+    margin-left: auto; background: rgba(255,255,255,.2);
+    border-radius: 999px; padding: .05rem .55rem; font-size: .85rem; font-weight: 600;
+  }
+  .vv-gal__chevron { transition: transform .18s ease; display: inline-block; }
+  .vv-gal__monthHead[aria-expanded="false"] .vv-gal__chevron { transform: rotate(-90deg); }
+
+  .vv-gal__grid {
+    list-style: none; margin: 0; padding: 1rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem;
+  }
+  .vv-gal__grid[hidden] { display: none; }
+
+  .vv-gal__tile { display: flex; flex-direction: column; gap: .4rem; }
+  .vv-gal__tile.is-hidden .vv-gal__thumb img { opacity: .45; filter: grayscale(.5); }
+
+  .vv-gal__thumb {
+    position: relative; aspect-ratio: 4 / 3; border-radius: .4rem; overflow: hidden;
+    background: #eef1f0; border: 1px solid #dfe8e6;
+  }
+  .vv-gal__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .vv-gal__handle {
+    position: absolute; top: .35rem; left: .35rem;
+    background: rgba(255,255,255,.92); color: #55606d;
+    border-radius: .3rem; padding: .05rem .35rem; cursor: grab; user-select: none;
+  }
+  .vv-gal__handle:active { cursor: grabbing; }
+
+  .vv-gal__badge {
+    position: absolute; bottom: .35rem; right: .35rem;
+    background: rgba(33,29,24,.82); color: #fff;
+    font-size: .72rem; border-radius: .3rem; padding: .1rem .4rem;
+  }
+
+  .vv-gal__tileActions { display: flex; align-items: center; gap: .25rem; }
+  .vv-gal__tileActions .btn { padding: 0 .3rem; font-size: .82rem; }
+  .vv-gal__status { font-size: .78rem; min-width: 4rem; }
+
+  .vv-gal__empty { color: #6c757d; font-style: italic; padding: 1.5rem 0; }
+
+  .vv-sortable-ghost { opacity: .4; }
+</style>
+
+{% endblock %}

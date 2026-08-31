@@ -9,6 +9,7 @@ use App\Repository\MenuCategoryRepository;
 use App\Repository\MenuItemRepository;
 use App\Repository\MenuItemVariantRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +21,11 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[IsGranted('ROLE_ADMIN')]
 final class MenuBuilderController extends AbstractController
 {
-    #[Route('/admin/menu/builder', name: 'admin_menu_builder')]
+    // Voir GalleryPageController : sans ce défaut, le layout EasyAdmin n'a
+    // pas son contexte et la page casse en accès direct.
+    #[Route('/admin/menu/builder', name: 'admin_menu_builder', defaults: [
+        EA::DASHBOARD_CONTROLLER_FQCN => DashboardController::class,
+    ])]
     public function index(
         MenuCategoryRepository $catRepo,
         MenuItemRepository $itemRepo

@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\SiteSetting;
 use App\Repository\SiteSettingRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -54,7 +55,11 @@ final class SiteSettingsPageController extends AbstractController
         ],
     ];
 
-    #[Route('/admin/reglages', name: 'admin_site_settings')]
+    // Voir GalleryPageController : sans ce défaut, le layout EasyAdmin n'a
+    // pas son contexte et la page casse en accès direct.
+    #[Route('/admin/reglages', name: 'admin_site_settings', defaults: [
+        EA::DASHBOARD_CONTROLLER_FQCN => DashboardController::class,
+    ])]
     public function index(
         Request $request,
         SiteSettingRepository $repository,
