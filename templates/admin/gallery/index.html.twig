@@ -152,12 +152,20 @@
 
   .vv-gal__count { margin: 1.5rem 0 .75rem; color: #55606d; display: flex; align-items: center; gap: .75rem; }
 
-  .vv-gal__month { margin-bottom: 1.25rem; border: 1px solid #c3cfcc; border-radius: .5rem; overflow: hidden; }
+  /* La section porte le fond et l'arrondi ; son overflow:hidden découpe
+     l'entête — pas de radius sur l'entête elle-même, sinon un liseré blanc
+     apparaît dans les coins bas quand le mois est replié. */
+  .vv-gal__month {
+    margin-bottom: 1.25rem; border: 1px solid #c3cfcc; border-radius: .5rem;
+    overflow: hidden; background: #fff;
+  }
   .vv-gal__monthHead {
     width: 100%; display: flex; align-items: center; gap: .6rem;
-    background: #2d685f; color: #fff; border: 0;
+    background: #2d685f; color: #fff; border: 0; border-radius: 0;
     padding: .65rem 1rem; font-size: 1.05rem; font-weight: 700; text-align: left;
+    cursor: pointer;
   }
+  .vv-gal__monthHead:hover { background: #245a52; }
   .vv-gal__monthCount {
     margin-left: auto; background: rgba(255,255,255,.2);
     border-radius: 999px; padding: .05rem .55rem; font-size: .85rem; font-weight: 600;

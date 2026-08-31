@@ -43,7 +43,8 @@ class DashboardController extends AbstractDashboardController
             // Chaque module cherche sa racine dans le DOM et ne fait rien s'il
             // ne la trouve pas : les charger partout est sans effet ailleurs.
             ->addAssetMapperEntry('admin-menu-builder')
-            ->addAssetMapperEntry('admin-gallery');
+            ->addAssetMapperEntry('admin-gallery')
+            ->addAssetMapperEntry('admin-partners');
     }
 
     public function index(): Response
@@ -112,7 +113,7 @@ class DashboardController extends AbstractDashboardController
         // par dépôt de fichiers. Le CRUD reste joignable par son URL.
         yield EaMenuItem::linkToRoute('Les photos', 'fa fa-image', 'admin_gallery');
 
-        yield EaMenuItem::linkToCrud('Les partenaires', 'fa fa-handshake', Partner::class);
+        yield EaMenuItem::linkToRoute('Les partenaires', 'fa fa-handshake', 'admin_partners');
 
         yield EaMenuItem::section('Réglages');
         // Page unique regroupant les 23 paramètres ; le CRUD reste joignable

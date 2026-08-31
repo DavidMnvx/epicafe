@@ -33,6 +33,10 @@ return [
         'path' => './assets/admin/gallery.js',
         'entrypoint' => true,
     ],
+    'admin-partners' => [
+        'path' => './assets/admin/partners.js',
+        'entrypoint' => true,
+    ],
     'sortablejs' => [
         'version' => '1.15.7',
     ],

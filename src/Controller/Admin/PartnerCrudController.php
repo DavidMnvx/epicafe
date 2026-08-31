@@ -85,99 +85,58 @@ final class PartnerCrudController extends AbstractCrudController
         yield IntegerField::new('position', 'Ordre')->onlyOnIndex();
         yield BooleanField::new('isPublished', 'Publié')->onlyOnIndex();
 
-        // ===== Onglet Infos =====
-        yield FormField::addTab('Infos')
+        // ===== Onglet 1 : tout ce qu'il faut pour publier =====
+        // L'ordre et le type se règlent au glisser-déposer sur la page « Les
+        // partenaires » : ni champ « position », ni onglet dédié.
+        yield FormField::addTab('L’essentiel')
             ->setIcon('fa fa-circle-info')
-            ->setHelp('Informations générales du partenaire. Le "Type" détermine comment il sera affiché sur le site.');
+            ->setHelp('De quoi présenter un partenaire : un nom, une photo, quelques mots. Le rang et la mise en avant se règlent en glissant les cartes sur la page « Les partenaires ».');
 
         yield TextField::new('name', 'Nom')
             ->setRequired(true)
             ->setColumns('col-md-6')
-            ->setHelp('Nom commercial du partenaire tel qu’il apparaît sur le site.')
+            ->setHelp('Nom commercial tel qu’il apparaît sur le site.')
             ->onlyOnForms();
 
-        yield SlugField::new('slug', 'Slug (URL)')
-            ->setTargetFieldName('name')
-            ->setRequired(false)
-            ->setColumns('col-md-6')
-            ->setHelp('Généré automatiquement à partir du nom. Laisse vide sauf cas particulier.')
-            ->onlyOnForms();
-
-        yield ChoiceField::new('type', 'Type')
-            ->setChoices(self::TYPE_CHOICES)
-            ->renderAsNativeWidget()
-            ->setHelp('• Premium = grand bloc avec 3 images (onglet "Images Premium"). • Partenaire = card avec logo. • Secondaire = petit logo dans la liste secondaire.')
-            ->setColumns('col-md-4')
-            ->onlyOnForms();
-
-        yield IntegerField::new('position', 'Ordre d’affichage')
-            ->setHelp('Plus petit = affiché en premier. Ex : 0 pour le mettre tout en haut, 10 pour le descendre.')
-            ->setColumns('col-md-2')
-            ->onlyOnForms();
-
-        yield BooleanField::new('isPublished', 'Publié')
+        yield BooleanField::new('isPublished', 'Visible sur le site')
             ->renderAsSwitch(false)
-            ->setColumns('col-md-2')
-            ->setHelp('Décoche pour cacher ce partenaire du site.')
+            ->setColumns('col-md-3')
+            ->setHelp('Décoche pour préparer la fiche sans l’afficher.')
             ->onlyOnForms();
 
         yield UrlField::new('websiteUrl', 'Site web')
             ->setColumns('col-md-8')
-            ->setHelp('URL complète avec https:// (ex : https://monpartenaire.fr). Un clic sur le partenaire renverra vers ce lien.')
+            ->setHelp('Un clic sur le partenaire renverra vers ce lien. Facultatif.')
             ->onlyOnForms();
 
         yield TextareaField::new('description', 'Description')
             ->setColumns('col-md-12')
-            ->setHelp('Présentation du partenaire affichée sur le site. Utilisée surtout pour les partenaires Premium.')
+            ->setHelp('Quelques phrases de présentation, affichées sur le site.')
             ->onlyOnForms();
 
-        // ===== Onglet Points =====
-        yield FormField::addTab('Points forts')
-            ->setIcon('fa fa-list-check')
-            ->setHelp('Jusqu’à 3 points courts mis en avant dans le bloc Premium (ex : "Produits locaux", "Livraison gratuite"). Utilisés uniquement si le type est Premium.');
-
-        yield TextField::new('bullet1', 'Point 1')
-            ->setColumns('col-md-4')
-            ->setHelp('Ex : "Produits 100% locaux"')
-            ->onlyOnForms();
-        yield TextField::new('bullet2', 'Point 2')
-            ->setColumns('col-md-4')
-            ->setHelp('Ex : "Livraison gratuite"')
-            ->onlyOnForms();
-        yield TextField::new('bullet3', 'Point 3')
-            ->setColumns('col-md-4')
-            ->setHelp('Ex : "Ouvert 7j/7"')
-            ->onlyOnForms();
-
-        // ===== Onglet Logo =====
-        yield FormField::addTab('Logo')
-            ->setIcon('fa fa-icons')
-            ->setHelp('Logo affiché pour tous les types de partenaires. Format carré ou horizontal, fond transparent de préférence. Taille recommandée : 500×500 px (PNG/SVG/WebP), poids < 200 Ko.');
-
-        yield ImageField::new('logoFileName', 'Logo uploadé')
-            ->setUploadDir('public/uploads/partners')
-            ->setBasePath('uploads/partners')
-            ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-            ->setHelp('Idéal : PNG/SVG avec fond transparent, 500×500 px, max 200 Ko. Évite les JPG qui n’ont pas de transparence.')
-            ->setColumns('col-md-8')
-            ->onlyOnForms();
-
-        yield TextField::new('logoUrl', 'Logo URL (fallback)')
-            ->setColumns('col-md-8')
-            ->setHelp('Alternative : lien direct vers un logo en ligne. Utilisé uniquement si aucun fichier n’est uploadé ci-dessus.')
-            ->onlyOnForms();
-
-        // ===== Onglet Images Premium =====
-        yield FormField::addTab('Images Premium')
-            ->setIcon('fa fa-images')
-            ->setHelp('⚠ Uniquement pour les partenaires de type "Premium" : 3 images affichées côte à côte dans le grand bloc. Format paysage recommandé : 1200×800 px (3:2), JPG ou WebP, max 500 Ko chacune.');
-
-        yield ImageField::new('heroImageFileName', 'Image principale')
+        yield ImageField::new('heroImageFileName', 'Photo principale')
             ->setUploadDir('public/uploads/partners')
             ->setBasePath('uploads/partners')
             ->setUploadedFileNamePattern('[slug]-hero-[timestamp].[extension]')
-            ->setColumns('col-md-4')
-            ->setHelp('La plus grande des trois, mise en avant. 1200×800 px recommandé.')
+            ->setColumns('col-md-6')
+            ->setHelp('La photo qui représente le partenaire. Paysage recommandé — elle est optimisée automatiquement, un PDF est accepté.')
+            ->onlyOnForms();
+
+        // ===== Onglet 2 : compléments, surtout pour les Premium =====
+        yield FormField::addTab('Détails')
+            ->setIcon('fa fa-sliders')
+            ->setHelp('Compléments facultatifs — surtout utiles pour les partenaires mis en avant (Premium).');
+
+        yield FormField::addFieldset('Points forts (bloc Premium)')
+            ->setHelp('Jusqu’à 3 arguments courts. Ex : "Produits 100% locaux", "Ouvert 7j/7".')
+            ->onlyOnForms();
+
+        yield TextField::new('bullet1', 'Point 1')->setColumns('col-md-4')->onlyOnForms();
+        yield TextField::new('bullet2', 'Point 2')->setColumns('col-md-4')->onlyOnForms();
+        yield TextField::new('bullet3', 'Point 3')->setColumns('col-md-4')->onlyOnForms();
+
+        yield FormField::addFieldset('Images complémentaires (bloc Premium)')
+            ->setHelp('Deux photos de plus dans le grand bloc — laisse vide pour un affichage à une seule image.')
             ->onlyOnForms();
 
         yield ImageField::new('image2FileName', 'Image 2')
@@ -185,7 +144,6 @@ final class PartnerCrudController extends AbstractCrudController
             ->setBasePath('uploads/partners')
             ->setUploadedFileNamePattern('[slug]-2-[timestamp].[extension]')
             ->setColumns('col-md-4')
-            ->setHelp('Image complémentaire — produit, ambiance, etc.')
             ->onlyOnForms();
 
         yield ImageField::new('image3FileName', 'Image 3')
@@ -193,7 +151,32 @@ final class PartnerCrudController extends AbstractCrudController
             ->setBasePath('uploads/partners')
             ->setUploadedFileNamePattern('[slug]-3-[timestamp].[extension]')
             ->setColumns('col-md-4')
-            ->setHelp('Troisième image du bloc Premium.')
+            ->onlyOnForms();
+
+        yield FormField::addFieldset('Divers')->onlyOnForms();
+
+        yield ImageField::new('logoFileName', 'Logo')
+            ->setUploadDir('public/uploads/partners')
+            ->setBasePath('uploads/partners')
+            ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
+            ->setColumns('col-md-4')
+            ->setHelp('Facultatif — PNG à fond transparent de préférence.')
+            ->onlyOnForms();
+
+        yield SlugField::new('slug', 'Adresse (slug)')
+            ->setTargetFieldName('name')
+            ->setRequired(false)
+            ->setColumns('col-md-4')
+            ->setHelp('Générée depuis le nom, à ne modifier qu’en cas de besoin.')
+            ->onlyOnForms();
+
+        // Le type reste modifiable ici pour qui préfère le formulaire, mais le
+        // geste normal est le glisser-déposer entre sections.
+        yield ChoiceField::new('type', 'Mise en avant')
+            ->setChoices(self::TYPE_CHOICES)
+            ->renderAsNativeWidget()
+            ->setColumns('col-md-4')
+            ->setHelp('Se règle aussi en glissant la carte d’une section à l’autre.')
             ->onlyOnForms();
     }
 }

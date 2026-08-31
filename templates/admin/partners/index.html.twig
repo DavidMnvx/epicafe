@@ -1,0 +1,157 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Les partenaires{% endblock %}
+
+{% block page_content %}
+
+<div class="vv-part"
+     data-partners
+     data-token="{{ csrf_token('partners') }}"
+     data-routes="{{ {
+         reorder: path('admin_partners_reorder'),
+         update:  path('admin_partners_update'),
+         delete:  path('admin_partners_delete')
+     }|json_encode }}">
+
+  <div class="vv-part__top">
+    <p class="vv-part__intro">
+      Glisse les cartes pour changer leur ordre — ou déplace-les d’une section à
+      l’autre pour changer leur mise en avant sur le site. Tout s’enregistre tout seul.
+    </p>
+    <a class="btn btn-primary" href="{{ newUrl }}">+ Nouveau partenaire</a>
+    <span class="vv-part__status" data-global-status></span>
+  </div>
+
+  {% for type, section in sections %}
+    <section class="vv-part__section" data-section="{{ type }}">
+      <div class="vv-part__head">
+        <h2 class="vv-part__title">{{ section.label }}</h2>
+        <span class="vv-part__count" data-count>{{ section.partners|length }}</span>
+        <p class="vv-part__help">{{ section.help }}</p>
+      </div>
+
+      <ul class="vv-part__grid" data-cards data-type="{{ type }}">
+        {% for partner in section.partners %}
+          <li class="vv-part__card{{ partner.isPublished ? '' : ' is-hidden' }}" data-card data-id="{{ partner.id }}">
+            <div class="vv-part__thumb">
+              {% set visual = partner.heroImageFileName ?? partner.logoFileName %}
+              {% if visual %}
+                <img src="{{ asset('uploads/partners/' ~ visual) }}" alt="{{ partner.name|e }}" loading="lazy" decoding="async">
+              {% else %}
+                <span class="vv-part__placeholder" aria-hidden="true">🤝</span>
+              {% endif %}
+
+              <span class="vv-part__handle" data-handle title="Glisser pour déplacer" aria-hidden="true">⠿</span>
+
+              {% if not partner.isPublished %}
+                <span class="vv-part__badge" data-hidden-badge>Masqué</span>
+              {% endif %}
+            </div>
+
+            <div class="vv-part__body">
+              <strong class="vv-part__name">{{ partner.name }}</strong>
+              {% if partner.websiteUrl %}
+                <span class="vv-part__site" title="{{ partner.websiteUrl }}">🔗 site web</span>
+              {% endif %}
+            </div>
+
+            <div class="vv-part__actions">
+              <a class="vv-part__edit" href="{{ ea_url()
+                  .setController('App\\Controller\\Admin\\PartnerCrudController')
+                  .setAction('edit')
+                  .setEntityId(partner.id) }}">Modifier</a>
+              <button type="button" data-toggle-published>{{ partner.isPublished ? 'Masquer' : 'Afficher' }}</button>
+              <button type="button" data-delete>Supprimer</button>
+              <span class="vv-part__status" data-status></span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <p class="vv-part__empty" data-empty {{ section.partners|length ? 'hidden' : '' }}>
+        Aucun partenaire ici — glisses-en un depuis une autre section.
+      </p>
+    </section>
+  {% endfor %}
+</div>
+
+<style>
+  /* Même vocabulaire visuel que la galerie et le builder de carte. */
+  .vv-part { max-width: 1100px; }
+
+  .vv-part__top { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .vv-part__intro { color: #55606d; margin: 0; flex: 1 1 300px; }
+
+  .vv-part__section {
+    margin-bottom: 1.25rem; border: 1px solid #c3cfcc; border-radius: .5rem;
+    overflow: hidden; background: #fff;
+  }
+  .vv-part__head {
+    display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+    background: #2d685f; color: #fff; padding: .65rem 1rem;
+  }
+  .vv-part__title { font-size: 1.05rem; font-weight: 700; margin: 0; }
+  .vv-part__count {
+    background: rgba(255,255,255,.2); border-radius: 999px;
+    padding: .05rem .55rem; font-size: .85rem; font-weight: 600;
+  }
+  .vv-part__help { font-size: .82rem; color: rgba(255,255,255,.85); margin: 0; flex-basis: 100%; }
+
+  .vv-part__grid {
+    list-style: none; margin: 0; padding: 1rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem;
+    min-height: 40px;
+  }
+
+  .vv-part__card {
+    display: flex; flex-direction: column; gap: .45rem;
+    border: 1px solid #efe6dc; border-radius: .5rem; background: #faf7f3; padding: .6rem;
+  }
+  .vv-part__card.is-hidden .vv-part__thumb img { opacity: .45; filter: grayscale(.5); }
+
+  .vv-part__thumb {
+    position: relative; aspect-ratio: 3 / 2; border-radius: .4rem; overflow: hidden;
+    background: #fff; border: 1px solid #e4dbd0; display: grid; place-items: center;
+  }
+  .vv-part__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vv-part__placeholder { font-size: 2rem; opacity: .5; }
+
+  .vv-part__handle {
+    position: absolute; top: .35rem; left: .35rem;
+    background: rgba(255,255,255,.92); color: #55606d;
+    border-radius: .3rem; padding: .05rem .35rem; cursor: grab; user-select: none;
+  }
+  .vv-part__handle:active { cursor: grabbing; }
+
+  .vv-part__badge {
+    position: absolute; bottom: .35rem; right: .35rem;
+    background: rgba(33,29,24,.82); color: #fff;
+    font-size: .72rem; border-radius: .3rem; padding: .1rem .4rem;
+  }
+
+  .vv-part__body { min-width: 0; }
+  .vv-part__name { display: block; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vv-part__site { font-size: .75rem; color: #8a9199; }
+
+  .vv-part__actions { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+  .vv-part__actions a, .vv-part__actions button {
+    font-size: .8rem; font-weight: 600; line-height: 1;
+    padding: .3rem .55rem; border-radius: .35rem; text-decoration: none;
+    transition: background .15s ease, color .15s ease; cursor: pointer;
+  }
+  .vv-part__edit { color: #fff; background: #2d685f; border: 1px solid #2d685f; }
+  .vv-part__edit:hover { background: #245a52; color: #fff; }
+  .vv-part__actions [data-toggle-published] { color: #2d685f; border: 1px solid #9dbdb6; background: #fff; }
+  .vv-part__actions [data-toggle-published]:hover { background: #2d685f; color: #fff; border-color: #2d685f; }
+  .vv-part__actions [data-delete] { color: #b03526; border: 1px solid #dcb0a9; background: #fff; }
+  .vv-part__actions [data-delete]:hover { background: #fdf1ef; border-color: #b03526; }
+  .vv-part__actions [data-delete].is-confirming,
+  .vv-part__actions [data-delete].is-confirming:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
+
+  .vv-part__status { font-size: .78rem; min-width: 3rem; }
+  .vv-part__empty { color: #6c757d; font-style: italic; padding: 0 1rem 1rem; margin: 0; }
+
+  .vv-sortable-ghost { opacity: .4; }
+</style>
+
+{% endblock %}
