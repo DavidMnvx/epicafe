@@ -103,7 +103,7 @@ if (root) {
     });
 
     fileInput.addEventListener('change', () => {
-        if (fileInput.files.length) upload([...fileInput.files]);
+        if (fileInput.files.length) openUploadModal([...fileInput.files]);
         fileInput.value = '';
     });
 
@@ -124,7 +124,7 @@ if (root) {
 
     dropzone.addEventListener('drop', (event) => {
         const files = [...(event.dataTransfer?.files ?? [])];
-        if (files.length) upload(files);
+        if (files.length) openUploadModal(files);
     });
 
     // Empêche le navigateur d'ouvrir un fichier lâché à côté de la zone.
@@ -139,25 +139,107 @@ if (root) {
     const progressText = root.querySelector('[data-progress-text]');
     const errorBox = root.querySelector('[data-errors]');
 
+    // ------------------------------------------- modale de validation d'envoi
+
+    // Déposer un fichier n'engage rien : la modale montre les aperçus, laisse
+    // saisir un titre par photo et une date commune, et rien ne part en base
+    // avant le clic sur « Ajouter ».
+    const modal = root.querySelector('[data-upload-modal]');
+    const modalList = modal.querySelector('[data-modal-list]');
+    const modalForm = modal.querySelector('[data-upload-form]');
+
+    /** @type {{file: File, url: string|null}[]} */
+    let pending = [];
+
+    function openUploadModal(files) {
+        closeUploadModal();
+
+        pending = files.map((file) => ({
+            file,
+            url: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
+        }));
+
+        modal.querySelector('[data-modal-title]').textContent =
+            pending.length > 1 ? `Ajouter ${pending.length} photos` : 'Ajouter une photo';
+
+        modalList.innerHTML = '';
+
+        pending.forEach((entry, index) => {
+            const li = document.createElement('li');
+            li.className = 'vv-gal__modalRow';
+            li.innerHTML = `
+                <span class="vv-gal__modalThumb">
+                    ${entry.url
+                        ? `<img src="${entry.url}" alt="">`
+                        : '<span title="PDF — la première page deviendra une image">📄</span>'}
+                </span>
+                <span class="vv-gal__modalMeta">
+                    <label for="vv-modal-title-${index}">Intitulé</label>
+                    <input class="form-control form-control-sm" id="vv-modal-title-${index}"
+                           data-modal-input="${index}"
+                           value="${escapeHtml(defaultTitle(entry.file.name))}"
+                           placeholder="Ex : Soirée concert, terrasse…">
+                    <span class="vv-gal__modalFile">${escapeHtml(entry.file.name)}</span>
+                </span>`;
+
+            modalList.append(li);
+        });
+
+        modal.showModal();
+        modalList.querySelector('input')?.select();
+    }
+
+    function closeUploadModal() {
+        pending.forEach((entry) => entry.url && URL.revokeObjectURL(entry.url));
+        pending = [];
+        if (modal.open) modal.close();
+    }
+
+    /** « IMG-3506-repas.jpg » → « IMG 3506 repas » : une base de titre propre. */
+    function defaultTitle(fileName) {
+        return fileName
+            .replace(/\.[^.]+$/, '')
+            .replaceAll(/[-_]+/g, ' ')
+            .trim();
+    }
+
+    modal.querySelector('[data-modal-cancel]').addEventListener('click', closeUploadModal);
+    modal.addEventListener('cancel', closeUploadModal); // touche Échap
+
+    modalForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const batch = pending.map((entry, index) => ({
+            file: entry.file,
+            title: modalList.querySelector(`[data-modal-input="${index}"]`)?.value.trim() ?? '',
+        }));
+        const takenAt = modal.querySelector('[data-taken-at]').value;
+
+        closeUploadModal();
+        upload(batch, takenAt);
+    });
+
     /**
      * Envoie les fichiers un par un plutôt qu'en un seul lot : la progression
      * est réelle, et un fichier refusé n'emporte pas les autres.
+     *
+     * @param {{file: File, title: string}[]} batch
      */
-    async function upload(files) {
+    async function upload(batch, takenAt) {
         errorBox.hidden = true;
         errorBox.innerHTML = '';
         progress.hidden = false;
 
-        const takenAt = root.querySelector('[data-taken-at]').value;
         const failures = [];
         let done = 0;
 
-        for (const file of files) {
-            progressText.textContent = `Envoi de ${file.name} (${done + 1}/${files.length})…`;
+        for (const { file, title } of batch) {
+            progressText.textContent = `Envoi de ${file.name} (${done + 1}/${batch.length})…`;
 
             const form = new FormData();
             form.append('files[]', file);
             if (takenAt) form.append('takenAt', takenAt);
+            if (title) form.append('title', title);
 
             try {
                 const json = await post(routes.upload, form, { asFormData: true });
@@ -168,7 +250,7 @@ if (root) {
             }
 
             done += 1;
-            progressBar.style.width = `${Math.round((done / files.length) * 100)}%`;
+            progressBar.style.width = `${Math.round((done / batch.length) * 100)}%`;
         }
 
         progressText.textContent = `${done - failures.length} photo(s) ajoutée(s).`;
@@ -246,7 +328,7 @@ if (root) {
             <input class="form-control form-control-sm vv-gal__title" data-title value="${escapeHtml(photo.title)}" placeholder="Sans titre">
             <div class="vv-gal__tileActions">
                 <button class="btn btn-sm btn-link" type="button" data-toggle-published>Masquer</button>
-                <button class="btn btn-sm btn-link text-danger" type="button" data-delete title="Supprimer">✕</button>
+                <button class="btn btn-sm btn-link text-danger" type="button" data-delete>Supprimer</button>
                 <span class="vv-gal__status" data-status></span>
             </div>`;
 
@@ -340,10 +422,24 @@ if (root) {
 
         const deleteButton = event.target.closest('[data-delete]');
         if (deleteButton) {
-            const tile = deleteButton.closest('[data-photo]');
-            const title = tile.querySelector('[data-title]')?.value || 'cette photo';
+            // Confirmation en deux clics, directement dans le bouton : les
+            // popups confirm() du navigateur peuvent être bloquées, et le clic
+            // semble alors ne rien faire du tout.
+            if (!deleteButton.classList.contains('is-confirming')) {
+                deleteButton.classList.add('is-confirming');
+                deleteButton.textContent = 'Confirmer ?';
 
-            if (!confirm(`Supprimer « ${title} » ? Cette action est définitive.`)) return;
+                deleteButton._confirmTimer = setTimeout(() => {
+                    deleteButton.classList.remove('is-confirming');
+                    deleteButton.textContent = 'Supprimer';
+                }, 4000);
+
+                return;
+            }
+
+            clearTimeout(deleteButton._confirmTimer);
+
+            const tile = deleteButton.closest('[data-photo]');
 
             flash(tile, 'saving');
             try {

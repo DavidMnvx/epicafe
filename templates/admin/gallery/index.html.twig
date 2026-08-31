@@ -25,16 +25,30 @@
       <p class="vv-gal__dropTitle">Glisse tes photos ici</p>
       <p class="vv-gal__dropHint">
         ou clique pour les choisir — JPG, PNG, WebP et PDF acceptés.<br>
-        Elles sont redimensionnées et allégées automatiquement.
+        Rien n’est publié avant que tu valides.
       </p>
     </div>
-
-    <div class="vv-gal__dropDate">
-      <label for="vv-taken-at">Date de prise de vue (facultatif)</label>
-      <input type="date" id="vv-taken-at" class="form-control form-control-sm" data-taken-at>
-      <span class="vv-gal__hint">Sert à ranger les photos par mois.</span>
-    </div>
   </div>
+
+  {# ---------- Modale de validation avant envoi ---------- #}
+  <dialog class="vv-gal__modal" data-upload-modal>
+    <form data-upload-form>
+      <h2 class="vv-gal__modalTitle" data-modal-title>Ajouter des photos</h2>
+
+      <div class="vv-gal__modalDate">
+        <label for="vv-taken-at">Date de prise de vue</label>
+        <input type="date" id="vv-taken-at" class="form-control form-control-sm" data-taken-at>
+        <span class="vv-gal__hint">Commune au lot — elle range les photos dans leur mois. Facultative.</span>
+      </div>
+
+      <ul class="vv-gal__modalList" data-modal-list></ul>
+
+      <footer class="vv-gal__modalActions">
+        <button type="button" class="btn btn-link" data-modal-cancel>Annuler</button>
+        <button type="submit" class="btn btn-primary" data-modal-submit>Ajouter</button>
+      </footer>
+    </form>
+  </dialog>
 
   <div class="vv-gal__progress" data-progress hidden>
     <div class="vv-gal__progressBar"><span data-progress-bar></span></div>
@@ -81,7 +95,7 @@
                 <button class="btn btn-sm btn-link" type="button" data-toggle-published>
                   {{ photo.isPublished ? 'Masquer' : 'Afficher' }}
                 </button>
-                <button class="btn btn-sm btn-link text-danger" type="button" data-delete title="Supprimer">✕</button>
+                <button class="btn btn-sm btn-link text-danger" type="button" data-delete>Supprimer</button>
                 <span class="vv-gal__status" data-status></span>
               </div>
             </li>
@@ -181,6 +195,55 @@
   .vv-gal__empty { color: #6c757d; font-style: italic; padding: 1.5rem 0; }
 
   .vv-sortable-ghost { opacity: .4; }
+
+  /* Confirmation de suppression intégrée au bouton (pas de popup navigateur). */
+  .vv-gal__tileActions [data-delete].is-confirming {
+    background: #c0392b; color: #fff; border-radius: .3rem; text-decoration: none;
+  }
+
+  /* ---------- Modale de validation ---------- */
+  .vv-gal__modal {
+    border: 0; border-radius: .6rem; padding: 0;
+    width: min(680px, calc(100vw - 2rem));
+    box-shadow: 0 12px 48px rgba(20, 45, 40, .3);
+  }
+  .vv-gal__modal::backdrop { background: rgba(20, 45, 40, .45); }
+  .vv-gal__modal form { display: flex; flex-direction: column; max-height: 85vh; }
+
+  .vv-gal__modalTitle {
+    background: #2d685f; color: #fff; font-size: 1.1rem; font-weight: 700;
+    margin: 0; padding: .8rem 1.25rem;
+  }
+
+  .vv-gal__modalDate {
+    display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+    padding: .9rem 1.25rem; border-bottom: 1px solid #dfe8e6;
+  }
+  .vv-gal__modalDate label { font-size: .9rem; font-weight: 600; color: #2d685f; margin: 0; }
+  .vv-gal__modalDate input { max-width: 170px; }
+
+  .vv-gal__modalList {
+    list-style: none; margin: 0; padding: .75rem 1.25rem;
+    overflow-y: auto; display: flex; flex-direction: column; gap: .75rem;
+  }
+  .vv-gal__modalRow { display: flex; align-items: center; gap: .9rem; }
+  .vv-gal__modalThumb {
+    width: 88px; height: 66px; flex: 0 0 88px;
+    border-radius: .35rem; overflow: hidden; background: #eef1f0;
+    border: 1px solid #dfe8e6; display: grid; place-items: center; font-size: 1.6rem;
+  }
+  .vv-gal__modalThumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vv-gal__modalMeta { flex: 1; min-width: 0; }
+  .vv-gal__modalMeta label { font-size: .78rem; color: #55606d; display: block; margin-bottom: .15rem; }
+  .vv-gal__modalFile {
+    font-size: .75rem; color: #8a9199; margin-top: .2rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .vv-gal__modalActions {
+    display: flex; justify-content: flex-end; gap: .75rem;
+    padding: .9rem 1.25rem; border-top: 1px solid #dfe8e6; background: #f7faf9;
+  }
 </style>
 
 {% endblock %}

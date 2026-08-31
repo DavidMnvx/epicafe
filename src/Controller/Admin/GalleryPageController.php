@@ -80,6 +80,10 @@ final class GalleryPageController extends AbstractController
         $directory = $this->getParameter('kernel.project_dir') . self::UPLOAD_SUBDIR;
         $takenAt = $this->parseDate($request->request->get('takenAt'));
 
+        // Intitulé saisi dans la modale de validation ; à défaut, le nom du
+        // fichier fera l'affaire.
+        $customTitle = trim((string) $request->request->get('title', ''));
+
         // Les nouvelles photos passent devant : c'est le plus souvent ce qu'on
         // veut voir en premier après un import.
         $offset = 1 + (int) ($repository->createQueryBuilder('p')
@@ -107,7 +111,7 @@ final class GalleryPageController extends AbstractController
 
             $photo = new GalleryPhoto();
             $photo->setFileName($storedName);
-            $photo->setTitle(pathinfo($originalName, PATHINFO_FILENAME));
+            $photo->setTitle($customTitle !== '' ? $customTitle : pathinfo($originalName, PATHINFO_FILENAME));
             $photo->setTakenAt($takenAt);
             $photo->setIsPublished(true);
             $photo->setPosition($offset++);
