@@ -70,9 +70,9 @@ class DashboardController extends AbstractDashboardController
             'navToggles' => $navToggles,
             'links' => [
                 'event'        => $this->crudUrl(EventCrudController::class),
-                'gallery'      => $this->crudUrl(GalleryPhotoCrudController::class),
-                'partner'      => $this->crudUrl(PartnerCrudController::class),
-                'menuItem'     => $this->crudUrl(MenuItemCrudController::class),
+                'gallery'      => $this->generateUrl('admin_gallery'),
+                'partner'      => $this->generateUrl('admin_partners'),
+                'menuItem'     => $this->generateUrl('admin_menu_builder'),
                 'menuCategory' => $this->crudUrl(MenuCategoryCrudController::class),
             ],
         ]);
@@ -150,19 +150,19 @@ class DashboardController extends AbstractDashboardController
                 'label' => 'Photos publiées',
                 'value' => (int) $this->em->getRepository(GalleryPhoto::class)->count(['isPublished' => true]),
                 'icon'  => 'fa-image',
-                'href'  => $this->crudUrl(GalleryPhotoCrudController::class),
+                'href'  => $this->generateUrl('admin_gallery'),
             ],
             'partners' => [
                 'label' => 'Partenaires actifs',
                 'value' => (int) $this->em->getRepository(Partner::class)->count(['isPublished' => true]),
                 'icon'  => 'fa-handshake',
-                'href'  => $this->crudUrl(PartnerCrudController::class),
+                'href'  => $this->generateUrl('admin_partners'),
             ],
             'menuItems' => [
                 'label' => 'Lignes menu',
                 'value' => (int) $this->em->getRepository(MenuItem::class)->count(['isPublished' => true]),
                 'icon'  => 'fa-utensils',
-                'href'  => $this->crudUrl(MenuItemCrudController::class),
+                'href'  => $this->generateUrl('admin_menu_builder'),
             ],
             'shopCategories' => [
                 'label' => 'Catégories boutique',
