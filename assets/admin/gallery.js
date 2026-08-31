@@ -286,6 +286,12 @@ if (root) {
         const list = section.querySelector('[data-photos]');
         list.prepend(buildTile(photo));
 
+        // Un mois replié qui reçoit une photo se déplie : l'ajout doit se voir.
+        if (list.hidden) {
+            list.hidden = false;
+            section.querySelector('[data-month-toggle]')?.setAttribute('aria-expanded', 'true');
+        }
+
         refreshCounts();
     }
 

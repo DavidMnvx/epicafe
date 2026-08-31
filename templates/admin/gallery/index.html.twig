@@ -63,16 +63,21 @@
     <span class="vv-gal__status" data-global-status></span>
   </div>
 
+  {# Seul le mois en cours arrive déplié — à défaut, le plus récent. #}
+  {% set currentMonth = 'now'|date('Y-m') %}
+  {% set hasCurrent = currentMonth in months|keys %}
+
   <div data-months>
     {% for key, month in months %}
+      {% set isOpen = key == currentMonth or (not hasCurrent and loop.first) %}
       <section class="vv-gal__month" data-month="{{ key }}">
-        <button class="vv-gal__monthHead" type="button" data-month-toggle aria-expanded="true">
+        <button class="vv-gal__monthHead" type="button" data-month-toggle aria-expanded="{{ isOpen ? 'true' : 'false' }}">
           <span class="vv-gal__chevron" aria-hidden="true">▾</span>
           <span class="vv-gal__monthName">{{ month.label }}</span>
           <span class="vv-gal__monthCount" data-month-count>{{ month.photos|length }}</span>
         </button>
 
-        <ul class="vv-gal__grid" data-photos>
+        <ul class="vv-gal__grid" data-photos {{ isOpen ? '' : 'hidden' }}
           {% for photo in month.photos %}
             <li class="vv-gal__tile{{ photo.isPublished ? '' : ' is-hidden' }}" data-photo data-id="{{ photo.id }}">
               <div class="vv-gal__thumb">
