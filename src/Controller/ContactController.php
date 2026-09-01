@@ -26,13 +26,17 @@ final class ContactController extends AbstractController
     private const FALLBACK_RECIPIENT = 'epicafebarroux@gmail.com';
 
     /**
-     * Expéditeur technique des mails du site. Doit appartenir au domaine
-     * epicafebarroux.fr et correspondre au compte SMTP utilisé : envoyer
-     * « from » une adresse Gmail depuis un autre serveur que Google part
-     * en spam (SPF/DKIM non alignés). Le destinataire, lui, reste le Gmail
-     * de la boutique ; la réponse va au visiteur via Reply-To.
+     * Expéditeur technique des mails du site (env MAILER_FROM). Doit
+     * appartenir à un domaine authentifié chez le fournisseur d'envoi :
+     * « from » une adresse Gmail part en spam (SPF/DKIM non alignés), et un
+     * domaine non authentifié chez Brevo aussi. Le destinataire, lui, reste
+     * le Gmail de la boutique ; la réponse va au visiteur via Reply-To.
      */
-    private const SENDER = 'site@epicafebarroux.fr';
+    public function __construct(
+        #[\Symfony\Component\DependencyInjection\Attribute\Autowire(env: 'MAILER_FROM')]
+        private readonly string $sender,
+    ) {
+    }
 
     #[Route('/contact', name: 'contact_index', methods: ['GET'])]
     public function index(MathCaptcha $captcha): Response
@@ -109,7 +113,7 @@ final class ContactController extends AbstractController
 
         // 6) Construction & envoi
         $emailObj = (new Email())
-            ->from(new Address(self::SENDER, 'Site L\'Épi-Café'))
+            ->from(new Address($this->sender, 'Site L\'Épi-Café'))
             ->to($recipient)
             ->replyTo(new Address($email, $name))
             ->subject('[Site] Nouveau message de ' . $name)

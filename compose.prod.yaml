@@ -20,6 +20,7 @@ services:
       DEFAULT_URI: "${DEFAULT_URI}"
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8"
       MAILER_DSN: "${MAILER_DSN}"
+      MAILER_FROM: "${MAILER_FROM:-contact@nosweb.fr}"
       TRUSTED_PROXIES: "127.0.0.1,REMOTE_ADDR"
       APP_RUNTIME: 'Runtime\FrankenPhpSymfony\Runtime'
     depends_on:
@@ -28,8 +29,8 @@ services:
     volumes:
       # Persistance des uploads utilisateurs (galerie, partenaires, événements, etc.)
       - epicafe_uploads:/app/public/uploads
-    expose:
-      - "80"
+    ports:
+     - "127.0.0.1:8080:80"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
