@@ -102,6 +102,13 @@ final class SiteSettingCrudController extends AbstractCrudController
             }
         }
 
+        // Retour à la page d'origine (dashboard ou grille) ; on ne suit le
+        // referer que s'il pointe vers notre propre site.
+        $referer = $request?->headers->get('referer');
+        if ($referer !== null && str_starts_with($referer, $request->getSchemeAndHttpHost() . '/')) {
+            return $this->redirect($referer);
+        }
+
         return $this->redirect($this->adminUrlGenerator->setAction(Action::INDEX)->generateUrl());
     }
 

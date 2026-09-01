@@ -98,11 +98,29 @@ final class SiteSettingsSeedCommand extends Command
         [
             'key' => 'social_google_reviews',
             'label' => 'Avis Google (URL)',
-            'description' => 'Lien pour laisser un avis sur Google. Si renseigné, la section "avis clients" apparaît au bas de toutes les pages. La note moyenne et le nombre d\'avis s\'affichent automatiquement depuis le CRUD "Avis clients (Google)".',
+            'description' => 'Lien pour laisser un avis sur Google. Si renseigné, la section "avis clients" apparaît au bas de toutes les pages.',
             'value' => '',
             'type' => SiteSetting::TYPE_URL,
             'group' => SiteSetting::GROUP_SOCIAL,
             'position' => 40,
+        ],
+        [
+            'key' => 'google_rating',
+            'label' => 'Note Google (ex : 4,7)',
+            'description' => 'Note affichée dans la section "avis clients". Recopie celle de la fiche Google — le site n\'héberge qu\'une sélection d\'avis, la moyenne calculée serait trompeuse. Laisse vide pour revenir au calcul automatique.',
+            'value' => '4,7',
+            'type' => SiteSetting::TYPE_TEXT,
+            'group' => SiteSetting::GROUP_SOCIAL,
+            'position' => 50,
+        ],
+        [
+            'key' => 'google_reviews_count',
+            'label' => 'Nombre d\'avis Google (ex : 119)',
+            'description' => 'Nombre d\'avis affiché à côté de la note. Recopie celui de la fiche Google. Laisse vide pour compter les avis publiés sur le site.',
+            'value' => '119',
+            'type' => SiteSetting::TYPE_TEXT,
+            'group' => SiteSetting::GROUP_SOCIAL,
+            'position' => 60,
         ],
 
         // ===== VISIBILITÉ DES PAGES =====
@@ -255,7 +273,7 @@ final class SiteSettingsSeedCommand extends Command
     }
 
     /** Anciennes clés à nettoyer (paramètres retirés du système). */
-    private const REMOVED_KEYS = ['google_rating', 'google_reviews_count'];
+    private const REMOVED_KEYS = [];
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

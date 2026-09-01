@@ -155,19 +155,22 @@ body {
 /* --------------------------------------------------------------------------
    En-tête de page
    -------------------------------------------------------------------------- */
+/* Titre plein, sans cadre : l'ancien bandeau-carte ressemblait à un champ de
+   saisie vide (fond clair, coins arrondis, texte gris hérité d'EasyAdmin). */
 .ea .content-header {
-    background: var(--vv-card) !important;
-    border: 1px solid var(--vv-border) !important;
-    border-left: 6px solid var(--vv-green) !important;
-    border-radius: var(--vv-r-lg) !important;
-    box-shadow: var(--vv-shadow) !important;
-    padding: 16px 18px !important;
-    margin: 18px 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 6px 0 !important;
+    margin: 18px 0 8px !important;
 }
 
-.ea .content-header-title {
+.ea .content-header-title,
+.ea .content-header-title .title,
+.ea .content-header-title h1 {
     color: var(--vv-green-deep) !important;
-    font-size: 1.35rem;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.55rem;
     font-weight: 800;
     letter-spacing: .3px;
 }
@@ -2204,4 +2207,53 @@ body {
     margin: 0;
     color: var(--vv-muted);
     line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard — interrupteurs de visibilité des pages du site
+   -------------------------------------------------------------------------- */
+.vv-navToggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.vv-navToggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--vv-border);
+    background: var(--vv-bg);
+    color: var(--vv-muted);
+    font-size: .85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.vv-navToggle:hover {
+    border-color: var(--vv-green);
+    color: var(--vv-green-deep);
+}
+
+.vv-navToggle.is-on {
+    background: var(--vv-green);
+    border-color: var(--vv-green);
+    color: #fff;
+}
+
+.vv-navToggle.is-on:hover {
+    background: var(--vv-green-deep);
+    color: #fff;
+}
+
+.vv-navToggle__state {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    opacity: .75;
 }

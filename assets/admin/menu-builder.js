@@ -284,7 +284,7 @@ if (root) {
         const deleteVariant = event.target.closest('[data-variant-delete]');
         if (deleteVariant) {
             const variantRow = deleteVariant.closest('[data-variant-row]');
-            if (!confirm('Supprimer cette déclinaison ?')) return;
+            if (!confirm('Supprimer cette variante ?')) return;
 
             flash(variantRow, 'saving');
             try {
@@ -428,7 +428,7 @@ if (root) {
                     <input class="form-check-input" type="checkbox" data-field data-published checked>
                     <span class="visually-hidden">Visible sur le site</span>
                 </label>
-                <button class="btn btn-sm btn-link text-muted" type="button" data-add-variant title="Ajouter une déclinaison">+ décl.</button>
+                <button class="btn btn-sm btn-link text-muted" type="button" data-add-variant title="Ajouter une variante (ex : 25 cl / 50 cl, simple / double)">+ variante</button>
                 <button class="btn btn-sm btn-link text-danger" type="button" data-delete title="Supprimer">✕</button>
                 <span class="vv-builder__status" data-status></span>
             </div>

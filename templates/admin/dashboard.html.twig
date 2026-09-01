@@ -144,5 +144,25 @@
       {% endif %}
     </section>
 
+    {% if navToggles|length > 0 %}
+      <section class="vv-admin-panel">
+        <header class="vv-admin-panel__head">
+          <h2 class="vv-admin-panel__title">Pages visibles sur le site</h2>
+        </header>
+        <p class="vv-admin-panel__empty">Un clic masque ou réaffiche la page sur le site public — pratique pour une section pas encore prête.</p>
+        <div class="vv-navToggles">
+          {% for item in navToggles %}
+            <a class="vv-navToggle{{ item.setting.asBool ? ' is-on' }}"
+               href="{{ item.toggleUrl }}"
+               title="{{ item.setting.asBool ? 'Masquer' : 'Afficher' }} « {{ item.label }} » sur le site">
+              <i class="fa {{ item.icon }}" aria-hidden="true"></i>
+              <span>{{ item.label }}</span>
+              <span class="vv-navToggle__state">{{ item.setting.asBool ? 'visible' : 'masquée' }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
   </div>
 {% endblock %}

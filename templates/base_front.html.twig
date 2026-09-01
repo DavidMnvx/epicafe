@@ -186,8 +186,12 @@
 {% if googleUrl %}
   {% set reviews = google_reviews(5) %}
   {% set stats = google_reviews_stats() %}
-  {% set googleRating = stats.count > 0 ? (stats.average|number_format(1, ',', ' ')) : '5,0' %}
-  {% set googleCount = stats.count %}
+  {# Le site n'héberge qu'une sélection d'avis : la note et le total de la
+     vraie fiche Google sont saisis dans les réglages ; les stats calculées
+     ne servent que de repli si ces réglages sont vides. #}
+  {% set googleRating = setting('google_rating')
+    |default(stats.count > 0 ? (stats.average|number_format(1, ',', ' ')) : '5,0') %}
+  {% set googleCount = setting('google_reviews_count')|default(stats.count) %}
 
   <section class="vv-googleReviews" aria-labelledby="google-reviews-title">
     <div class="vv-container">
