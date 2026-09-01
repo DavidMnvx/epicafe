@@ -431,21 +431,41 @@
       <div class="vv-panel vv-scroll-reveal">
         <h3 class="vv-h3">Nous contacter</h3>
 
-        {# Formulaire statique (tu brancheras Symfony Form ensuite) #}
-        <form class="vv-form" method="post" action="#">
+        {# Même circuit que la page Contact : envoi réel via contact_send. #}
+        <form class="vv-form" method="post" action="{{ path('contact_send') }}#contact">
+          <input type="hidden" name="_token" value="{{ csrf_token('contact_send') }}">
+
+          {# Honeypot anti-spam : champ caché que les vrais visiteurs ne remplissent jamais #}
+          <div class="vv-form__honeypot" aria-hidden="true">
+            <label for="website-bot-home">Site web</label>
+            <input type="text" name="website" id="website-bot-home" tabindex="-1" autocomplete="off">
+          </div>
+
           <label>
             <span>Nom</span>
-            <input type="text" name="name" required>
+            <input type="text" name="name" required maxlength="120" autocomplete="name">
           </label>
 
           <label>
             <span>Email</span>
-            <input type="email" name="email" required>
+            <input type="email" name="email" required autocomplete="email">
           </label>
 
           <label>
             <span>Message</span>
-            <textarea name="message" rows="5" required></textarea>
+            <textarea name="message" rows="5" required minlength="5" maxlength="5000"></textarea>
+          </label>
+
+          {# Captcha math anti-bot — accessible (lecteur d'écran lit la question) #}
+          <label class="vv-form__captcha">
+            <span>{{ captchaQuestion }} <small>(anti-spam)</small></span>
+            <input type="text"
+                   name="captcha_answer"
+                   required
+                   inputmode="numeric"
+                   pattern="-?[0-9]+"
+                   autocomplete="off"
+                   placeholder="Votre réponse">
           </label>
 
           <button class="vv-btn vv-btn--primary vv-btn--full" type="submit">Envoyer le message</button>

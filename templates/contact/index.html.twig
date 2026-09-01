@@ -132,6 +132,16 @@
             </div>
           {% endfor %}
 
+          {# Safari ne suit pas toujours l'ancre après la redirection du POST,
+             et les images qui chargent décalent la page : on amène le
+             message de confirmation au centre de l'écran nous-mêmes. #}
+          <script>
+            window.addEventListener('load', function () {
+              var alert = document.querySelector('.vv-formAlert');
+              if (alert) alert.scrollIntoView({ block: 'center' });
+            });
+          </script>
+
           <form class="vv-form" method="post" action="{{ path('contact_send') }}#contact">
             <input type="hidden" name="_token" value="{{ csrf_token('contact_send') }}">
 
