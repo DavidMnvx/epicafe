@@ -77,7 +77,7 @@
           <span class="vv-gal__monthCount" data-month-count>{{ month.photos|length }}</span>
         </button>
 
-        <ul class="vv-gal__grid" data-photos {{ isOpen ? '' : 'hidden' }}
+        <ul class="vv-gal__grid" data-photos {{ isOpen ? '' : 'hidden' }}>
           {% for photo in month.photos %}
             <li class="vv-gal__tile{{ photo.isPublished ? '' : ' is-hidden' }}" data-photo data-id="{{ photo.id }}">
               <div class="vv-gal__thumb">

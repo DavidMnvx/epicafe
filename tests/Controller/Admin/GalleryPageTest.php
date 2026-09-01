@@ -62,6 +62,25 @@ final class GalleryPageTest extends WebTestCase
         self::assertCount($expected, $crawler->filter('[data-photo] [data-handle]'), 'Chaque tuile doit avoir sa poignée.');
     }
 
+    public function testTilesAreInsideTheGrid(): void
+    {
+        // Régression du 01/09 : un chevron manquant sur le <ul> faisait avaler
+        // le premier <li> comme attributs — la « première tuile » devenait la
+        // grille elle-même, étalée en pleine largeur.
+        $crawler = $this->client->request('GET', '/admin/photos');
+
+        self::assertCount(
+            0,
+            $crawler->filter('[data-photos][data-photo]'),
+            'La grille ne doit pas porter les attributs d’une tuile (balise <ul> mal fermée).'
+        );
+        self::assertSame(
+            $crawler->filter('[data-photo]')->count(),
+            $crawler->filter('[data-photos] > [data-photo]')->count(),
+            'Chaque tuile doit être un enfant direct de sa grille.'
+        );
+    }
+
     public function testPhotosAreGroupedByMonth(): void
     {
         /** @var GalleryPhoto[] $photos */
