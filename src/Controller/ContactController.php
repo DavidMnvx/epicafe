@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Repository\SiteSettingRepository;
 use App\Service\MathCaptcha;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +14,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
-use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -55,32 +54,32 @@ final class ContactController extends AbstractController
         ValidatorInterface $validator,
         SiteSettingRepository $settings,
         MathCaptcha $captcha,
-        #[Target('contact_form')] RateLimiterFactory $contactFormLimiter,
+        RateLimiterFactoryInterface $contactFormLimiter,
     ): Response {
         // 0) Rate limiting — max 5 envois / 10 min / IP (anti-flood)
         $limiter = $contactFormLimiter->create($request->getClientIp() ?? 'unknown');
         if (false === $limiter->consume(1)->isAccepted()) {
             $this->addFlash('contact_error', 'Trop de tentatives en peu de temps. Merci de réessayer dans quelques minutes.');
-            return $this->redirectToRoute('contact_index', [], Response::HTTP_SEE_OTHER, ['#' => 'contact']);
+            return $this->redirect($this->generateUrl('contact_index') . '#contact', Response::HTTP_SEE_OTHER);
         }
 
         // 1) CSRF
         $token = (string) $request->request->get('_token', '');
         if (!$this->isCsrfTokenValid('contact_send', $token)) {
             $this->addFlash('contact_error', 'Erreur de sécurité, merci de recharger la page et de réessayer.');
-            return $this->redirectToRoute('contact_index', [], Response::HTTP_SEE_OTHER, ['#' => 'contact']);
+            return $this->redirect($this->generateUrl('contact_index') . '#contact', Response::HTTP_SEE_OTHER);
         }
 
         // 2) Honeypot — si rempli, c'est un bot. On fait semblant que tout va bien.
         if (trim((string) $request->request->get('website', '')) !== '') {
             $this->addFlash('contact_success', 'Merci, votre message a bien été envoyé !');
-            return $this->redirectToRoute('contact_index', [], Response::HTTP_SEE_OTHER, ['#' => 'contact']);
+            return $this->redirect($this->generateUrl('contact_index') . '#contact', Response::HTTP_SEE_OTHER);
         }
 
         // 3) Captcha mathématique — bloque les bots qui contournent le honeypot
         if (!$captcha->verify((string) $request->request->get('captcha_answer', ''))) {
             $this->addFlash('contact_error', 'La vérification anti-spam a échoué. Une nouvelle question vient d\'être générée, merci de réessayer.');
-            return $this->redirectToRoute('contact_index', [], Response::HTTP_SEE_OTHER, ['#' => 'contact']);
+            return $this->redirect($this->generateUrl('contact_index') . '#contact', Response::HTTP_SEE_OTHER);
         }
 
         // 3) Récupération + nettoyage des champs
@@ -105,7 +104,7 @@ final class ContactController extends AbstractController
                 $msgs[] = $err->getMessage();
             }
             $this->addFlash('contact_error', implode(' ', $msgs));
-            return $this->redirectToRoute('contact_index', [], Response::HTTP_SEE_OTHER, ['#' => 'contact']);
+            return $this->redirect($this->generateUrl('contact_index') . '#contact', Response::HTTP_SEE_OTHER);
         }
 
         // 5) Destinataire — depuis SiteSettings, fallback dur sur l'adresse Gmail
@@ -127,7 +126,7 @@ final class ContactController extends AbstractController
             $this->addFlash('contact_error', 'Désolé, l\'envoi du message a échoué. Vous pouvez nous contacter directement par téléphone ou email.');
         }
 
-        return $this->redirectToRoute('contact_index', [], Response::HTTP_SEE_OTHER, ['#' => 'contact']);
+        return $this->redirect($this->generateUrl('contact_index') . '#contact', Response::HTTP_SEE_OTHER);
     }
 
     private function buildPlainTextBody(string $name, string $email, string $message): string
