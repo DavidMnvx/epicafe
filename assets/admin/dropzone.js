@@ -20,10 +20,8 @@ function enhance(input) {
     zone.className = 'vv-dz';
     zone.innerHTML = `
         <span class="vv-dz__icon" aria-hidden="true">🖼️</span>
-        <span class="vv-dz__text">
-            <strong>Glisse ton image ici</strong> ou clique pour la choisir<br>
-            <small>JPG, PNG, WebP ou PDF — elle est optimisée automatiquement.</small>
-        </span>
+        <span class="vv-dz__title">Glisse ton image ici</span>
+        <span class="vv-dz__hint">ou clique pour la choisir — JPG, PNG, WebP et PDF acceptés.<br>Elle est optimisée automatiquement.</span>
         <span class="vv-dz__preview" data-preview hidden></span>
     `;
 
@@ -107,22 +105,27 @@ new MutationObserver((mutations) => {
 // EasyAdmin, hors de nos templates custom.
 const style = document.createElement('style');
 style.textContent = `
+    /* Même style que la zone de dépôt de la page Photos. */
     .vv-dz {
-        display: flex; align-items: center; gap: .9rem; flex-wrap: wrap;
-        border: 2px dashed #9dbdb6; border-radius: .5rem;
-        background: #f7faf9; padding: .9rem 1.1rem; cursor: pointer;
+        display: block; text-align: center;
+        border: 2px dashed #9dbdb6; border-radius: .6rem;
+        background: #f7faf9; padding: 1.75rem 1.25rem; cursor: pointer;
         transition: border-color .15s ease, background .15s ease;
     }
     .vv-dz:hover { border-color: #2d685f; background: #eef5f3; }
     .vv-dz.is-dragover { border-color: #2d685f; background: #e3efec; border-style: solid; }
-    .vv-dz__icon { font-size: 1.4rem; }
-    .vv-dz__text { color: #55606d; font-size: .85rem; line-height: 1.35; }
-    .vv-dz__text strong { color: #2d685f; }
-    .vv-dz__preview { display: flex; align-items: center; gap: .6rem; }
-    .vv-dz__preview img {
-        width: 72px; height: 54px; object-fit: cover;
-        border-radius: .35rem; border: 1px solid #dfe8e6;
+    .vv-dz__icon { font-size: 1.75rem; display: block; }
+    .vv-dz__title { display: block; font-weight: 700; color: #2d685f; margin: .4rem 0 .2rem; font-size: 1.05rem; }
+    .vv-dz__hint { display: block; color: #55606d; font-size: .85rem; }
+    .vv-dz__preview {
+        display: flex; align-items: center; justify-content: center; gap: .6rem;
+        margin-top: 1rem; padding-top: .9rem; border-top: 1px solid #dfe8e6;
     }
-    .vv-dz__name { font-size: .8rem; color: #2d685f; font-weight: 600; }
+    .vv-dz__preview img {
+        width: 96px; height: 72px; object-fit: cover;
+        border-radius: .4rem; border: 1px solid #e4dbd0;
+        box-shadow: 0 2px 6px rgba(20, 45, 40, .08);
+    }
+    .vv-dz__name { font-size: .82rem; color: #2d685f; font-weight: 600; }
 `;
 document.head.append(style);
