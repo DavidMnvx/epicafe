@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Partner;
 use App\Repository\PartnerRepository;
+use App\Service\AdminContextEnsurer;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -52,8 +53,10 @@ final class PartnerPageController extends AbstractController
     #[Route('/admin/partenaires', name: 'admin_partners', defaults: [
         EA::DASHBOARD_CONTROLLER_FQCN => DashboardController::class,
     ])]
-    public function index(PartnerRepository $repository): Response
+    public function index(Request $request, PartnerRepository $repository, AdminContextEnsurer $context): Response
     {
+        $context->ensure($request);
+
         $partners = $repository->findBy([], ['position' => 'ASC', 'id' => 'ASC']);
 
         $sections = [];

@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\SiteSetting;
 use App\Repository\SiteSettingRepository;
+use App\Service\AdminContextEnsurer;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -64,7 +65,10 @@ final class SiteSettingsPageController extends AbstractController
         Request $request,
         SiteSettingRepository $repository,
         EntityManagerInterface $em,
+        AdminContextEnsurer $context,
     ): Response {
+        $context->ensure($request);
+
         /** @var SiteSetting[] $settings */
         $settings = $repository->findBy([], ['position' => 'ASC']);
 

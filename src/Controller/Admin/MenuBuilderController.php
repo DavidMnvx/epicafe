@@ -8,6 +8,7 @@ use App\Entity\MenuItemVariant;
 use App\Repository\MenuCategoryRepository;
 use App\Repository\MenuItemRepository;
 use App\Repository\MenuItemVariantRepository;
+use App\Service\AdminContextEnsurer;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,9 +28,13 @@ final class MenuBuilderController extends AbstractController
         EA::DASHBOARD_CONTROLLER_FQCN => DashboardController::class,
     ])]
     public function index(
+        Request $request,
         MenuCategoryRepository $catRepo,
-        MenuItemRepository $itemRepo
+        MenuItemRepository $itemRepo,
+        AdminContextEnsurer $context,
     ): Response {
+        $context->ensure($request);
+
         // Top categories (parent null)
         $roots = $catRepo->createQueryBuilder('c')
             ->andWhere('c.parent IS NULL')

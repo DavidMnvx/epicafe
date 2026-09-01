@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\GalleryPhoto;
 use App\Repository\GalleryPhotoRepository;
+use App\Service\AdminContextEnsurer;
 use App\Service\ImageProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
@@ -38,8 +39,10 @@ final class GalleryPageController extends AbstractController
     #[Route('/admin/photos', name: 'admin_gallery', defaults: [
         EA::DASHBOARD_CONTROLLER_FQCN => DashboardController::class,
     ])]
-    public function index(GalleryPhotoRepository $repository): Response
+    public function index(Request $request, GalleryPhotoRepository $repository, AdminContextEnsurer $context): Response
     {
+        $context->ensure($request);
+
         $photos = $repository->createQueryBuilder('p')
             ->orderBy('p.position', 'ASC')
             ->addOrderBy('p.id', 'ASC')
