@@ -25,15 +25,6 @@ RUN { \
         echo "max_file_uploads=50"; \
         echo "max_execution_time=120"; \
         echo "date.timezone=Europe/Paris"; \
-        echo "opcache.enable=1"; \
-        echo "opcache.enable_cli=1"; \
-        echo "opcache.memory_consumption=256"; \
-        echo "opcache.max_accelerated_files=20000"; \
-        echo "opcache.interned_strings_buffer=32"; \
-        echo "opcache.validate_timestamps=0"; \
-        echo "opcache.fast_shutdown=1"; \
-        echo "realpath_cache_size=4096K"; \
-        echo "realpath_cache_ttl=600"; \
     } > /usr/local/etc/php/conf.d/app.ini
 
 # Outils utiles pour l'entrypoint runtime (pg_isready + bash)
@@ -58,6 +49,22 @@ RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 FROM base AS prod
 
 RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
+# Opcache agressif : réservé à la prod. validate_timestamps=0 signifie « ne
+# jamais revérifier les fichiers » — parfait quand le code est figé dans
+# l'image, invivable en dev où il ferait servir du code périmé (vécu : le
+# conteneur dev ignorait toute modification jusqu'au redémarrage).
+RUN { \
+        echo "opcache.enable=1"; \
+        echo "opcache.enable_cli=1"; \
+        echo "opcache.memory_consumption=256"; \
+        echo "opcache.max_accelerated_files=20000"; \
+        echo "opcache.interned_strings_buffer=32"; \
+        echo "opcache.validate_timestamps=0"; \
+        echo "opcache.fast_shutdown=1"; \
+        echo "realpath_cache_size=4096K"; \
+        echo "realpath_cache_ttl=600"; \
+    } > /usr/local/etc/php/conf.d/opcache-prod.ini
 
 ENV APP_ENV=prod \
     APP_DEBUG=0 \
