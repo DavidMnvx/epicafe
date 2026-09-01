@@ -44,7 +44,10 @@ class DashboardController extends AbstractDashboardController
             // ne la trouve pas : les charger partout est sans effet ailleurs.
             ->addAssetMapperEntry('admin-menu-builder')
             ->addAssetMapperEntry('admin-gallery')
-            ->addAssetMapperEntry('admin-partners');
+            ->addAssetMapperEntry('admin-partners')
+            ->addAssetMapperEntry('admin-events')
+            // Dropzone universelle des champs fichier des formulaires EasyAdmin.
+            ->addAssetMapperEntry('admin-dropzone');
     }
 
     public function index(): Response
@@ -69,7 +72,7 @@ class DashboardController extends AbstractDashboardController
             'reviewsHref' => $this->crudUrl(GoogleReviewCrudController::class),
             'navToggles' => $navToggles,
             'links' => [
-                'event'        => $this->crudUrl(EventCrudController::class),
+                'event'        => $this->generateUrl('admin_events'),
                 'gallery'      => $this->generateUrl('admin_gallery'),
                 'partner'      => $this->generateUrl('admin_partners'),
                 'menuItem'     => $this->generateUrl('admin_menu_builder'),
@@ -107,7 +110,7 @@ class DashboardController extends AbstractDashboardController
 
         yield EaMenuItem::linkToCrud('La boutique', 'fa fa-basket-shopping', ShopCategory::class);
 
-        yield EaMenuItem::linkToCrud('Les événements', 'fa fa-calendar', Event::class);
+        yield EaMenuItem::linkToUrl('Les événements', 'fa fa-calendar', $this->generateUrl('admin_events'));
 
         // Une seule entrée : l'ajout se fait sur l'écran même où l'on consulte,
         // par dépôt de fichiers. Le CRUD reste joignable par son URL.
@@ -144,7 +147,7 @@ class DashboardController extends AbstractDashboardController
                 'label' => 'Événements à venir',
                 'value' => $upcoming,
                 'icon'  => 'fa-calendar',
-                'href'  => $this->crudUrl(EventCrudController::class),
+                'href'  => $this->generateUrl('admin_events'),
             ],
             'photos' => [
                 'label' => 'Photos publiées',

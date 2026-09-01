@@ -1,0 +1,195 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Les événements{% endblock %}
+
+{% macro event_tile(event, days) %}
+  <li class="vv-ev__tile{{ event.isPublished ? '' : ' is-hidden' }}" data-event data-id="{{ event.id }}">
+    <div class="vv-ev__thumb">
+      {% set visual = event.imageFileName
+          ? asset('uploads/events/' ~ event.imageFileName)
+          : (event.imageUrl ?: null) %}
+      {% if visual %}
+        <img src="{{ visual }}" alt="{{ event.title|e }}" loading="lazy" decoding="async">
+      {% else %}
+        <span class="vv-ev__placeholder" aria-hidden="true">📅</span>
+      {% endif %}
+
+      {% if not event.isPublished %}
+        <span class="vv-ev__badge" data-hidden-badge>Masqué</span>
+      {% endif %}
+
+      <span class="vv-ev__date">
+        {% if event.isRecurring %}
+          {{ days[event.recurringDayOfWeek] ?? 'Chaque semaine' }}{{ event.recurringTime ? ' · ' ~ event.recurringTime|date('H:i') : '' }}
+        {% elseif event.startAt %}
+          {{ event.startAt|date('d/m/Y H:i') }}
+        {% else %}
+          Sans date
+        {% endif %}
+      </span>
+    </div>
+
+    <strong class="vv-ev__name" title="{{ event.title|e }}">{{ event.title }}</strong>
+
+    <div class="vv-ev__actions">
+      <a class="vv-ev__edit" href="{{ ea_url()
+          .setController('App\\Controller\\Admin\\EventCrudController')
+          .setAction('edit')
+          .setEntityId(event.id) }}">Modifier</a>
+      <button type="button" data-toggle-published>{{ event.isPublished ? 'Masquer' : 'Afficher' }}</button>
+      <button type="button" data-delete>Supprimer</button>
+      <span class="vv-ev__status" data-status></span>
+    </div>
+  </li>
+{% endmacro %}
+
+{% block page_content %}
+{% import _self as ui %}
+
+<div class="vv-ev"
+     data-events
+     data-token="{{ csrf_token('events') }}"
+     data-routes="{{ {
+         update: path('admin_events_update'),
+         delete: path('admin_events_delete')
+     }|json_encode }}">
+
+  <div class="vv-ev__top">
+    <p class="vv-ev__intro">
+      Les rendez-vous hebdomadaires restent en tête ; les événements datés se
+      rangent tout seuls dans leur mois.
+    </p>
+    <a class="btn btn-primary" href="{{ newUrl }}">+ Nouvel événement</a>
+    <span class="vv-ev__status" data-global-status></span>
+  </div>
+
+  {# ---------- Rendez-vous hebdomadaires : toujours en tête, ouverts ---------- #}
+  <section class="vv-ev__month" data-section="recurring">
+    <button class="vv-ev__monthHead" type="button" data-month-toggle aria-expanded="true">
+      <span class="vv-ev__chevron" aria-hidden="true">▾</span>
+      <span class="vv-ev__monthName">Rendez-vous hebdomadaires</span>
+      <span class="vv-ev__monthCount">{{ recurring|length }}</span>
+    </button>
+
+    <ul class="vv-ev__grid" data-tiles>
+      {% for event in recurring %}
+        {{ ui.event_tile(event, days) }}
+      {% endfor %}
+    </ul>
+
+    {% if recurring is empty %}
+      <p class="vv-ev__empty">Aucun rendez-vous hebdomadaire pour l'instant.</p>
+    {% endif %}
+  </section>
+
+  {# ---------- Mois : le mois en cours arrive ouvert ---------- #}
+  {% set currentMonth = 'now'|date('Y-m') %}
+  {% for key, month in months %}
+    {% set isOpen = key == currentMonth %}
+    <section class="vv-ev__month" data-month="{{ key }}">
+      <button class="vv-ev__monthHead" type="button" data-month-toggle aria-expanded="{{ isOpen ? 'true' : 'false' }}">
+        <span class="vv-ev__chevron" aria-hidden="true">▾</span>
+        <span class="vv-ev__monthName">{{ month.label }}</span>
+        <span class="vv-ev__monthCount">{{ month.events|length }}</span>
+      </button>
+
+      <ul class="vv-ev__grid" data-tiles {{ isOpen ? '' : 'hidden' }}>
+        {% for event in month.events %}
+          {{ ui.event_tile(event, days) }}
+        {% endfor %}
+      </ul>
+    </section>
+  {% endfor %}
+
+  {# ---------- Sans date (rare) ---------- #}
+  {% if undated|length %}
+    <section class="vv-ev__month" data-section="undated">
+      <button class="vv-ev__monthHead" type="button" data-month-toggle aria-expanded="false">
+        <span class="vv-ev__chevron" aria-hidden="true">▾</span>
+        <span class="vv-ev__monthName">Sans date</span>
+        <span class="vv-ev__monthCount">{{ undated|length }}</span>
+      </button>
+
+      <ul class="vv-ev__grid" data-tiles hidden>
+        {% for event in undated %}
+          {{ ui.event_tile(event, days) }}
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+</div>
+
+<style>
+  /* Même vocabulaire visuel que la galerie et les partenaires. */
+  .vv-ev { max-width: 1100px; }
+
+  .vv-ev__top { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .vv-ev__intro { color: #55606d; margin: 0; flex: 1 1 300px; }
+
+  .vv-ev__month {
+    margin-bottom: 1.25rem; border: 1px solid #c3cfcc; border-radius: .5rem;
+    overflow: hidden; background: #fff;
+  }
+  .vv-ev__monthHead {
+    width: 100%; display: flex; align-items: center; gap: .6rem;
+    background: #2d685f; color: #fff; border: 0; border-radius: 0;
+    padding: .65rem 1rem; font-size: 1.05rem; font-weight: 700; text-align: left;
+    cursor: pointer;
+  }
+  .vv-ev__monthHead:hover { background: #245a52; }
+  .vv-ev__monthCount {
+    margin-left: auto; background: rgba(255,255,255,.2);
+    border-radius: 999px; padding: .05rem .55rem; font-size: .85rem; font-weight: 600;
+  }
+  .vv-ev__chevron { transition: transform .18s ease; display: inline-block; }
+  .vv-ev__monthHead[aria-expanded="false"] .vv-ev__chevron { transform: rotate(-90deg); }
+
+  .vv-ev__grid {
+    list-style: none; margin: 0; padding: 1rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem;
+  }
+  .vv-ev__grid[hidden] { display: none; }
+
+  .vv-ev__tile { display: flex; flex-direction: column; gap: .45rem; }
+  .vv-ev__tile.is-hidden .vv-ev__thumb img { opacity: .45; filter: grayscale(.5); }
+
+  .vv-ev__thumb {
+    position: relative; aspect-ratio: 3 / 2; border-radius: .4rem; overflow: hidden;
+    background: #eef1f0; border: 1px solid #dfe8e6; display: grid; place-items: center;
+  }
+  .vv-ev__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vv-ev__placeholder { font-size: 2rem; opacity: .5; }
+
+  .vv-ev__badge {
+    position: absolute; top: .35rem; right: .35rem;
+    background: rgba(33,29,24,.82); color: #fff;
+    font-size: .72rem; border-radius: .3rem; padding: .1rem .4rem;
+  }
+  .vv-ev__date {
+    position: absolute; bottom: .35rem; left: .35rem;
+    background: rgba(255,255,255,.94); color: #2d685f;
+    font-size: .75rem; font-weight: 700; border-radius: .3rem; padding: .12rem .45rem;
+  }
+
+  .vv-ev__name { font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .vv-ev__actions { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+  .vv-ev__actions a, .vv-ev__actions button {
+    font-size: .8rem; font-weight: 600; line-height: 1;
+    padding: .3rem .55rem; border-radius: .35rem; text-decoration: none;
+    transition: background .15s ease, color .15s ease; cursor: pointer;
+  }
+  .vv-ev__edit { color: #fff; background: #2d685f; border: 1px solid #2d685f; }
+  .vv-ev__edit:hover { background: #245a52; color: #fff; }
+  .vv-ev__actions [data-toggle-published] { color: #2d685f; border: 1px solid #9dbdb6; background: #fff; }
+  .vv-ev__actions [data-toggle-published]:hover { background: #2d685f; color: #fff; border-color: #2d685f; }
+  .vv-ev__actions [data-delete] { color: #b03526; border: 1px solid #dcb0a9; background: #fff; }
+  .vv-ev__actions [data-delete]:hover { background: #fdf1ef; border-color: #b03526; }
+  .vv-ev__actions [data-delete].is-confirming,
+  .vv-ev__actions [data-delete].is-confirming:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
+
+  .vv-ev__status { font-size: .78rem; min-width: 3rem; }
+  .vv-ev__empty { color: #6c757d; font-style: italic; padding: 0 1rem 1rem; margin: 0; }
+</style>
+
+{% endblock %}

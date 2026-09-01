@@ -26,6 +26,7 @@ final class CustomAdminPagesTest extends WebTestCase
         yield 'réglages' => ['/admin/reglages'];
         yield 'builder de carte' => ['/admin/menu/builder'];
         yield 'partenaires' => ['/admin/partenaires'];
+        yield 'événements' => ['/admin/evenements'];
     }
 
     #[DataProvider('pageProvider')]

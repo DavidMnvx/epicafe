@@ -37,6 +37,14 @@ return [
         'path' => './assets/admin/partners.js',
         'entrypoint' => true,
     ],
+    'admin-events' => [
+        'path' => './assets/admin/events.js',
+        'entrypoint' => true,
+    ],
+    'admin-dropzone' => [
+        'path' => './assets/admin/dropzone.js',
+        'entrypoint' => true,
+    ],
     'sortablejs' => [
         'version' => '1.15.7',
     ],
