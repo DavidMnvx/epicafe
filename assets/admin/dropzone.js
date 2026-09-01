@@ -25,13 +25,17 @@ function enhance(input) {
         <span class="vv-dz__preview" data-preview hidden></span>
     `;
 
-    // La zone remplace visuellement le widget ; l'input reste fonctionnel
-    // mais caché (il garde le focus clavier via le clic sur la zone).
-    input.parentElement.insertBefore(zone, input);
-    input.style.position = 'absolute';
-    input.style.opacity = '0';
-    input.style.width = '1px';
-    input.style.height = '1px';
+    // La zone REMPLACE la barre de fichier d'EasyAdmin (div.input-group) :
+    // elle est insérée à sa place et la barre est masquée. L'input, déjà
+    // caché par EasyAdmin (d-none), reste la source de vérité du formulaire ;
+    // l'aperçu d'une image déjà en place (page d'édition) n'est pas touché.
+    const bar = input.closest('.input-group');
+    if (bar) {
+        bar.parentElement.insertBefore(zone, bar);
+        bar.style.display = 'none';
+    } else {
+        input.parentElement.insertBefore(zone, input);
+    }
 
     zone.addEventListener('click', () => input.click());
 
