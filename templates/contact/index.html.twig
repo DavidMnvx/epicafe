@@ -79,26 +79,7 @@
         <div class="vv-panel">
           <h3 class="vv-h3">Horaires d'ouverture</h3>
 
-          <div class="vv-hours">
-            <div class="vv-hours__row">
-              <span>Lundi - Mardi et Jeudi</span>
-              <b>7h30 - 18h30</b>
-            </div>
-
-            <div class="vv-hours__row">
-              <span>Vendredi - Samedi</span>
-              <b>7h30 - 21h30</b>
-            </div>
-
-            <div class="vv-hours__row">
-              <span>Dimanche</span>
-              <b>8h00 - 12h00</b>
-            </div>
-
-            <div class="vv-hours__note">
-              Fermé le mercredi
-            </div>
-          </div>
+          {% include 'components/opening_hours.html.twig' %}
 
         </div>
         <div class="vv-panel">

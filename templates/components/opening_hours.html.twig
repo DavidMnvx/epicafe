@@ -1,0 +1,23 @@
+{# Horaires d'ouverture, pilotés par le réglage « Horaires (résumé) » du
+   back-office (contact_hours_summary). Une ligne « Jour : plage » devient
+   une rangée ; une ligne sans « : » (ex. « Fermé le mercredi ») devient la
+   note du bas. Le repli reproduit les horaires historiques du site. #}
+{% set hoursRaw = setting('contact_hours_summary',
+  "Lun-Mar-Jeu : 7h30 - 18h30\nVen-Sam : 7h30 - 21h30\nDim : 8h00 - 12h00\nFermé le mercredi") %}
+
+<div class="vv-hours">
+  {% for line in hoursRaw|split("\n") %}
+    {% set line = line|trim %}
+    {% if line %}
+      {% set parts = line|split(':', 2) %}
+      {% if parts|length == 2 and parts[1]|trim %}
+        <div class="vv-hours__row">
+          <span>{{ parts[0]|trim }}</span>
+          <b>{{ parts[1]|trim }}</b>
+        </div>
+      {% else %}
+        <div class="vv-hours__note">{{ line }}</div>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</div>
